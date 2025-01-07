@@ -25,6 +25,8 @@ export class CommandHandler {
   }
 
   listCommands(): string[] {
+    // todos: return this.commands.keys();
+
     return Array.from(this.commands.keys());
   }
 }

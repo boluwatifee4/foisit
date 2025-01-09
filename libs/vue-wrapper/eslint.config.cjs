@@ -2,7 +2,7 @@ const vue = require('eslint-plugin-vue');
 const baseConfig = require('../../.eslintrc.json');
 
 module.exports = [
-  ...baseConfig,
+  ...baseConfig.overrides,
   ...vue.configs['flat/recommended'],
   {
     files: ['**/*.vue'],

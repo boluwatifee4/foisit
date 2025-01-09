@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@foisit/angular-wrapper": ["libs/angular-wrapper/src/index.ts"],
-      "@foisit/core": ["libs/core/src/index.ts"]
+      "@foisit/core": ["libs/core/src/index.ts"],
+      "@foisit/react-wrapper": ["libs/react-wrapper/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -6,7 +6,18 @@ describe('AssistantService', () => {
   let service: AssistantService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: 'ASSISTANT_CONFIG', useValue: {
+            activationCommand: 'activate',
+            commands: [],
+            fallbackResponse: 'I did not understand that',
+            introMessage: 'Hello! How can I help you?'
+          }
+        }
+      ]
+    });
     service = TestBed.inject(AssistantService);
   });
 

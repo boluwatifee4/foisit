@@ -24,6 +24,17 @@ export class AppComponent {
       this.color.set('red');
       console.log('Color changed to red', this.color());
     });
+
+    this.assistantService.addCommand('remove background', () => {
+      console.log('Hello!');
+      this.color.set('transparent');
+    });
+
+    this.assistantService.addCommand('sleep', () => {
+      console.log('Sleeping...');
+      this.assistantService.stopListening();
+    })
+
     this.assistantService.startListening()
   }
 }

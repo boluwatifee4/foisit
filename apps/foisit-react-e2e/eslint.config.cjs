@@ -4,7 +4,7 @@ const baseConfig = require('../../.eslintrc.json');
 module.exports = [
   cypress.configs['recommended'],
 
-  ...baseConfig,
+  baseConfig,
   {
     // Override or add rules here
     rules: {},

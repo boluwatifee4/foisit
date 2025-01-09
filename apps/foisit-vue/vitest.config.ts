@@ -22,4 +22,8 @@ export default defineConfig({
       provider: 'v8',
     },
   },
+  // port to serve the app
+  server: {
+    port: 4220,
+  },
 });

@@ -9,7 +9,7 @@
     "reset:all": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules && yarn install",
     "project-graph": "nx dep-graph",
     "vue": "nx run foisit-vue:dev --port=4202",
-    "react": "nx run foisit-react:serve --port=4201"
+    "react": "nx run foisit-react:serve --port=8000"
   },
   "private": true,
   "dependencies": {

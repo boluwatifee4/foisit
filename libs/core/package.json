@@ -2,8 +2,7 @@
   "name": "@foisit/core",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^19.0.0",
-    "@angular/core": "^19.0.0"
+    "typescript": "^4.0.0"
   },
   "sideEffects": false
 }

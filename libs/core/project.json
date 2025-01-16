@@ -7,20 +7,13 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/angular:package",
+      "executor": "@nx/js:tsc",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "libs/core/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "libs/core/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "libs/core/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production"
+        "outputPath": "dist/libs/core",
+        "tsConfig": "libs/core/tsconfig.lib.json",
+        "main": "libs/core/src/index.ts"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",

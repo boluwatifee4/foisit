@@ -17,32 +17,19 @@ module.exports = [
       parser: require('jsonc-eslint-parser'),
     },
   },
-  ...nx.configs['flat/angular'],
-  ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
     rules: {
-      '@angular-eslint/directive-selector': [
+      // Framework-agnostic linting rules can go here
+      'no-unused-vars': 'error',
+      'no-console': 'warn',
+      '@nx/enforce-module-boundaries': [
         'error',
         {
-          type: 'attribute',
-          prefix: 'lib',
-          style: 'camelCase',
-        },
-      ],
-      '@angular-eslint/component-selector': [
-        'error',
-        {
-          type: 'element',
-          prefix: 'lib',
-          style: 'kebab-case',
+          enforceBuildableLibDependency: true,
+          allow: [],
         },
       ],
     },
-  },
-  {
-    files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
   },
 ];

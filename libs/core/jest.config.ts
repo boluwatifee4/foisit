@@ -1,21 +1,11 @@
 export default {
   displayName: 'core',
-  preset: '../../jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  preset: 'ts-jest',
+  testEnvironment: 'node', // For framework-agnostic testing
+  setupFilesAfterEnv: [],
   coverageDirectory: '../../coverage/libs/core',
   transform: {
-    '^.+\\.(ts|mjs|js|html)$': [
-      'jest-preset-angular',
-      {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
-        stringifyContentPathRegex: '\\.(html|svg)$',
-      },
-    ],
+    '^.+\\.(ts|js)$': 'ts-jest',
   },
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
-  snapshotSerializers: [
-    'jest-preset-angular/build/serializers/no-ng-attributes',
-    'jest-preset-angular/build/serializers/ng-snapshot',
-    'jest-preset-angular/build/serializers/html-comment',
-  ],
 };

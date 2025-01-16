@@ -45,13 +45,14 @@ export class AssistantService {
       const normalizedTranscript = transcript.toLowerCase();
 
       if (!this.isActivated && normalizedTranscript === this.config.activationCommand.toLowerCase()) {
-        console.log('Activation command matched.');
+        console.log('Service: Activation command matched.');
         this.isActivated = true;
         this.textToSpeech.speak(this.config.introMessage || 'How can I assist you?');
       } else if (!this.isActivated) {
         console.log('Activation command not recognized.');
+        this.textToSpeech.speak('Sorry, please say the activation command.');
       }
-      if (this.isActivated) {
+      if (this.isActivated && normalizedTranscript !== this.config.activationCommand.toLowerCase()) {
         this.listenForCommands(normalizedTranscript);
       }
     });
@@ -80,13 +81,6 @@ export class AssistantService {
     this.stateManager.setState('idle');
   }
 
-  /** Reactivate the assistant manually */
-  reactivate(): void {
-    console.log('Assistant reactivated.');
-    this.clearIdleTimeout(); // Clear any existing idle timeout
-    this.startListening(); // Restart listening for activation or commands
-  }
-
   /** Handle fallback responses */
   private handleFallback(input: string): void {
     this.fallbackHandler.handleFallback(input);
@@ -94,11 +88,19 @@ export class AssistantService {
 
   /** Setup reactivation listeners */
   private setupReactivationListeners(): void {
-    const reactivationHandler = () => {
-      if (this.stateManager.getState() === 'idle') {
-        this.reactivate();
-      }
-    };
+    const reactivationHandler = (() => {
+      let timeoutId: NodeJS.Timeout | null = null;
+      return () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+          if (this.stateManager.getState() === 'idle') {
+            this.reactivate();
+          }
+        }, 200); // Debounce for 200ms
+      };
+    })();
 
     document.addEventListener('dblclick', reactivationHandler);
 
@@ -112,6 +114,18 @@ export class AssistantService {
       lastTap = currentTime;
     });
   }
+
+  reactivate(): void {
+    console.log('Assistant reactivated.');
+    if (this.stateManager.getState() !== 'idle') {
+      console.warn('Reactivation ignored: Assistant is not idle.');
+      return;
+    }
+
+    this.clearIdleTimeout(); // Clear any existing idle timeout
+    this.startListening(); // Restart listening for activation or commands
+  }
+
 
   /** Start the idle timeout */
   private startIdleTimeout(): void {

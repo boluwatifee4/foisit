@@ -6,6 +6,7 @@ import {
   StateManager,
   AssistantConfig,
   TextToSpeech,
+  GestureHandler,
 } from '@foisit/core';
 
 @Injectable({
@@ -17,8 +18,10 @@ export class AssistantService {
   private voiceProcessor: VoiceProcessor;
   private textToSpeech: TextToSpeech;
   private stateManager: StateManager;
-  private idleTimeoutId: any;
+  private lastProcessedInput = '';
+  private processingLock = false;
   private isActivated = false; // Tracks activation status
+  private gestureHandler: GestureHandler;
 
   constructor(@Inject('ASSISTANT_CONFIG') private config: AssistantConfig) {
     this.commandHandler = new CommandHandler();
@@ -26,6 +29,7 @@ export class AssistantService {
     this.voiceProcessor = new VoiceProcessor();
     this.textToSpeech = new TextToSpeech();
     this.stateManager = new StateManager();
+    this.gestureHandler = new GestureHandler();
 
     // Setup commands from config
     this.config.commands.forEach((cmd) =>
@@ -37,127 +41,93 @@ export class AssistantService {
       this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
     }
 
-    // Setup reactivation listeners
-    this.setupReactivationListeners();
-  }
-
-  /** Start listening for activation commands */
-  startListening(): void {
-    console.log('Assistant is now listening for activation...');
-    this.stateManager.setState('listening'); // Update state to listening
-    this.stateManager.removeGradientAnimation();
-
-    this.voiceProcessor.startListening((transcript: string) => {
-      const normalizedTranscript = transcript.toLowerCase();
-
-      if (!this.isActivated && normalizedTranscript === this.config.activationCommand.toLowerCase()) {
-        console.log('Activation command matched.');
-        this.isActivated = true; // Mark as activated
-        this.textToSpeech.speak(this.config.introMessage || 'How can I assist you?');
-      } else if (!this.isActivated) {
-        console.log('Activation command not recognized.');
-      }
-      if (this.isActivated) {
-        this.listenForCommands(normalizedTranscript);
-      }
-    });
-
-    this.startIdleTimeout(); // Automatically transition to idle after timeout
-  }
-
-  /** Listen for commands after activation */
-  private listenForCommands(normalizedTranscript: string): void {
-    console.log('Assistant is now in command mode...');
-    // this.voiceProcessor.startListening((transcript: string) => {
-    //   const normalizedTranscript = transcript.toLowerCase();
-    console.log('Processing command:', normalizedTranscript);
-    this.stateManager.addGradientAnimation();
-
-    if (normalizedTranscript !== this.config.activationCommand.toLowerCase()) {
-      // Attempt to execute the command
-      const commandExecuted = this.commandHandler.executeCommand(normalizedTranscript);
-
-      if (!commandExecuted) {
-        console.log('Command not recognized. Triggering fallback...');
-        this.handleFallback(normalizedTranscript);
-      } else {
-        console.log(`Command "${normalizedTranscript}" executed successfully.`);
-      }
-    }
-    // });
-  }
-
-  /** Stop listening and go idle */
-  stopListening(): void {
-    console.log('Assistant is now idle.');
-    this.isActivated = false; // Reset activation status
-    this.voiceProcessor.stopListening();
-    this.stateManager.setState('idle'); // Transition to idle state
-    this.stateManager.removeGradientAnimation();
-  }
-
-
-  /** Handle fallback responses */
-  private handleFallback(input: string): void {
-    this.fallbackHandler.handleFallback(input);
-    console.log('Fallback response provided.');
-  }
-
-  /** Reactivate the assistant manually */
-  reactivate(): void {
-    console.log('Assistant reactivated.');
-    this.clearIdleTimeout();
     this.startListening();
+
+    // Setup double-tap/double-click listener
+    this.gestureHandler.setupDoubleTapListener(() => this.toggleAssistantState());
   }
 
-  /** Setup reactivation listeners */
-  private setupReactivationListeners(): void {
-    const reactivationHandler = () => {
-      if (this.stateManager.getState() === 'idle') {
-        this.reactivate();
-      }
-    };
+  /** Start listening for activation and commands */
+  startListening(): void {
+    console.log('AssistantService: Starting listening...');
+    this.voiceProcessor.startListening(async (transcript: string) => {
+      if (this.processingLock) return;
 
-    document.addEventListener('dblclick', reactivationHandler);
+      const normalizedTranscript = transcript.toLowerCase().trim();
 
-    let lastTap = 0;
-    document.addEventListener('touchend', (event) => {
-      const currentTime = new Date().getTime();
-      const tapInterval = currentTime - lastTap;
-      if (tapInterval < 300 && tapInterval > 0) {
-        reactivationHandler();
+      // Skip repeated or irrelevant inputs
+      if (
+        !normalizedTranscript ||
+        normalizedTranscript.length < 3 ||
+        normalizedTranscript === this.lastProcessedInput
+      ) {
+        console.log('AssistantService: Ignoring irrelevant input.');
+        return;
       }
-      lastTap = currentTime;
+
+      this.lastProcessedInput = normalizedTranscript;
+
+      if (!this.isActivated) {
+        await this.processActivation(normalizedTranscript);
+      } else {
+        await this.handleCommand(normalizedTranscript);
+      }
+
+      // Throttle input processing to prevent rapid feedback
+      this.processingLock = true;
+      setTimeout(() => (this.processingLock = false), 1000);
     });
   }
 
-  private startIdleTimeout(): void {
-    this.clearIdleTimeout();
-    this.idleTimeoutId = setTimeout(() => {
-      this.goIdle();
-    }, 2 * 60 * 1000); // 2 minutes
-  }
-
-  private clearIdleTimeout(): void {
-    if (this.idleTimeoutId) {
-      clearTimeout(this.idleTimeoutId);
-      this.idleTimeoutId = null;
+  /** Process activation command */
+  private async processActivation(transcript: string): Promise<void> {
+    if (transcript === this.config.activationCommand.toLowerCase()) {
+      console.log('AssistantService: Activation matched.');
+      this.isActivated = true;
+      this.textToSpeech.speak(this.config.introMessage || 'How can I assist you?');
+      this.stateManager.setState('listening'); // Show animation
+    } else {
+      console.log('AssistantService: Activation command not recognized.');
     }
   }
 
-  private goIdle(): void {
-    console.log('Assistant is now idle.');
-    this.stopListening();
+  /** Handle recognized commands */
+  private async handleCommand(transcript: string): Promise<void> {
+    const commandExecuted = await this.commandHandler.executeCommand(transcript);
+    if (!commandExecuted) {
+      console.log('AssistantService: Command not recognized.');
+      this.fallbackHandler.handleFallback(transcript);
+    }
   }
 
-  /** Add commands dynamically */
+  /** Stop listening */
+  stopListening(): void {
+    console.log('AssistantService: Stopping listening...');
+    this.voiceProcessor.stopListening();
+    this.isActivated = false;
+    this.stateManager.setState('idle'); // Remove animation
+  }
+
+  /** Add a command dynamically */
   addCommand(command: string, action: () => void): void {
+    console.log(`AssistantService: Adding command "${command}".`);
     this.commandHandler.addCommand(command, action);
   }
 
-  /** Remove commands dynamically */
+  /** Remove a command dynamically */
   removeCommand(command: string): void {
+    console.log(`AssistantService: Removing command "${command}".`);
     this.commandHandler.removeCommand(command);
+  }
+
+  private toggleAssistantState(): void {
+    if (this.isActivated) {
+      console.log('AssistantService: Stopping assistant on double-tap/click...');
+      this.stopListening();
+    } else {
+      console.log('AssistantService: Reactivating assistant on double-tap/click...');
+      this.startListening();
+    }
   }
 }
 

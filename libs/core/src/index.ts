@@ -3,3 +3,4 @@ export * from './lib/fallback/fallback-handler';
 export * from './lib/interfaces';
 export * from './lib/speech';
 export * from './lib/state-manager';
+export * from './lib/utils';

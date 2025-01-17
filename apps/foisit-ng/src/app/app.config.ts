@@ -9,7 +9,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     importProvidersFrom(AssistantModule.forRoot({
-      activationCommand: 'hi',
+      activationCommand: 'bad bitch',
       fallbackResponse: 'Sorry, I didn’t understand that.',
       commands: [
         { command: 'show profile', action: () => console.log('Showing profile...') },

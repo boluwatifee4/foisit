@@ -2,7 +2,7 @@ import React from 'react';
 import { AssistantProvider, useAssistant, AssistantActivator } from '@foisit/react-wrapper';
 
 const config = {
-  activationCommand: 'hi react',
+  activationCommand: 'react',
   fallbackResponse: 'Sorry, I didn’t understand that.',
   commands: [
     {
@@ -58,7 +58,8 @@ const ControlPanel: React.FC = () => {
   };
 
   const handleReactivate = () => {
-    assistant.reactivate();
+    // assistant.reactivate();
+    assistant.startListening();
     addLog('Assistant reactivated.');
   };
 

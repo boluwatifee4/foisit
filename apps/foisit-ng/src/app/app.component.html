@@ -1,8 +1,32 @@
 <div
 [ngStyle]="{
- 'background-color': color(),
- 'padding': '10px' }"
->
-  <app-nx-welcome></app-nx-welcome>
+  'background-color': color(),
+  'padding': '20px'
+}"
+class="app-container">
+  <header class="header">
+    <h1>Foisit Angular Assistant</h1>
+    <p>
+      Activate the assistant with <strong>"bad bitch"</strong> or use the controls below.
+    </p>
+  </header>
+
+  <main class="control-panel">
+    <div class="buttons-container">
+      <button (click)="reactivateAssistant()" class="button">
+        Reactivate Assistant
+      </button>
+      <button (click)="clearLogs()" class="button">
+        Clear Logs
+      </button>
+    </div>
+
+    <div class="log-container">
+      <h3>Execution Log:</h3>
+      <ul class="log-list">
+        <li *ngFor="let log of logs">{{ log }}</li>
+      </ul>
+      <p *ngIf="logs.length === 0">No logs yet. Interact with the assistant!</p>
+    </div>
+  </main>
 </div>
-<router-outlet></router-outlet>

@@ -4,31 +4,44 @@ import { AssistantService } from '../services/AssistantService';
 
 export const AssistantContext = createContext<AssistantService | null>(null);
 
+// Global singleton for AssistantService
+let globalAssistantService: AssistantService | null = null;
+
 export const AssistantProvider: React.FC<{ config: AssistantConfig; children: React.ReactNode }> = ({ config, children }) => {
-  const assistantServiceRef = useRef<AssistantService | null>(null);
+  const [assistantService, setAssistantService] = useState<AssistantService | null>(null);
   const [isReady, setIsReady] = useState(false); // Track loading state
 
   useEffect(() => {
-    // Initialize AssistantService
-    assistantServiceRef.current = new AssistantService(config);
-    assistantServiceRef.current.startListening();
+    if (!globalAssistantService) {
+      console.log('Initializing global AssistantService...');
+      globalAssistantService = new AssistantService(config);
+    } else {
+      console.warn('Multiple AssistantProvider instances detected. Reusing global AssistantService.');
+    }
+
+    // Set state and start listening
+    const instance = globalAssistantService;
+    setAssistantService(instance);
+    instance.startListening();
 
     // Set ready state
     setIsReady(true);
 
     return () => {
-      // Cleanup on unmount
-      assistantServiceRef.current?.stopListening();
+      console.log('Cleaning up AssistantService...');
+      instance.stopListening();
+      instance.destroy?.(); // Call destroy if implemented
+      globalAssistantService = null; // Cleanup the global reference
     };
   }, [config]);
 
   // Render a fallback until the provider is ready
-  if (!isReady) {
+  if (!isReady || !assistantService) {
     return <div>Loading Assistant...</div>;
   }
 
   return (
-    <AssistantContext.Provider value={assistantServiceRef.current}>
+    <AssistantContext.Provider value={assistantService}>
       {children}
     </AssistantContext.Provider>
   );

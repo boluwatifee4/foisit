@@ -1,44 +1,41 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
+import { AssistantProvider } from '@foisit/vue-wrapper';
+import Header from '../views/Header.vue';
+import ControlPanel from '../views/ControlPanel.vue';
+
+// Configuration for the assistant
+const assistantConfig = {
+  activationCommand: 'john',
+  fallbackResponse: 'Sorry, I didn’t understand that.',
+  commands: [
+    { command: 'turn red', action: () => (document.body.style.backgroundColor = 'red') },
+    { command: 'show alert', action: () => alert('Assistant executed the "show alert" command') },
+    { command: 'remove background', action: () => (document.body.style.backgroundColor = 'transparent') },
+  ],
+};
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
-  </header>
-  <RouterView />
+  <!-- AssistantProvider wrapping the entire app -->
+  <AssistantProvider :config="assistantConfig">
+    <div class="app">
+      <Header />
+      <ControlPanel />
+    </div>
+  </AssistantProvider>
 </template>
 
 <style scoped lang="scss">
-header {
-  line-height: 1.5;
-  max-width: 100vw;
+/* Basic styling */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-nav > a {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@media (min-width: 768px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 768px;
-  }
-
-  nav {
-    text-align: left;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.app {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
 }
 </style>

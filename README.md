@@ -1,5 +1,8 @@
 # Foisit
 
+<img width="846" alt="image" src="https://github.com/user-attachments/assets/3ec6fa31-736c-438c-83ab-ce57e593d4af" />
+
+
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.

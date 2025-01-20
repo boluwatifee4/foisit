@@ -14,7 +14,8 @@
     "angular:prod": "nx run foisit-ng:serve --configuration=production",
     "build:all": "nx run-many --target=build --all",
     "release": "semantic-release",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "export NX_DAEMON=false"
   },
   "private": true,
   "workspaces": [

@@ -24,7 +24,7 @@ jobs:
         run: env
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --ignore-scripts
 
       - name: Run Semantic Release
         env:

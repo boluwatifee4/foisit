@@ -6,7 +6,7 @@
     "reset:foisit-ng": "rm -rf dist/apps/foisit-ng && rm -rf dist/libs/foisit-ng && rm -rf dist/libs/foisit-ng-e2e",
     "build:foisit-ng": "nx build foisit-ng",
     "serve:foisit-ng": "nx serve foisit-ng",
-    "reset:all": "rm -rf package-lock.json && rm -rf dist && rm -rf node_modules && yarn install",
+    "reset:all": "rm -rf yarn-lock && rm -rf node_modules && yarn install",
     "project-graph": "nx dep-graph",
     "vue": "nx run foisit-vue:dev --port=4202",
     "react": "nx run foisit-react:serve --port=8000",
@@ -17,6 +17,10 @@
     "prepare": "husky"
   },
   "private": true,
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ],
   "dependencies": {
     "@angular/animations": "^19.0.5",
     "@angular/common": "~19.0.0",

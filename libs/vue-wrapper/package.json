@@ -9,5 +9,17 @@
       "require": "./index.js",
       "types": "./index.d.ts"
     }
-  }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "description": "Foisit: Speak, and its done. A voice assistant library for vue apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boluwatifee4/foisit"
+  },
+  "author": "Ola Boluwatife (Bima)",
+  "license": "MIT"
 }

@@ -5,5 +5,16 @@
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "description": "Foisit: Speak, and its done. A voice assistant library for angular apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boluwatifee4/foisit"
+  },
+  "author": "Ola Boluwatife (Bima)",
+  "license": "MIT"
 }

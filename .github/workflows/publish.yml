@@ -1,0 +1,50 @@
+name: Publish Libraries to npm
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger only on version tags
+
+jobs:
+  publish:
+    name: Publish Libraries
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: npm
+
+      # Step 3: Authenticate with npm
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 5: Build all libraries
+      - name: Build all libraries
+        run: npx nx run-many --target=build --all
+
+      # Step 6: Publish Angular Wrapper
+      - name: Publish Angular Wrapper
+        working-directory: dist/libs/angular-wrapper
+        run: npm publish --access public
+
+      # Step 7: Publish React Wrapper
+      - name: Publish React Wrapper
+        working-directory: dist/libs/react-wrapper
+        run: npm publish --access public
+
+      # Step 8: Publish Vue Wrapper
+      - name: Publish Vue Wrapper
+        working-directory: dist/libs/vue-wrapper
+        run: npm publish --access public

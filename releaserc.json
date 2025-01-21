@@ -1,5 +1,5 @@
 {
-  "branches": ["main"],
+  "branches": ["main", "next"],
   "repositoryUrl": "https://github.com/boluwatifee4/foisit",
   "plugins": [
     "@semantic-release/commit-analyzer",

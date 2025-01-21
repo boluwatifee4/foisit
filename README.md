@@ -1,86 +1,142 @@
-# Foisit
+# 🎙️ Foisit: Speak, and it’s Done.
 
-<img width="913" alt="image" src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" />
+<img src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" alt="Foisit Logo" width="600" />
 
+The **Foisit Project** is your all-in-one suite of libraries for building interactive, voice-driven experiences in **Angular**, **React**, and **Vue**. With **Foisit**, you can empower your applications to listen, respond, and act—seamlessly.
 
+---
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+## 🌟 Key Features
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+- **🌐 Cross-Framework Support**: Designed for Angular, React, and Vue.
+- **🗣️ Voice Interactions**: Speak commands to control your app with ease.
+- **🧩 Dynamic Commands**: Add or remove commands on the fly.
+- **✨ Visual Feedback**: Show animations when the assistant is active.
+- **🚀 Effortless Integration**: Start with just a few lines of code.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-## Finish your CI setup
+## 🌐 Live Demos
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/T8Vvw2FgEn)
+Ready to see the magic? Check out live demos for each framework:
 
+- 🅰️ **[Angular Demo](https://ng-foisit-demo.netlify.app/)**
+- ⚛️ **[React Demo](https://foisit-react-demo.netlify.app/)**
+- 🖖 **[Vue Demo](https://foisit-vue-demo.netlify.app/)**
 
-## Run tasks
+---
 
-To run the dev server for your app, use:
+## 🚀 Installation
 
-```sh
+Install the library for your desired framework:
+
+### For Angular:
+
+```bash
+npm install @foisit/angular-wrapper
+```
+
+or
+
+```bash
+yarn add @foisit/angular-wrapper
+```
+
+### For React:
+
+```bash
+npm install @foisit/react-wrapper
+```
+
+or
+
+```bash
+yarn add @foisit/react-wrapper
+```
+
+### For Vue:
+
+```bash
+npm install @foisit/vue-wrapper
+```
+
+or
+
+```bash
+yarn add @foisit/vue-wrapper
+```
+
+---
+
+## 🛠️ Usage
+
+Each library has its own detailed documentation to help you get started quickly:
+
+- 🅰️ **[Angular Setup Guide](https://www.npmjs.com/package/@foisit/angular-wrapper)**
+- ⚛️ **[React Setup Guide](https://www.npmjs.com/package/@foisit/react-wrapper)**
+- 🖖 **[Vue Setup Guide](https://www.npmjs.com/package/@foisit/vue-wrapper)**
+
+---
+
+## 🛠️ Contributing
+
+We’re excited to have you join the **Foisit** community! Contribute, suggest features, or raise issues.
+
+- Submit your PRs 🤝.
+- Follow semantic versioning for commit messages ✍️.
+- We welcome all ideas!
+
+---
+
+## 📄 License
+
+Licensed under the **MIT License**.
+
+---
+
+## 🚀 Nx Workspace
+
+This project is powered by **Nx**, a smart monorepo management tool:
+
+### Run Tasks
+
+Serve the Angular app:
+
+```bash
 npx nx serve foisit-ng
 ```
 
-To create a production bundle:
+Build the Vue app:
 
-```sh
-npx nx build foisit-ng
+```bash
+npx nx build foisit-vue
 ```
 
-To see all available targets to run for a project, run:
+View the dependency graph:
 
-```sh
-npx nx show project foisit-ng
+```bash
+npx nx graph
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+[Learn more about Nx &raquo;](https://nx.dev)
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Add new projects
+## 💡 Useful Links
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+- [Nx Plugins & Generators](https://nx.dev/concepts/nx-plugins)
+- [Nx CI/CD Guide](https://nx.dev/ci/intro/ci-with-nx)
+- [Nx Blog](https://nx.dev/blog)
 
-Use the plugin's generator to create new projects.
+---
 
-To generate a new application, use:
+## 💬 Community
 
-```sh
-npx nx g @nx/angular:app demo
-```
+Join the conversation:
 
-To generate a new library, use:
-
-```sh
-npx nx g @nx/angular:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
 - [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [X (Twitter)](https://twitter.com/nxdevtools)
+- [LinkedIn](https://www.linkedin.com/company/nrwl)
+- [YouTube](https://www.youtube.com/@nxdevtools)
+
+Let us know how **Foisit** can make your apps even better! 🎉

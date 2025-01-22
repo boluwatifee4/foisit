@@ -66,8 +66,17 @@ export class AssistantService {
 
       if (!this.isActivated) {
         await this.processActivation(normalizedTranscript);
-      } else {
+        return;
+      }
+
+      const isFallbackOrIntroMessage =
+        normalizedTranscript === this.config.fallbackResponse?.toLowerCase() ||
+        normalizedTranscript === this.config.introMessage?.toLowerCase();
+
+      if (!isFallbackOrIntroMessage) {
         await this.handleCommand(normalizedTranscript);
+      } else {
+        console.log('AssistantService: Ignoring fallback or intro message.');
       }
 
       // Throttle input processing to prevent rapid feedback

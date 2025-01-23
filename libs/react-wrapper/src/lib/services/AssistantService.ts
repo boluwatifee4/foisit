@@ -18,6 +18,7 @@ export class AssistantService {
   private lastProcessedInput = '';
   private processingLock = false;
   private gestureHandler: GestureHandler;
+  private defaultIntroMessage = 'How can I help you?';
 
   constructor(private config: AssistantConfig) {
     this.commandHandler = new CommandHandler();
@@ -71,7 +72,8 @@ export class AssistantService {
 
       const isFallbackOrIntroMessage =
         normalizedTranscript === this.config.fallbackResponse?.toLowerCase() ||
-        normalizedTranscript === this.config.introMessage?.toLowerCase();
+        normalizedTranscript === this.config.introMessage?.toLowerCase() ||
+        normalizedTranscript === this.defaultIntroMessage.toLowerCase();
 
       if (!isFallbackOrIntroMessage) {
         await this.handleCommand(normalizedTranscript);
@@ -98,7 +100,7 @@ export class AssistantService {
     if (transcript === this.config.activationCommand.toLowerCase()) {
       console.log('AssistantService: Activation matched.');
       this.isActivated = true;
-      this.textToSpeech.speak(this.config.introMessage || 'How can I assist you?');
+      this.textToSpeech.speak(this.config.introMessage || this.defaultIntroMessage);
       this.stateManager.setState('listening'); // Show animation
     } else {
       console.log('AssistantService: Activation command not recognized.');

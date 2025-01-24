@@ -1,14 +1,12 @@
-import { StateManager } from "../state-manager";
-
-/* eslint-disable no-console */
 export class VoiceProcessor {
   private recognition: any;
   private isListening = false;
-  private stateManager: StateManager;
+  private isStoppedSpeechRecog = false;
+  private restartAllowed = true;
 
   constructor(language = 'en-US') {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).webkitSpeechRecognition;
+    // (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       throw new Error('SpeechRecognition API is not supported in this browser.');
@@ -22,8 +20,6 @@ export class VoiceProcessor {
     this.recognition.onresult = this.handleResult.bind(this); // Event handler for results
     this.recognition.onend = this.handleEnd.bind(this); // Event handler for session end
     this.recognition.onerror = this.handleError.bind(this); // Event handler for errors
-    this.stateManager = new StateManager();
-
   }
 
   /** Start listening for speech input */
@@ -39,6 +35,8 @@ export class VoiceProcessor {
       this.recognition.onresult = (event: any) => this.handleResult(event, callback);
       this.recognition.start();
       this.isListening = true;
+      this.isStoppedSpeechRecog = false;
+      this.restartAllowed = true;
       console.log('VoiceProcessor: Listening started.');
     } catch (error) {
       console.error('VoiceProcessor: Failed to start SpeechRecognition:', error);
@@ -48,6 +46,8 @@ export class VoiceProcessor {
   /** Stop listening for speech input */
   stopListening(): void {
     console.log('VoiceProcessor: Stopping listening...');
+    this.isStoppedSpeechRecog = true;
+    this.restartAllowed = false; // Prevent automatic restart
     if (!this.isListening) {
       console.warn('VoiceProcessor: Already stopped. Skipping stop...');
       return;
@@ -71,7 +71,6 @@ export class VoiceProcessor {
 
     if (transcript && confidence > 0.75) {
       console.log(`VoiceProcessor: Recognized Speech (confidence ${confidence}):`, transcript);
-      // check if the transcript is equals to activation command
       callback(transcript);
     } else {
       console.log('VoiceProcessor: Ignoring low-confidence or empty result.');
@@ -82,6 +81,13 @@ export class VoiceProcessor {
   private handleEnd(): void {
     console.log('VoiceProcessor: Session ended.');
     this.isListening = false;
+
+    if (this.restartAllowed && !this.isStoppedSpeechRecog) {
+      console.log('VoiceProcessor: Restarting session...');
+      this.startListening(() => {
+        // console.log('VoiceProcessor: Restarted session.');
+      });
+    }
   }
 
   /** Handle errors during speech recognition */

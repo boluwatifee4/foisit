@@ -82,13 +82,14 @@ export class VoiceProcessor {
     console.log('VoiceProcessor: Session ended.');
     this.isListening = false;
 
+    // Only restart if it was NOT intentionally stopped
     if (this.restartAllowed && !this.isStoppedSpeechRecog) {
-      console.log('VoiceProcessor: Restarting session...');
-      this.startListening(() => {
-        // console.log('VoiceProcessor: Restarted session.');
-      });
+      console.log('VoiceProcessor: Restarting session due to unexpected stop...');
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      setTimeout(() => this.startListening(() => { }), 560); // Small delay to prevent spam
     }
   }
+
 
   /** Handle errors during speech recognition */
   private handleError(event: any): void {

@@ -1,142 +1,92 @@
-# 🎙️ Foisit: Speak, and it’s Done.
+# 🎙️ Foisit: AI-Powered Voice & UI Assistant
 
-<img src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" alt="Foisit Logo" width="600" />
+<img src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" alt="Foisit Logo" width="300" />
 
-The **Foisit Project** is your all-in-one suite of libraries for building interactive, voice-driven experiences in **Angular**, **React**, and **Vue**. With **Foisit**, you can empower your applications to listen, respond, and act—seamlessly.
+**Foisit** is an AI-powered assistant for web applications that combines voice recognition, natural language processing, and a modern UI overlay. It allows users to control your app via voice or text, with built-in safety for critical actions.
 
 ---
 
 ## 🌟 Key Features
 
-- **🌐 Cross-Framework Support**: Designed for Angular, React, and Vue.
-- **🗣️ Voice Interactions**: Speak commands to control your app with ease.
-- **🧩 Dynamic Commands**: Add or remove commands on the fly.
-- **✨ Visual Feedback**: Show animations when the assistant is active.
-- **🚀 Effortless Integration**: Start with just a few lines of code.
+- **🧠 Smart Intent (AI)**: Understands natural language using GPT-4o mini (via a secure proxy). No client-side API keys required.
+- **🛡️ Critical Actions**: Built-in confirmation flow for sensitive operations (e.g., "Delete Account").
+- **💬 Modern UI Overlay**: A sleek, text-first chat interface with loading states and interactive options.
+- **👋 Gesture Activation**: Trigger the assistant via a floating "Powered by Foisit" watermark (double-click/tap).
+- **🌐 Framework Agnostic Core**: Shared logic across Angular, React, and Vue.
+- **🚀 Zero Config AI**: Enable AI features with a single toggle.
 
 ---
 
-## 🌐 Live Demos
+## 📦 Packages
 
-Ready to see the magic? Check out live demos for each framework:
-
-- 🅰️ **[Angular Demo](https://ng-foisit-demo.netlify.app/)**
-- ⚛️ **[React Demo](https://foisit-react-demo.netlify.app/)**
-- 🖖 **[Vue Demo](https://foisit-vue-demo.netlify.app/)**
+| Package                                             | Framework | Installation                          |
+| :-------------------------------------------------- | :-------- | :------------------------------------ |
+| [`@foisit/core`](./libs/core)                       | Engine    | `npm install @foisit/core`            |
+| [`@foisit/angular-wrapper`](./libs/angular-wrapper) | Angular   | `npm install @foisit/angular-wrapper` |
+| [`@foisit/react-wrapper`](./libs/react-wrapper)     | React     | `npm install @foisit/react-wrapper`   |
+| [`@foisit/vue-wrapper`](./libs/vue-wrapper)         | Vue       | `npm install @foisit/vue-wrapper`     |
 
 ---
 
-## 🚀 Installation
+## 🚀 Quick Start (React Example)
 
-Install the library for your desired framework:
+```tsx
+import { AssistantProvider } from '@foisit/react-wrapper';
 
-### For Angular:
+const config = {
+  enableSmartIntent: true,
+  introMessage: 'How can I help you today?',
+  commands: [
+    {
+      command: 'dark mode',
+      action: () => setDarkMode(true),
+      keywords: ['lights out', 'night'],
+    },
+    {
+      command: 'delete order',
+      critical: true,
+      description: 'delete your last order',
+      action: () => deleteOrder(),
+    },
+  ],
+};
 
-```bash
-npm install @foisit/angular-wrapper
-```
-
-or
-
-```bash
-yarn add @foisit/angular-wrapper
-```
-
-### For React:
-
-```bash
-npm install @foisit/react-wrapper
-```
-
-or
-
-```bash
-yarn add @foisit/react-wrapper
-```
-
-### For Vue:
-
-```bash
-npm install @foisit/vue-wrapper
-```
-
-or
-
-```bash
-yarn add @foisit/vue-wrapper
+function App() {
+  return (
+    <AssistantProvider config={config}>
+      <YourApp />
+    </AssistantProvider>
+  );
+}
 ```
 
 ---
 
-## 🛠️ Usage
+## 🛡️ Critical Action Confirmation
 
-Each library has its own detailed documentation to help you get started quickly:
+Foisit automatically handles confirmation for commands marked as `critical: true`.
 
-- 🅰️ **[Angular Setup Guide](https://www.npmjs.com/package/@foisit/angular-wrapper)**
-- ⚛️ **[React Setup Guide](https://www.npmjs.com/package/@foisit/react-wrapper)**
-- 🖖 **[Vue Setup Guide](https://www.npmjs.com/package/@foisit/vue-wrapper)**
+**User:** "Delete my order"  
+**Assistant:** "Are you sure you want to delete your last order?"  
+**Buttons:** [Yes] [No]
 
 ---
 
-## 🛠️ Contributing
+## 🛠️ Development (Nx Monorepo)
 
-We’re excited to have you join the **Foisit** community! Contribute, suggest features, or raise issues.
+```bash
+# Serve Angular Demo
+npx nx serve foisit-ng
 
-- Submit your PRs 🤝.
-- Follow semantic versioning for commit messages ✍️.
-- We welcome all ideas!
+# Serve React Demo
+npx nx serve foisit-react
+
+# Serve Vue Demo
+npx nx serve foisit-vue
+```
 
 ---
 
 ## 📄 License
 
 Licensed under the **MIT License**.
-
----
-
-## 🚀 Nx Workspace
-
-This project is powered by **Nx**, a smart monorepo management tool:
-
-### Run Tasks
-
-Serve the Angular app:
-
-```bash
-npx nx serve foisit-ng
-```
-
-Build the Vue app:
-
-```bash
-npx nx build foisit-vue
-```
-
-View the dependency graph:
-
-```bash
-npx nx graph
-```
-
-[Learn more about Nx &raquo;](https://nx.dev)
-
----
-
-## 💡 Useful Links
-
-- [Nx Plugins & Generators](https://nx.dev/concepts/nx-plugins)
-- [Nx CI/CD Guide](https://nx.dev/ci/intro/ci-with-nx)
-- [Nx Blog](https://nx.dev/blog)
-
----
-
-## 💬 Community
-
-Join the conversation:
-
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-
-Let us know how **Foisit** can make your apps even better! 🎉

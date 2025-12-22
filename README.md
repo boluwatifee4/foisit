@@ -12,16 +12,17 @@
 - **🛡️ Critical Actions**: Built-in confirmation flow for sensitive operations (e.g., "Delete Account").
 - **💬 Modern UI Overlay**: A sleek, text-first chat interface with loading states and interactive options.
 - **👋 Gesture Activation**: Trigger the assistant via a floating "Powered by Foisit" watermark (double-click/tap).
-- **🌐 Framework Agnostic Core**: Shared logic across Angular, React, and Vue.
+- **🌐 Framework Agnostic Core**: A shared engine powers the logic across Angular, React, and Vue.
 - **🚀 Zero Config AI**: Enable AI features with a single toggle.
 
 ---
 
-## 📦 Packages
+## 📦 Framework Wrappers
+
+Install the wrapper specifically for your framework. The core engine is included automatically.
 
 | Package                                             | Framework | Installation                          |
 | :-------------------------------------------------- | :-------- | :------------------------------------ |
-| [`@foisit/core`](./libs/core)                       | Engine    | `npm install @foisit/core`            |
 | [`@foisit/angular-wrapper`](./libs/angular-wrapper) | Angular   | `npm install @foisit/angular-wrapper` |
 | [`@foisit/react-wrapper`](./libs/react-wrapper)     | React     | `npm install @foisit/react-wrapper`   |
 | [`@foisit/vue-wrapper`](./libs/vue-wrapper)         | Vue       | `npm install @foisit/vue-wrapper`     |

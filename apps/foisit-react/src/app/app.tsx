@@ -1,9 +1,12 @@
 import React from 'react';
-import { AssistantProvider, useAssistant, AssistantActivator } from '@foisit/react-wrapper';
+import { AssistantProvider, useAssistant } from '@foisit/react-wrapper';
 
 const config = {
   activationCommand: 'react',
+  introMessage: 'Hello from React!',
   fallbackResponse: 'Sorry, I didn’t understand that.',
+  enableSmartIntent: true,
+  // openAIKey: '', // Removed from public config
   commands: [
     {
       command: 'turn red',
@@ -20,6 +23,12 @@ const config = {
     {
       command: 'show alert',
       action: () => alert('Assistant executed the "show alert" command'),
+    },
+    {
+      command: 'reset settings',
+      description: 'reset all your settings to default',
+      critical: true,
+      action: () => alert('Settings reset! (Demo)'),
     },
   ],
 };
@@ -38,7 +47,7 @@ const App: React.FC = () => {
 const Header: React.FC = () => (
   <header style={styles.header}>
     <h1>Foisit React Assistant</h1>
-    <p>Activate the assistant with "{config.activationCommand}" or use the controls below.</p>
+    <p>Double-tap anywhere to activate the assistant.</p>
   </header>
 );
 
@@ -51,16 +60,11 @@ const ControlPanel: React.FC = () => {
   };
 
   const handleAddCommand = () => {
-    assistant.addCommand('sleep', () => {
-      assistant.stopListening();
+    assistant.addCommand('turn green', () => {
+      document.body.style.backgroundColor = 'green';
+      addLog('Background turned green.');
     });
-    addLog('Command "sleep" added.');
-  };
-
-  const handleReactivate = () => {
-    // assistant.reactivate();
-    assistant.startListening();
-    addLog('Assistant reactivated.');
+    addLog('Command "turn green" added.');
   };
 
   const handleClearLog = () => {
@@ -71,17 +75,12 @@ const ControlPanel: React.FC = () => {
     <main style={styles.controlPanel}>
       <div style={styles.buttonsContainer}>
         <button onClick={handleAddCommand} style={styles.button}>
-          Add "Sleep" Command
-        </button>
-        <button onClick={handleReactivate} style={styles.button}>
-          Reactivate Assistant
+          Add "Turn Green" Command
         </button>
         <button onClick={handleClearLog} style={styles.button}>
           Clear Log
         </button>
       </div>
-
-      <AssistantActivator label="Activate Assistant" />
 
       <div style={styles.logContainer}>
         <h3>Execution Log:</h3>

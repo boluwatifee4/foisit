@@ -14,18 +14,12 @@ const addLog = (message: string) => {
 };
 
 // Dynamically add a new command
-const addBlueCommand = () => {
-  assistant.addCommand('turn blue', () => {
-    document.body.style.backgroundColor = 'blue';
-    addLog('Background turned blue.');
+const addGreenCommand = () => {
+  assistant.addCommand('turn green', () => {
+    document.body.style.backgroundColor = 'green';
+    addLog('Background turned green.');
   });
-  addLog('Command "turn blue" added.');
-};
-
-// Reactivate the assistant manually
-const reactivateAssistant = () => {
-  assistant.startListening();
-  addLog('Assistant reactivated.');
+  addLog('Command "turn green" added.');
 };
 
 // Clear all logs
@@ -39,8 +33,7 @@ const clearLogs = () => {
   <main class="control-panel">
     <!-- Buttons for interacting with the assistant -->
     <div class="buttons">
-      <button @click="addBlueCommand">Add "Turn Blue" Command</button>
-      <button @click="reactivateAssistant">Reactivate Assistant</button>
+      <button @click="addGreenCommand">Add "Turn Green" Command</button>
       <button @click="clearLogs">Clear Logs</button>
     </div>
 
@@ -50,7 +43,9 @@ const clearLogs = () => {
       <ul>
         <li v-for="(log, index) in logs" :key="index">{{ log }}</li>
       </ul>
-      <p v-if="logs.length === 0">No logs available. Interact with the assistant!</p>
+      <p v-if="logs.length === 0">
+        No logs available. Interact with the assistant!
+      </p>
     </section>
   </main>
 </template>

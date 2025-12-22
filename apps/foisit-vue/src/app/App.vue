@@ -6,11 +6,20 @@ import ControlPanel from '../views/ControlPanel.vue';
 // Configuration for the assistant
 const assistantConfig = {
   activationCommand: 'john',
+  introMessage: 'Hello from Vue!',
   fallbackResponse: 'Sorry, I didn’t understand that.',
+  enableSmartIntent: true,
+  // openAIKey: '', // Removed from public config
   commands: [
     { command: 'turn red', action: () => (document.body.style.backgroundColor = 'red') },
     { command: 'show alert', action: () => alert('Assistant executed the "show alert" command') },
     { command: 'remove background', action: () => (document.body.style.backgroundColor = 'transparent') },
+    {
+      command: 'nuclear option',
+      description: 'wipe the entire database',
+      critical: true,
+      action: () => alert('Database wiped! (Demo)'),
+    },
   ],
 };
 </script>

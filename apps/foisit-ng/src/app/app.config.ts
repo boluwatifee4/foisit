@@ -1,5 +1,8 @@
-
-import { ApplicationConfig, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideZoneChangeDetection,
+  importProvidersFrom,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { AssistantModule } from '@foisit/angular-wrapper'; // Update with the correct path
@@ -8,13 +11,27 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    importProvidersFrom(AssistantModule.forRoot({
-      activationCommand: 'bad',
-      fallbackResponse: 'Sorry, I didn’t understand that.',
-      commands: [
-        { command: 'show profile', action: () => console.log('Showing profile...') },
-        { command: 'log out', action: () => console.log('Logging out...') },
-      ],
-    })),
+    importProvidersFrom(
+      AssistantModule.forRoot({
+        activationCommand: 'bad',
+        introMessage: 'Hello from Angular!',
+        fallbackResponse: 'Sorry, I didn’t understand that.',
+        enableSmartIntent: true,
+        // openAIKey: '', // Removed from public config
+        commands: [
+          {
+            command: 'show profile',
+            action: () => alert('Showing profile...'),
+          },
+          { command: 'log out', action: () => console.log('Logging out...') },
+          {
+            command: 'delete account',
+            description: 'delete your account permanently',
+            critical: true,
+            action: () => alert('Account deleted! (Demo)'),
+          },
+        ],
+      })
+    ),
   ],
 };

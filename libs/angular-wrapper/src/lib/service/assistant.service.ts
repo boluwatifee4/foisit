@@ -7,6 +7,8 @@ import {
   AssistantConfig,
   TextToSpeech,
   GestureHandler,
+  OverlayManager,
+  AssistantCommand,
 } from '@foisit/core';
 
 @Injectable({
@@ -22,30 +24,36 @@ export class AssistantService {
   private processingLock = false;
   private isActivated = false; // Tracks activation status
   private gestureHandler: GestureHandler;
+  private overlayManager: OverlayManager;
   private defaultIntroMessage = 'How can I help you?';
 
   constructor(@Inject('ASSISTANT_CONFIG') private config: AssistantConfig) {
-    this.commandHandler = new CommandHandler();
+    // Pass enableSmartIntent (default true) and potential apiKey (if we add it to config later)
+    this.commandHandler = new CommandHandler(
+      this.config.enableSmartIntent !== false
+    );
     this.fallbackHandler = new FallbackHandler();
     this.voiceProcessor = new VoiceProcessor();
     this.textToSpeech = new TextToSpeech();
     this.stateManager = new StateManager();
     this.gestureHandler = new GestureHandler();
+    this.overlayManager = new OverlayManager();
 
     // Setup commands from config
-    this.config.commands.forEach((cmd) =>
-      this.commandHandler.addCommand(cmd.command, cmd.action)
-    );
+    this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
 
     // Setup fallback response
     if (this.config.fallbackResponse) {
       this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
     }
 
-    this.startListening();
+    // Voice disabled for text-first pivot
+    // this.startListening();
 
     // Setup double-tap/double-click listener
-    this.gestureHandler.setupDoubleTapListener(() => this.toggleAssistantState());
+    this.gestureHandler.setupDoubleTapListener(() =>
+      this.toggleAssistantState()
+    );
   }
 
   /** Start listening for activation and commands */
@@ -92,11 +100,18 @@ export class AssistantService {
 
   /** Process activation command */
   private async processActivation(transcript: string): Promise<void> {
-    if (transcript === this.config.activationCommand.toLowerCase()) {
+    const activationCmd = this.config.activationCommand?.toLowerCase();
+
+    // If no activation command is set, we can't activate via voice
+    if (!activationCmd) return;
+
+    if (transcript === activationCmd) {
       console.log('AssistantService: Activation matched.');
       this.isActivated = true;
-      this.textToSpeech.speak(this.config.introMessage || this.defaultIntroMessage);
-      this.stateManager.setState('listening'); // Show animation
+      this.textToSpeech.speak(
+        this.config.introMessage || this.defaultIntroMessage
+      );
+      // this.stateManager.setState('listening'); // DISABLED - no gradient animation
     } else {
       console.log('AssistantService: Activation command not recognized.');
     }
@@ -104,9 +119,18 @@ export class AssistantService {
 
   /** Handle recognized commands */
   private async handleCommand(transcript: string): Promise<void> {
-    const commandExecuted = await this.commandHandler.executeCommand(transcript);
-    if (!commandExecuted) {
-      console.log('AssistantService: Command not recognized.');
+    this.overlayManager.showLoading();
+    const response = await this.commandHandler.executeCommand(transcript);
+    this.overlayManager.hideLoading();
+
+    // Add AI/System response bubble
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
+    }
+
+    if (response.type === 'ambiguous' && response.options) {
+      this.overlayManager.addOptions(response.options);
+    } else if (response.type === 'error') {
       this.fallbackHandler.handleFallback(transcript);
     }
   }
@@ -119,10 +143,19 @@ export class AssistantService {
     this.stateManager.setState('idle'); // Remove animation
   }
 
-  /** Add a command dynamically */
-  addCommand(command: string, action: () => void): void {
-    console.log(`AssistantService: Adding command "${command}".`);
-    this.commandHandler.addCommand(command, action);
+  /** Add a command dynamically (supports string or rich object) */
+  addCommand(
+    commandOrObj: string | AssistantCommand,
+    action?: () => void
+  ): void {
+    if (typeof commandOrObj === 'string') {
+      console.log(`AssistantService: Adding command "${commandOrObj}".`);
+    } else {
+      console.log(
+        `AssistantService: Adding rich command "${commandOrObj.command}".`
+      );
+    }
+    this.commandHandler.addCommand(commandOrObj, action);
   }
 
   /** Remove a command dynamically */
@@ -131,14 +164,19 @@ export class AssistantService {
     this.commandHandler.removeCommand(command);
   }
 
+  /** Get all registered commands */
+  getCommands(): string[] {
+    return this.commandHandler.getCommands();
+  }
+
   private toggleAssistantState(): void {
-    if (this.isActivated) {
-      console.log('AssistantService: Stopping assistant on double-tap/click...');
-      this.stopListening();
-    } else {
-      console.log('AssistantService: Reactivating assistant on double-tap/click...');
-      this.startListening();
-    }
+    console.log('AssistantService: Toggling overlay...');
+    this.overlayManager.toggle(
+      async (text) => {
+        await this.handleCommand(text);
+        // Don't close overlay - let user close it manually or on success
+      },
+      () => console.log('AssistantService: Overlay closed.')
+    );
   }
 }
-

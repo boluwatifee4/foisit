@@ -48,3 +48,6 @@ vitest.config.*.timestamp*
 
 .env
 .npmrc
+
+# Local Netlify folder
+.netlify

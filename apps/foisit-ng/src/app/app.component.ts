@@ -1,14 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+// import { NxWelcomeComponent } from './nx-welcome.component';
 import { AssistantService } from '@foisit/angular-wrapper';
 import { CommonModule } from '@angular/common';
 
 @Component({
   imports: [
-    NxWelcomeComponent,
+    // NxWelcomeComponent,
     RouterModule,
-    CommonModule
+    CommonModule,
   ],
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -35,26 +35,26 @@ export class AppComponent {
     this.assistantService.addCommand('remove background', () => {
       console.log('Removing background color...');
       this.color.set('transparent');
+      this.color.set('transparent');
       this.addLog('Background color removed.');
     });
 
-    this.assistantService.addCommand('sleep', () => {
-      console.log('Assistant is sleeping...');
-      this.assistantService.stopListening();
-      this.addLog('Assistant is now idle.');
+    // Example of a critical command added dynamically
+    this.assistantService.addCommand({
+      command: 'nuke database',
+      description: 'delete all records',
+      critical: true,
+      action: () => {
+        console.log('Nuking database...');
+        this.addLog('Database nuked (simulated).');
+        alert('BOOM! Database nuked.');
+      },
     });
   }
 
   /** Add entry to the log */
   private addLog(message: string): void {
     this.logs.unshift(message);
-  }
-
-  /** Manually reactivate assistant */
-  reactivateAssistant(): void {
-    console.log('Reactivating Assistant...');
-    this.assistantService.startListening();
-    this.addLog('Assistant reactivated.');
   }
 
   /** Clear all logs */

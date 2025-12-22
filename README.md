@@ -2,18 +2,21 @@
 
 <img src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" alt="Foisit Logo" width="300" />
 
-**Foisit** is an AI-powered assistant for web applications that combines voice recognition, natural language processing, and a modern UI overlay. It allows users to control your app via voice or text, with built-in safety for critical actions.
+**Foisit** is an AI-powered assistant for web applications that combines natural language processing with a modern UI overlay.
+
+> [!NOTE]
+> 🎙️ **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
 
 ---
 
-## 🌟 Key Features
+## ✅ Currently Supported
 
-- **🧠 Smart Intent (AI)**: Understands natural language using GPT-4o mini (via a secure proxy). No client-side API keys required.
-- **🛡️ Critical Actions**: Built-in confirmation flow for sensitive operations (e.g., "Delete Account").
-- **💬 Modern UI Overlay**: A sleek, text-first chat interface with loading states and interactive options.
-- **👋 Gesture Activation**: Trigger the assistant via a floating "Powered by Foisit" watermark (double-click/tap).
-- **🌐 Framework Agnostic Core**: A shared engine powers the logic across Angular, React, and Vue.
-- **🚀 Zero Config AI**: Enable AI features with a single toggle.
+- **💬 Text-First Assistant**: A sleek, interactive chat overlay for all user queries.
+- **🧠 Smart Intent (AI)**: Natural language understanding via GPT-4o mini (securely proxied).
+- **🛡️ Critical Actions**: Automated confirmation flow for safe execution of sensitive commands.
+- **🎯 Deterministic Matching**: Ultra-fast exact matching for predefined commands.
+- **👋 Gesture Activation**: Trigger the overlay via a floating watermark (double-click/tap).
+- **⚛️ Framework Wrappers**: Full support for Angular, React, and Vue.
 
 ---
 

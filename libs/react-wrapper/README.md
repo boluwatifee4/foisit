@@ -1,6 +1,9 @@
 # @foisit/react-wrapper
 
-Power your React apps with an AI-driven voice and text assistant.
+Power your React apps with an AI-driven text assistant.
+
+> [!NOTE]
+> 🎙️ **Coming Soon**: Voice recognition and responses are planned for a future release. Current support is focused on text-based interactions and AI intent matching.
 
 ---
 

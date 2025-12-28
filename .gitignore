@@ -1,3 +1,4 @@
+
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
@@ -51,3 +52,7 @@ vitest.config.*.timestamp*
 
 # Local Netlify folder
 .netlify
+
+# Ignore project folders to remove from Git history
+apps/proxy-api/
+libs/core/

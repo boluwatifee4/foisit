@@ -17,6 +17,14 @@ export const appConfig: ApplicationConfig = {
         introMessage: 'Hello from Angular!',
         fallbackResponse: 'Sorry, I didn’t understand that.',
         enableSmartIntent: true,
+        inputPlaceholder: 'Ask Foisit anything...',
+        floatingButton: {
+          visible: true,
+          tooltip: 'Click to start chatting',
+          // customHtml: undefined, // Uses default logo
+          customHtml: '<span>🤖</span>', // Example custom HTML
+          position: { bottom: '30px', right: '30px' },
+        },
         // openAIKey: '', // Removed from public config
         commands: [
           {

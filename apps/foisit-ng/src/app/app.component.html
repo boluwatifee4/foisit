@@ -1,29 +1,217 @@
-<div
-[ngStyle]="{
-  'background-color': color(),
-  'padding': '20px'
-}"
-class="app-container">
-  <header class="header">
-    <h1>Foisit Angular Assistant</h1>
-    <p>
-      <strong>Double-tap anywhere</strong> to activate the assistant.
+<button class="theme-toggle" (click)="toggleTheme()">
+  {{ theme() === 'light' ? '🌙' : '☀️' }}
+</button>
+
+<div class="showcase-container">
+  <header class="hero-section">
+    <h1 class="hero-title">Foisit Angular</h1>
+    <p class="hero-subtitle">
+      The most powerful, AI-driven conversational assistant for Angular applications.
+      Build natural language interfaces in minutes, not days.
     </p>
   </header>
 
-  <main class="control-panel">
-    <div class="buttons-container">
-      <button (click)="clearLogs()" class="button">
-        Clear Logs
-      </button>
+  <!-- Quick Start Guide -->
+  <section class="glass-card">
+    <h2 class="section-title">🚀 Quick Start Guide</h2>
+    <p><strong>Step 1:</strong> Install the package</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Terminal</span>
+        <span>NPM</span>
+      </div>
+      <pre>npm install &#64;foisit/angular-wrapper</pre>
     </div>
 
-    <div class="log-container">
-      <h3>Execution Log:</h3>
-      <ul class="log-list">
-        <li *ngFor="let log of logs">{{ log }}</li>
-      </ul>
-      <p *ngIf="logs.length === 0">No logs yet. Interact with the assistant!</p>
+    <p style="margin-top: 20px;"><strong>Step 2:</strong> Import the module</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span>app.config.ts</span>
+      </div>
+      <pre>{{ "import { importProvidersFrom } from '@angular/core';\nimport { AssistantModule } from '@foisit/angular-wrapper';\n\nexport const appConfig = {\n  providers: [\n    importProvidersFrom(\n      AssistantModule.forRoot({\n        commands: [\n          { \n            command: 'greet',\n            action: () => 'Hello, World!' \n          }\n        ]\n      })\n    )\n  ]\n};" }}</pre>
     </div>
-  </main>
+
+    <p style="margin-top: 20px;"><strong>Step 3:</strong> Try it! Double-tap anywhere or click the floating button.</p>
+  </section>
+
+  <!-- Core Concepts -->
+  <section class="glass-card">
+    <h2 class="section-title">📚 Core Concepts</h2>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <h3>🎯 Commands</h3>
+        <p>Define actions users can trigger through natural language. Simple commands execute immediately.</p>
+      </div>
+      <div class="feature-item">
+        <h3>� Slot Filling</h3>
+        <p>Add parameters to commands. Foisit automatically creates forms to collect missing information.</p>
+      </div>
+      <div class="feature-item">
+        <h3>⚠️ Critical Actions</h3>
+        <p>Mark destructive actions as critical. Users must confirm before execution.</p>
+      </div>
+      <div class="feature-item">
+        <h3>🔄 Dynamic Options</h3>
+        <p>Load options from APIs using getOptions(). Perfect for dropdowns with live data.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Examples with Code -->
+  <section class="glass-card">
+    <h2 class="section-title">� Live Examples</h2>
+    <p>Open the assistant (double-tap or click the 🚀 button) and try these commands. Each example shows the code powering it:</p>
+
+    <!-- Example 1: Basic Command -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">1. Basic Command - "help"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        No parameters required. Returns a simple message.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'help',\n  description: 'Show available commands',\n  action: async () => {\n    return 'I can help you with: User Management, Scheduling...';\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 2: String + Number Parameters with Validation -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">2. Multi-Parameter with Validation - "create user"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        Collects string and number inputs, performs validation, simulates API call.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'create user',\n  parameters: [\n    { name: 'name', type: 'string', required: true },\n    { name: 'email', type: 'string', required: true },\n    { name: 'age', type: 'number', required: true }\n  ],\n  action: async (params) => {\n    if (params.age < 18) {\n      return { type: 'error', message: 'Must be 18+' };\n    }\n    await simulateAPICall();\n    return { \n      type: 'success', \n      message: `User ${params.name} created!` \n    };\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 3: Select Parameter -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">3. Select Parameter - "change theme"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        Shows a dropdown with predefined options.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'change theme',\n  parameters: [{\n    name: 'theme',\n    type: 'select',\n    options: [\n      { label: '🔵 Blue Ocean', value: 'blue' },\n      { label: '🟢 Forest Green', value: 'green' }\n    ]\n  }],\n  action: (params) => {\n    document.body.style.backgroundColor = colors[params.theme];\n    return `Theme changed to ${params.theme}!`;\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 4: Date Parameter -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">4. Date Picker - "book appointment"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        Renders a date picker for user selection.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'book appointment',\n  parameters: [\n    { name: 'service', type: 'string', required: true },\n    { name: 'date', type: 'date', required: true }\n  ],\n  action: (params) => {\n    return `📅 Booked ${params.service} on ${params.date}`;\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 5: Async Select -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">5. Async/Dynamic Select - "schedule meeting"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        Loads options dynamically from an API or service.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'schedule meeting',\n  parameters: [{\n    name: 'member',\n    type: 'select',\n    getOptions: async () => {\n      const members = await api.getTeamMembers();\n      return members.map(m => ({\n        label: `${m.name} (${m.dept})`,\n        value: m.id\n      }));\n    }\n  }],\n  action: async (params) => {\n    return `Meeting scheduled with ${params.member}`;\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 6: Critical Action -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">6. Critical Action - "delete all records"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        Requires user confirmation before executing dangerous operations.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'delete all records',\n  critical: true, // ⚠️ Forces confirmation dialog\n  description: 'Permanently delete all data',\n  action: async () => {\n    await database.deleteAll();\n    return {\n      type: 'success',\n      message: '🗑️ All records deleted. Cannot be undone.'\n    };\n  }\n});" }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 7: Optional Parameters -->
+    <div style="margin-top: 30px;">
+      <h3 style="color: var(--accent-color); margin-bottom: 10px;">7. Optional Parameters - "update profile"</h3>
+      <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
+        All parameters are optional. Users can skip fields they don't want to update.
+      </p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ "this.assistantService.addCommand({\n  command: 'update profile',\n  parameters: [\n    { name: 'displayName', type: 'string', required: false },\n    { name: 'bio', type: 'string', required: false },\n    { name: 'role', type: 'select', required: false, options: [...] }\n  ],\n  action: (params) => {\n    const updates = Object.entries(params)\n      .filter(([_, v]) => v)\n      .map(([k, v]) => `${k}: ${v}`);\n    return `Updated: ${updates.join(', ')}`;\n  }\n});" }}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parameter Types Reference -->
+  <section class="glass-card">
+    <h2 class="section-title">🔧 Parameter Types Reference</h2>
+    <div class="code-block">
+      <pre>{{ "// STRING\n{ name: 'username', type: 'string', required: true }\n\n// NUMBER\n{ name: 'age', type: 'number', required: true }\n\n// DATE\n{ name: 'appointmentDate', type: 'date', required: true }\n\n// SELECT (Static)\n{\n  name: 'role',\n  type: 'select',\n  options: [\n    { label: 'Admin', value: 'admin' },\n    { label: 'User', value: 'user' }\n  ]\n}\n\n// SELECT (Dynamic/Async)\n{\n  name: 'customer',\n  type: 'select',\n  getOptions: async () => {\n    const res = await fetch('/api/customers');\n    return res.json();\n  }\n}" }}</pre>
+    </div>
+  </section>
+
+  <!-- Interactive Sandbox -->
+  <section class="glass-card">
+    <h2 class="section-title">🎮 Interactive Sandbox</h2>
+    <p>Test programmatic control of the assistant:</p>
+    
+    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="demo-btn" (click)="openAssistant()">
+        Open Assistant
+      </button>
+      <button class="demo-btn secondary" (click)="toggleAssistant()">
+        Toggle with Callbacks
+      </button>
+    </div>
+  </section>
+
+  <!-- Programmatic Control -->
+  <section class="glass-card">
+    <h2 class="section-title">🎮 Programmatic Control</h2>
+    <p>Control the assistant from your Angular components:</p>
+    <div class="code-block">
+      <pre>{{ "constructor(private assistant: AssistantService) {}\n\nopenAssistant() {\n  this.assistant.toggle();\n}\n\naddDynamicCommand() {\n  this.assistant.addCommand('my command', () => {\n    return 'Command executed!';\n  });\n}" }}</pre>
+    </div>
+  </section>
+
+  <!-- Features Summary -->
+  <section class="glass-card">
+    <h2 class="section-title">✨ Feature Checklist</h2>
+    <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
+      <li>✅ Natural language command matching</li>
+      <li>✅ Multi-step slot filling with auto-generated forms</li>
+      <li>✅ All parameter types (string, number, date, select)</li>
+      <li>✅ Static and async/dynamic select options</li>
+      <li>✅ Required and optional parameters</li>
+      <li>✅ Critical action confirmations</li>
+      <li>✅ Interactive response handling (success/error)</li>
+      <li>✅ Floating button trigger</li>
+      <li>✅ Double-tap activation</li>
+      <li>✅ Programmatic API (toggle, addCommand, removeCommand)</li>
+      <li>✅ Dark/Light mode support</li>
+      <li>✅ Custom styling and theming</li>
+      <li>✅ TypeScript support</li>
+      <li>✅ Angular DI and Signals integration</li>
+      <li>✅ Zero backend required</li>
+    </ul>
+  </section>
 </div>

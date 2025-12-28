@@ -1,13 +1,15 @@
 {
   "name": "@foisit/angular-wrapper",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0"
   },
   "sideEffects": false,
   "files": [
-    "dist",
+    "fesm2022",
+    "esm2022",
+    "index.d.ts",
     "README.md"
   ],
   "description": "Foisit: Speak, and its done. A voice assistant library for angular apps",

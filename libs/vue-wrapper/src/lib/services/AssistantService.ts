@@ -8,6 +8,7 @@ import {
   GestureHandler,
   OverlayManager,
   AssistantCommand,
+  InteractiveResponse,
 } from '@foisit/core';
 
 export class AssistantService {
@@ -33,7 +34,10 @@ export class AssistantService {
     this.textToSpeech = new TextToSpeech();
     this.stateManager = new StateManager();
     this.gestureHandler = new GestureHandler();
-    this.overlayManager = new OverlayManager();
+    this.overlayManager = new OverlayManager({
+      floatingButton: this.config.floatingButton,
+      inputPlaceholder: this.config.inputPlaceholder,
+    });
 
     // Add configured commands
     this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
@@ -47,8 +51,15 @@ export class AssistantService {
     // this.startListening();
 
     // Setup double-tap/double-click listener
-    this.gestureHandler.setupDoubleTapListener(() =>
-      this.toggleAssistantState()
+    this.gestureHandler.setupDoubleTapListener(() => this.toggle());
+
+    // Register global callbacks for floating button
+    this.overlayManager.registerCallbacks(
+      async (text) => {
+        this.overlayManager.addMessage(text, 'user'); // Echo user input
+        await this.handleCommand(text);
+      },
+      () => console.log('AssistantService: Overlay closed.')
     );
   }
 
@@ -133,17 +144,60 @@ export class AssistantService {
       this.overlayManager.addMessage(response.message, 'system');
     }
 
-    if (response.type === 'ambiguous' && response.options) {
+    if (response.type === 'form' && response.fields) {
+      this.overlayManager.addForm(
+        response.message,
+        response.fields,
+        async (data) => {
+          this.overlayManager.showLoading();
+          const nextReponse = await this.commandHandler.executeCommand(data);
+          this.overlayManager.hideLoading();
+          this.processResponse(nextReponse);
+        }
+      );
+    } else if (response.type === 'ambiguous' && response.options) {
       this.overlayManager.addOptions(response.options);
     } else if (response.type === 'error') {
       this.fallbackHandler.handleFallback(transcript);
     }
   }
 
+  /**
+   * Cleanup resources
+   */
+  destroy(): void {
+    this.voiceProcessor.stopListening();
+    this.overlayManager.destroy();
+  }
+
+  /** Unified response processing */
+  private processResponse(response: any): void {
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
+    }
+
+    if (response.type === 'form' && response.fields) {
+      this.overlayManager.addForm(
+        response.message,
+        response.fields,
+        async (data) => {
+          this.overlayManager.showLoading();
+          const nextReponse = await this.commandHandler.executeCommand(data);
+          this.overlayManager.hideLoading();
+          this.processResponse(nextReponse);
+        }
+      );
+    } else if (response.type === 'ambiguous' && response.options) {
+      this.overlayManager.addOptions(response.options);
+    }
+  }
+
   /** Add a command dynamically (supports string or rich object) */
   addCommand(
     commandOrObj: string | AssistantCommand,
-    action?: () => void
+    action?: (
+      params?: any
+    ) => Promise<string | InteractiveResponse | void> | void
   ): void {
     if (typeof commandOrObj === 'string') {
       console.log(`AssistantService: Adding command "${commandOrObj}".`);
@@ -166,14 +220,19 @@ export class AssistantService {
     return this.commandHandler.getCommands();
   }
 
-  private toggleAssistantState(): void {
+  /** Toggle the assistant overlay */
+  toggle(onSubmit?: (text: string) => void, onClose?: () => void): void {
     console.log('AssistantService: Toggling overlay...');
     this.overlayManager.toggle(
       async (text) => {
+        this.overlayManager.addMessage(text, 'user'); // Echo user input
+        if (onSubmit) onSubmit(text);
         await this.handleCommand(text);
-        // Don't close overlay - let user close it manually or on success
       },
-      () => console.log('AssistantService: Overlay closed.')
+      () => {
+        console.log('AssistantService: Overlay closed.');
+        if (onClose) onClose();
+      }
     );
   }
 }

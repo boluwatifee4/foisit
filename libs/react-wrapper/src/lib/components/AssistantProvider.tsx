@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { AssistantConfig } from '@foisit/core';
 import { AssistantService } from '../services/AssistantService';
 
@@ -29,8 +29,7 @@ export const AssistantProvider: React.FC<{ config: AssistantConfig; children: Re
 
     return () => {
       console.log('Cleaning up AssistantService...');
-      instance.stopListening();
-      instance.destroy?.(); // Call destroy if implemented
+      instance.destroy?.(); // Calls destroy() in AssistantService which calls overlayManager.destroy()
       globalAssistantService = null; // Cleanup the global reference
     };
   }, [config]);

@@ -57,6 +57,28 @@ Just tell me what you'd like to do!`;
     },
 
     {
+      command: 'secure create user',
+      description: 'Enterprise-safe create user (no AI guessing, form-only)',
+      collectRequiredViaForm: true,
+      allowAiParamExtraction: false,
+      parameters: [
+        { name: 'fullName', description: 'Full name', required: true, type: 'string' as const },
+        { name: 'email', description: 'Email address', required: true, type: 'string' as const },
+        { name: 'age', description: 'User age', required: true, type: 'number' as const, min: 18 },
+      ],
+      action: async (params: any) => {
+        if (params.age < 18) {
+          return { type: 'error' as const, message: 'Must be 18 or older.' };
+        }
+        await new Promise(resolve => setTimeout(resolve, 400));
+        return {
+          type: 'success' as const,
+          message: `Secure user created!\n\nName: ${params.fullName}\nEmail: ${params.email}\nAge: ${params.age}`,
+        };
+      }
+    },
+
+    {
       command: 'change theme',
       description: 'Change the application color theme',
       parameters: [
@@ -151,7 +173,7 @@ Just tell me what you'd like to do!`;
           description: 'Select a file',
           required: true,
           type: 'file' as const,
-          accept: ['image/*', 'audio/*', 'video/*'],
+          accept: ['image/*', 'audio/*', 'video/*', 'text/csv', '.csv'],
           multiple: false,
           delivery: 'file' as const,
         },
@@ -161,6 +183,12 @@ Just tell me what you'd like to do!`;
         if (!v) {
           return { type: 'error' as const, message: 'No file provided.' };
         }
+
+        // Additional validation for malformed File objects
+        if (!v.name || v.size === undefined || v.size === null) {
+          return { type: 'error' as const, message: 'Invalid file selected. Please try selecting the file again.' };
+        }
+
         return {
           type: 'success' as const,
           message: `File received.\n\nName: ${v.name}\nType: ${v.type || 'unknown'}\nSize: ${v.size} bytes`,

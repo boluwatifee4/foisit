@@ -157,6 +157,28 @@ Define parameters and Foisit will automatically generate forms to collect them:
 }
 ```
 
+**Enterprise-safe param collection controls**
+
+- `collectRequiredViaForm` (default: true): when enabled, any missing/invalid required params are collected via a form—no conversational guessing.
+- `allowAiParamExtraction` (default: true): when false, AI-extracted params are ignored; the assistant will always prompt the user for required fields.
+
+Example:
+
+```typescript
+{
+  command: 'secure create user',
+  description: 'No AI guessing, form-only',
+  collectRequiredViaForm: true,
+  allowAiParamExtraction: false,
+  parameters: [
+    { name: 'fullName', type: 'string', required: true },
+    { name: 'email', type: 'string', required: true },
+    { name: 'age', type: 'number', required: true, min: 18 },
+  ],
+  action: (params) => this.userService.create(params),
+}
+```
+
 **Supported Parameter Types:**
 
 - `string` - Text input

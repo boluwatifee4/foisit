@@ -1,6 +1,6 @@
 {
   "name": "@foisit/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "peerDependencies": {
     "typescript": "^4.0.0"
   },

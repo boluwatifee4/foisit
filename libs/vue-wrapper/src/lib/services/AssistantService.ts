@@ -193,13 +193,19 @@ export class AssistantService {
       return;
     }
 
-    if (response.message) {
-      this.overlayManager.addMessage(response.message, 'system');
-    } else if (
+    if (
       (response.type === 'ambiguous' || response.type === 'confirm') &&
       response.options
     ) {
+      if (response.message) {
+        this.overlayManager.addMessage(response.message, 'system');
+      }
       this.overlayManager.addOptions(response.options);
+      return;
+    }
+
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "@foisit/angular-wrapper",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0"

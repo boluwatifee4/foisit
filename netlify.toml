@@ -1,0 +1,12 @@
+[build]
+base = "apps/proxy-api"
+publish = "public"
+functions = "functions"
+command = "echo 'no build'"
+
+[[headers]]
+for = "/*"
+  [headers.values]
+  Access-Control-Allow-Origin = "*"
+  Access-Control-Allow-Methods = "POST, OPTIONS"
+  Access-Control-Allow-Headers = "Content-Type"

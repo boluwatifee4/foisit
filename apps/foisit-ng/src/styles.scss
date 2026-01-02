@@ -1,4 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-body{
-    background-color: #fff !important;
+/* Global styles for the Angular demo app */
+
+@import './app/showcase.css';
+
+body {
+  background: var(--bg);
 }

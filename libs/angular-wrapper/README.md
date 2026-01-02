@@ -7,39 +7,38 @@
 
 Transform your Angular app into an intelligent, voice-ready platform. Foisit provides a drop-in AI layer that understands natural language, manages multi-step workflows, and executes actions—all with zero backend required.
 
-> [!NOTE]
-> 🎙️ **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
+> [!NOTE] > **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Features](#-features)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Core Concepts](#-core-concepts)
-- [API Reference](#-api-reference)
-- [Advanced Usage](#-advanced-usage)
-- [Examples](#-examples)
-- [TypeScript Support](#-typescript-support)
-- [Best Practices](#-best-practices)
-
----
-
-## ✨ Features
-
-- **🧠 Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
-- **📝 Smart Slot Filling** - Auto-generates forms for missing parameters
-- **⚠️ Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
-- **🎨 Premium UI** - Glassmorphic overlay with dark/light mode support
-- **🔒 Zero Backend Required** - Secure proxy architecture keeps API keys server-side
-- **⚡ Angular Native** - Uses Dependency Injection, Signals, and RxJS
-- **🎯 Type-Safe** - Full TypeScript support with comprehensive types
-- **📱 Responsive** - Works flawlessly on desktop and mobile
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [API Reference](#api-reference)
+- [Advanced Usage](#advanced-usage)
+- [Examples](#examples)
+- [TypeScript Support](#typescript-support)
+- [Best Practices](#best-practices)
 
 ---
 
-## 🚀 Installation
+## Features
+
+- **Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
+- **Smart Slot Filling** - Auto-generates forms for missing parameters
+- **Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
+- **Premium UI** - Glassmorphic overlay with dark/light mode support
+- **Zero Backend Required** - Secure proxy architecture keeps API keys server-side
+- **Angular Native** - Uses Dependency Injection, Signals, and RxJS
+- **Type-Safe** - Full TypeScript support with comprehensive types
+- **Responsive** - Works flawlessly on desktop and mobile
+
+---
+
+## Installation
 
 ```bash
 npm install @foisit/angular-wrapper
@@ -56,7 +55,7 @@ npm install @foisit/angular-wrapper
 
 ---
 
-## 🏁 Quick Start
+## Quick Start
 
 ### Step 1: Import the Module
 
@@ -127,7 +126,7 @@ export class MyComponent {
 
 ---
 
-## 🎯 Core Concepts
+## Core Concepts
 
 ### 1. Commands
 
@@ -164,24 +163,57 @@ Define parameters and Foisit will automatically generate forms to collect them:
 - `number` - Numeric input
 - `date` - Date picker
 - `select` - Dropdown (static or async options)
+- `file` - File upload input
 
-### 3. Critical Actions
+### 3. File Parameters
+
+Collect files via the built-in form UI and receive them in your command `action`.
+
+```typescript
+{
+  command: 'upload file',
+  description: 'Pick a file and return it to the action',
+  parameters: [
+    {
+      name: 'attachment',
+      type: 'file',
+      required: true,
+      accept: ['image/*', 'audio/*', 'video/*'],
+      multiple: false,
+      // delivery: 'file' | 'base64' (default: 'file')
+      delivery: 'file',
+    },
+  ],
+  action: async (params) => {
+    const file = params?.attachment as File | undefined;
+    if (!file) return { type: 'error', message: 'No file provided.' };
+    return {
+      type: 'success',
+      message: `File received. Name: ${file.name}, Type: ${file.type || 'unknown'}, Size: ${file.size} bytes`,
+    };
+  },
+}
+```
+
+`FileParameter` supports validations like `maxFiles`, `maxSizeBytes`, `maxTotalBytes`, and media/image constraints like `maxDurationSec`, `maxWidth`, and `maxHeight`.
+
+### 4. Critical Actions
 
 Protect dangerous operations with automatic confirmation dialogs:
 
 ```typescript
 {
   command: 'delete all data',
-  critical: true, // 🔒 Requires confirmation
+  critical: true, // Requires confirmation
   description: 'Permanently delete all application data',
   action: async () => {
     await this.dataService.deleteAll();
-    return '✅ All data deleted successfully.';
+    return 'All data deleted successfully.';
   }
 }
 ```
 
-### 4. Select Parameters (Static)
+### 5. Select Parameters (Static)
 
 Provide predefined options:
 
@@ -201,7 +233,7 @@ Provide predefined options:
 }
 ```
 
-### 5. Dynamic Select Parameters
+### 6. Dynamic Select Parameters
 
 Load options from APIs:
 
@@ -225,7 +257,7 @@ Load options from APIs:
 
 ---
 
-## 📘 API Reference
+## API Reference
 
 ### `AssistantService`
 
@@ -250,7 +282,7 @@ this.assistant.toggle(
 
 ##### `addCommand(command, action?)`
 
-Dynamically add a command at runtime.
+Dynamically add or update a command at runtime. Commands added via `addCommand` take effect immediately in the running application; they are stored in memory for the current session (they are not persisted after a page reload unless you re-register them during app startup).
 
 ```typescript
 // Add a simple command
@@ -280,6 +312,35 @@ this.assistant.addCommand({
 });
 ```
 
+### Dynamic Updates (Add / Remove / Update commands at runtime) ✅
+
+- Use `addCommand` to register a new command or to replace an existing command's behavior (remove first if you want a clean replacement).
+- Use `removeCommand(commandPhrase)` to unregister a command. This is useful for temporary or context-specific commands.
+- Commands are in-memory only; to persist them across reloads, re-register on app startup (e.g., in an initialization hook).
+
+Example — register a temporary command and clean it up in `ngOnDestroy`:
+
+```typescript
+// component.ts
+import { OnDestroy } from '@angular/core';
+
+export class MyComponent implements OnDestroy {
+  constructor(private assistant: AssistantService) {
+    this.assistant.addCommand('temp action', () => 'Temporary action executed');
+  }
+
+  ngOnDestroy() {
+    // Remove the temporary command when component unmounts
+    this.assistant.removeCommand('temp action');
+  }
+}
+```
+
+Notes:
+
+- If a command has only optional params, consider returning a `form` InteractiveResponse to prompt the user when no params are provided.
+- Always remove transient commands in your cleanup lifecycle to avoid leaks and confusing UX.
+
 ##### `removeCommand(commandPhrase)`
 
 Remove a registered command.
@@ -299,7 +360,7 @@ console.log('Available commands:', commands);
 
 ---
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ### `AssistantConfig`
 
@@ -335,7 +396,7 @@ interface AssistantConfig {
 
 ---
 
-## 🎨 Advanced Usage
+## Advanced Usage
 
 ### Example 1: Multi-Step Booking System
 
@@ -471,7 +532,7 @@ this.assistant.addCommand({
 
 ---
 
-## 📝 TypeScript Support
+## TypeScript Support
 
 ### Full Type Definitions
 
@@ -505,7 +566,7 @@ const myCommand: AssistantCommand = {
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 ### 1. Command Naming
 
@@ -571,7 +632,7 @@ export class MyComponent {
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Unit Testing Commands
 
@@ -606,7 +667,7 @@ describe('AssistantService', () => {
 
 ---
 
-## � Related Packages
+## Related Packages
 
 - **[@foisit/core](../core)** - Core engine (auto-installed)
 - **[@foisit/react-wrapper](../react-wrapper)** - React integration
@@ -614,7 +675,7 @@ describe('AssistantService', () => {
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Assistant not appearing
 
@@ -630,24 +691,24 @@ Make sure you're using Angular 17+ and have `@angular/core` installed.
 
 ---
 
-## 📄 License
+## License
 
 MIT © [Foisit](https://github.com/boluwatifee4/foisit)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our [Contributing Guide](../../CONTRIBUTING.md) first.
 
 ---
 
-## 📬 Support
+## Support
 
-- 📧 Email: support@foisit.com
-- 💬 Discord: [Join our community](https://discord.gg/foisit)
-- 🐛 Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
+- Email: support@foisit.com
+- Discord: [Join our community](https://discord.gg/foisit)
+- Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
 
 ---
 
-**Made with ❤️ by the Foisit Team**
+**Made by the Foisit Team**

@@ -26,7 +26,8 @@ export class AppComponent {
   ) {
     this.initTheme();
     this.setupCommands();
-    this.assistantService.startListening();
+    // Voice is currently disabled (text-only mode)
+    // this.assistantService.startListening();
   }
 
   private initTheme(): void {
@@ -72,7 +73,7 @@ export class AppComponent {
     // ===== THEME TOGGLE COMMAND =====
     this.assistantService.addCommand('toggle theme', async () => {
       this.toggleTheme();
-      return `🎨 Theme switched to ${this.theme()} mode!`;
+      return `Theme switched to ${this.theme()} mode.`;
     });
 
     // ===== BASIC COMMAND (No parameters) =====
@@ -81,11 +82,11 @@ export class AppComponent {
       description: 'Show available commands and what I can do',
       action: async () => {
         return `I can help you with:
-✅ User Management (create user, update profile)
-📅 Scheduling (book appointment, schedule meeting)
-🗑️ Data Operations (delete records - requires confirmation)
-📊 Analytics (view stats)
-🎨 UI Actions (change theme)
+User Management (create user, update profile)
+Scheduling (book appointment, schedule meeting)
+Data Operations (delete records - requires confirmation)
+Analytics (view stats)
+UI Actions (change theme)
 
 Just tell me what you'd like to do!`;
       },
@@ -120,7 +121,7 @@ Just tell me what you'd like to do!`;
         if (params.age < 18) {
           return {
             type: 'error',
-            message: '❌ User must be at least 18 years old.',
+            message: 'User must be at least 18 years old.',
           };
         }
 
@@ -129,7 +130,7 @@ Just tell me what you'd like to do!`;
 
         return {
           type: 'success',
-          message: `✅ User created successfully!\n\n👤 Name: ${params.name}\n📧 Email: ${params.email}\n🎂 Age: ${params.age}`,
+          message: `User created successfully.\n\nName: ${params.name}\nEmail: ${params.email}\nAge: ${params.age}`,
         };
       },
     });
@@ -145,10 +146,10 @@ Just tell me what you'd like to do!`;
           required: true,
           type: 'select',
           options: [
-            { label: '🔵 Blue Ocean', value: 'blue' },
-            { label: '🟢 Forest Green', value: 'green' },
-            { label: '🟣 Purple Haze', value: 'purple' },
-            { label: '🔴 Ruby Red', value: 'red' },
+            { label: 'Blue Ocean', value: 'blue' },
+            { label: 'Forest Green', value: 'green' },
+            { label: 'Purple Haze', value: 'purple' },
+            { label: 'Ruby Red', value: 'red' },
           ],
         },
       ],
@@ -161,7 +162,7 @@ Just tell me what you'd like to do!`;
         };
         this.document.body.style.backgroundColor =
           themeColors[params.theme] || '';
-        return `🎨 Theme changed to ${params.theme}!`;
+        return `Theme changed to ${params.theme}.`;
       },
     });
 
@@ -184,14 +185,13 @@ Just tell me what you'd like to do!`;
         },
       ],
       action: async (params: any) => {
-        return `📅 Appointment booked!\n\n🔧 Service: ${
-          params.service
-        }\n📆 Date: ${new Date(params.date).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}`;
+        return `Appointment booked.\n\nService: ${params.service
+          }\nDate: ${new Date(params.date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}`;
       },
     });
 
@@ -209,10 +209,10 @@ Just tell me what you'd like to do!`;
             // Simulate API call to get team members
             await new Promise((resolve) => setTimeout(resolve, 1000));
             return [
-              { label: '👨‍💼 John Doe (Engineering)', value: 'john_123' },
-              { label: '👩‍💼 Jane Smith (Design)', value: 'jane_456' },
-              { label: '👨‍💼 Mike Johnson (Product)', value: 'mike_789' },
-              { label: '👩‍💼 Sarah Williams (Marketing)', value: 'sarah_012' },
+              { label: 'John Doe (Engineering)', value: 'john_123' },
+              { label: 'Jane Smith (Design)', value: 'jane_456' },
+              { label: 'Mike Johnson (Product)', value: 'mike_789' },
+              { label: 'Sarah Williams (Marketing)', value: 'sarah_012' },
             ];
           },
         },
@@ -233,11 +233,10 @@ Just tell me what you'd like to do!`;
         await new Promise((resolve) => setTimeout(resolve, 600));
         return {
           type: 'success',
-          message: `✅ Meeting scheduled!\n\n👥 With: ${
-            params.member
-          }\n📆 Date: ${new Date(
-            params.date
-          ).toLocaleDateString()}\n⏱️ Duration: ${params.duration} minutes`,
+          message: `Meeting scheduled.\n\nWith: ${params.member
+            }\nDate: ${new Date(
+              params.date
+            ).toLocaleDateString()}\nDuration: ${params.duration} minutes`,
         };
       },
     });
@@ -253,7 +252,7 @@ Just tell me what you'd like to do!`;
         return {
           type: 'success',
           message:
-            '🗑️ All records have been permanently deleted.\n\n⚠️ This action cannot be undone.',
+            'All records have been permanently deleted.\n\nThis action cannot be undone.',
         };
       },
     });
@@ -288,14 +287,46 @@ Just tell me what you'd like to do!`;
         },
       ],
       action: async (params: any) => {
+        if (!params || Object.keys(params).length === 0) {
+          return {
+            type: 'form',
+            message: 'Please provide the details to update your profile.',
+            fields: [
+              {
+                name: 'displayName',
+                description: 'Display name',
+                required: false,
+                type: 'string',
+              },
+              {
+                name: 'bio',
+                description: 'Short biography',
+                required: false,
+                type: 'string',
+              },
+              {
+                name: 'role',
+                description: 'User role',
+                required: false,
+                type: 'select',
+                options: [
+                  { label: 'Developer', value: 'dev' },
+                  { label: 'Designer', value: 'design' },
+                  { label: 'Manager', value: 'manager' },
+                ],
+              },
+            ],
+          };
+        }
+
         const updates: string[] = [];
         if (params.displayName) updates.push(`Name: ${params.displayName}`);
         if (params.bio) updates.push(`Bio: ${params.bio}`);
         if (params.role) updates.push(`Role: ${params.role}`);
 
         return updates.length > 0
-          ? `✅ Profile updated:\n\n${updates.join('\n')}`
-          : '⚠️ No fields were updated.';
+          ? `Profile updated:\n\n${updates.join('\n')}`
+          : 'No fields were updated.';
       },
     });
 
@@ -304,7 +335,7 @@ Just tell me what you'd like to do!`;
       command: 'reset theme',
       action: async () => {
         this.document.body.style.backgroundColor = '';
-        return '✨ Theme reset to default.';
+        return 'Theme reset to default.';
       },
     });
 
@@ -312,7 +343,34 @@ Just tell me what you'd like to do!`;
       command: 'view stats',
       description: 'View application statistics',
       action: async () => {
-        return `📊 Application Statistics:\n\n👥 Active Users: 1,234\n📝 Total Commands: 42\n⚡ Uptime: 99.9%\n🚀 Version: 1.0.0`;
+        return `Application Statistics:\n\nActive Users: 1,234\nTotal Commands: 42\nUptime: 99.9%\nVersion: 1.0.0`;
+      },
+    });
+
+    // ===== FILE UPLOAD DEMO =====
+    this.assistantService.addCommand({
+      command: 'upload file',
+      description: 'Pick a file and return it to the action (demo)',
+      parameters: [
+        {
+          name: 'attachment',
+          description: 'Select a file',
+          required: true,
+          type: 'file',
+          accept: ['image/*', 'audio/*', 'video/*'],
+          multiple: false,
+          delivery: 'file',
+        },
+      ],
+      action: async (params: any) => {
+        const v = params.attachment as File | undefined;
+        if (!v) {
+          return { type: 'error', message: 'No file provided.' };
+        }
+        return {
+          type: 'success',
+          message: `File received.\n\nName: ${v.name}\nType: ${v.type || 'unknown'}\nSize: ${v.size} bytes`,
+        };
       },
     });
   }

@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
           visible: true,
           tooltip: 'Click to start chatting',
           // customHtml: undefined, // Uses default logo
-          customHtml: '<span>🤖</span>', // Example custom HTML
+          customHtml: '<span>Assistant</span>', // Example custom HTML
           position: { bottom: '30px', right: '30px' },
         },
         // openAIKey: '', // Removed from public config
@@ -38,6 +38,8 @@ export const appConfig: ApplicationConfig = {
             critical: true,
             action: () => alert('Account deleted! (Demo)'),
           },
+          // Example file upload handler: returns a data URL for demo purposes
+          // (In production you'd upload to your backend or cloud storage and return a public URL)
         ],
       })
     ),

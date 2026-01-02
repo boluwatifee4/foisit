@@ -1,41 +1,36 @@
 <script setup lang="ts">
-import { ref, watch, inject, onMounted } from 'vue';
-import { AssistantProvider, AssistantService } from '@foisit/vue-wrapper';
+import { ref } from 'vue';
+import { AssistantProvider } from '@foisit/vue-wrapper';
+import OpenAssistantButton from './OpenAssistantButton.vue';
+import './showcase.css';
 
-/**
- * COMPREHENSIVE CONFIGURATION
- * This demonstrates 100% of Foisit's capabilities
- */
 const assistantConfig = {
   activationCommand: 'hey foisit',
-  introMessage: '👋 Welcome to Foisit! I can help you with various tasks. Try saying "help" to see what I can do.',
+  introMessage: 'Welcome to Foisit! I can help you with various tasks. Try saying "help" to see what I can do.',
   fallbackResponse: 'I didn\'t quite understand that. Try saying "help" or "show commands" to see what I can assist with.',
   enableSmartIntent: true,
   inputPlaceholder: 'Type a command or describe what you need...',
   floatingButton: {
     visible: true,
     tooltip: 'Open Foisit Assistant',
-    customHtml: '<span style="font-size: 24px;">💚</span>',
     position: { bottom: '30px', right: '30px' },
   },
   commands: [
-    // ===== BASIC COMMAND (No parameters) =====
     {
       command: 'help',
       description: 'Show available commands and what I can do',
       action: () => {
         return `I can help you with:
-✅ User Management (create user, update profile)
-📅 Scheduling (book appointment, schedule meeting)
-🗑️ Data Operations (delete records - requires confirmation)
-📊 Analytics (view stats)
-🎨 UI Actions (change theme)
+User Management (create user, update profile)
+Scheduling (book appointment, schedule meeting)
+Data Operations (delete records - requires confirmation)
+Analytics (view stats)
+UI Actions (change theme)
 
 Just tell me what you'd like to do!`;
       }
     },
 
-    // ===== STRING + NUMBER PARAMETERS =====
     {
       command: 'create user',
       description: 'Create a new user account with name, email, and age',
@@ -45,25 +40,22 @@ Just tell me what you'd like to do!`;
         { name: 'age', description: 'User age (must be 18+)', required: true, type: 'number' as const },
       ],
       action: async (params: any) => {
-        // Simulate validation
         if (params.age < 18) {
           return {
             type: 'error' as const,
-            message: '❌ User must be at least 18 years old.'
+            message: 'User must be at least 18 years old.'
           };
         }
-        
-        // Simulate API call
+
         await new Promise(resolve => setTimeout(resolve, 800));
-        
+
         return {
           type: 'success' as const,
-          message: `✅ User created successfully!\n\n👤 Name: ${params.name}\n📧 Email: ${params.email}\n🎂 Age: ${params.age}`
+          message: `User created successfully!\n\nName: ${params.name}\nEmail: ${params.email}\nAge: ${params.age}`
         };
       }
     },
 
-    // ===== SELECT PARAMETER (Static options) =====
     {
       command: 'change theme',
       description: 'Change the application color theme',
@@ -74,12 +66,12 @@ Just tell me what you'd like to do!`;
           required: true,
           type: 'select' as const,
           options: [
-            { label: '🔵 Blue Ocean', value: 'blue' },
-            { label: '🟢 Forest Green', value: 'green' },
-            { label: '🟣 Purple Haze', value: 'purple' },
-            { label: '🔴 Ruby Red', value: 'red' },
-          ]
-        }
+            { label: 'Blue Ocean', value: 'blue' },
+            { label: 'Forest Green', value: 'green' },
+            { label: 'Purple Haze', value: 'purple' },
+            { label: 'Ruby Red', value: 'red' },
+          ],
+        },
       ],
       action: (params: any) => {
         const themeColors: Record<string, string> = {
@@ -89,11 +81,10 @@ Just tell me what you'd like to do!`;
           red: 'rgba(239, 68, 68, 0.1)',
         };
         document.body.style.backgroundColor = themeColors[params.theme] || '';
-        return `🎨 Theme changed to ${params.theme}!`;
+        return `Theme changed to ${params.theme}!`;
       }
     },
 
-    // ===== DATE PARAMETER =====
     {
       command: 'book appointment',
       description: 'Book an appointment for a specific date',
@@ -102,240 +93,216 @@ Just tell me what you'd like to do!`;
         { name: 'date', description: 'Preferred appointment date', required: true, type: 'date' as const },
       ],
       action: (params: any) => {
-        return `📅 Appointment booked!\n\n🔧 Service: ${params.service}\n📆 Date: ${new Date(params.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+        return `Appointment booked!\n\nService: ${params.service}\nDate: ${new Date(params.date).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}`;
       }
     },
 
-    // ===== ASYNC SELECT (Dynamic options from API) =====
     {
       command: 'schedule meeting',
       description: 'Schedule a meeting with a team member',
       parameters: [
         {
           name: 'member',
-          description: 'Select a team member',
+          description: 'Team member to meet with',
           required: true,
           type: 'select' as const,
           getOptions: async () => {
-            // Simulate API call to get team members
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500));
             return [
-              { label: '👨‍💼 John Doe (Engineering)', value: 'john_123' },
-              { label: '👩‍💼 Jane Smith (Design)', value: 'jane_456' },
-              { label: '👨‍💼 Mike Johnson (Product)', value: 'mike_789' },
-              { label: '👩‍💼 Sarah Williams (Marketing)', value: 'sarah_012' },
+              { label: 'Alice Johnson (Engineering)', value: 'alice' },
+              { label: 'Bob Smith (Design)', value: 'bob' },
+              { label: 'Charlie Brown (Product)', value: 'charlie' },
+              { label: 'Diana Prince (Marketing)', value: 'diana' },
             ];
-          }
+          },
         },
         { name: 'date', description: 'Meeting date', required: true, type: 'date' as const },
-        { name: 'duration', description: 'Duration in minutes', required: true, type: 'number' as const },
       ],
       action: async (params: any) => {
         await new Promise(resolve => setTimeout(resolve, 600));
-        return {
-          type: 'success' as const,
-          message: `✅ Meeting scheduled!\n\n👥 With: ${params.member}\n📆 Date: ${new Date(params.date).toLocaleDateString()}\n⏱️ Duration: ${params.duration} minutes`
-        };
+        return `Meeting scheduled with ${params.member} on ${new Date(params.date).toLocaleDateString()}`;
       }
     },
 
-    // ===== CRITICAL ACTION (Requires confirmation) =====
     {
       command: 'delete all records',
-      description: 'Permanently delete all user records from the database',
+      description: 'Permanently delete all user records',
       critical: true,
       action: async () => {
-        // Simulate deletion process
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         return {
           type: 'success' as const,
-          message: '🗑️ All records have been permanently deleted.\n\n⚠️ This action cannot be undone.'
+          message: 'All records have been deleted. This action cannot be undone.'
         };
       }
     },
 
-    // ===== OPTIONAL PARAMETERS =====
     {
-      command: 'update profile',
-      description: 'Update user profile information (all fields optional)',
+      command: 'upload file',
+      description: 'Pick a file and return it to the action (demo)',
       parameters: [
-        { name: 'displayName', description: 'Display name', required: false, type: 'string' as const },
-        { name: 'bio', description: 'Short biography', required: false, type: 'string' as const },
-        { name: 'role', description: 'User role', required: false, type: 'select' as const, options: [
-          { label: 'Developer', value: 'dev' },
-          { label: 'Designer', value: 'design' },
-          { label: 'Manager', value: 'manager' },
-        ]},
+        {
+          name: 'attachment',
+          description: 'Select a file',
+          required: true,
+          type: 'file' as const,
+          accept: ['image/*', 'audio/*', 'video/*'],
+          multiple: false,
+          delivery: 'file' as const,
+        },
       ],
-      action: (params: any) => {
-        const updates: string[] = [];
-        if (params.displayName) updates.push(`Name: ${params.displayName}`);
-        if (params.bio) updates.push(`Bio: ${params.bio}`);
-        if (params.role) updates.push(`Role: ${params.role}`);
-        
-        return updates.length > 0 
-          ? `✅ Profile updated:\n\n${updates.join('\n')}`
-          : '⚠️ No fields were updated.';
+      action: async (params: any) => {
+        const v = params?.attachment as File | undefined;
+        if (!v) {
+          return { type: 'error' as const, message: 'No file provided.' };
+        }
+        return {
+          type: 'success' as const,
+          message: `File received.\n\nName: ${v.name}\nType: ${v.type || 'unknown'}\nSize: ${v.size} bytes`,
+        };
       }
     },
 
-    // ===== SIMPLE UI ACTIONS =====
     {
-      command: 'reset theme',
-      action: () => {
-        document.body.style.backgroundColor = '';
-        return '✨ Theme reset to default.';
-      }
-    },
-    {
-      command: 'view stats',
-      description: 'View application statistics',
-      action: () => {
-        return `📊 Application Statistics:\n\n👥 Active Users: 1,234\n📝 Total Commands: 42\n⚡ Uptime: 99.9%\n🚀 Version: 1.0.0`;
+      command: 'update profile',
+      description: 'Update your user profile',
+      parameters: [
+        { name: 'displayName', description: 'Your display name', required: false, type: 'string' as const },
+        { name: 'bio', description: 'Short bio', required: false, type: 'string' as const },
+        {
+          name: 'role',
+          description: 'Your role',
+          required: false,
+          type: 'select' as const,
+          options: [
+            { label: 'Developer', value: 'dev' },
+            { label: 'Designer', value: 'design' },
+            { label: 'Manager', value: 'manager' },
+          ],
+        },
+      ],
+      action: (params: any) => {
+        const updates = Object.entries(params)
+          .filter(([_, value]) => value)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(', ');
+
+        return updates
+          ? `Profile updated: ${updates}`
+          : 'No changes made to profile.';
       }
     },
   ],
 };
 
-const theme = ref<'light' | 'dark'>(
-  (localStorage.getItem('foisit-theme') as 'light' | 'dark') || 'light'
-);
+const theme = ref<'light' | 'dark'>('light');
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme.value);
 };
-
-watch(theme, (newTheme) => {
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('foisit-theme', newTheme);
-}, { immediate: true });
-
-// Add theme toggle command dynamically
-onMounted(() => {
-  const assistant = inject<AssistantService>('assistantService');
-  if (assistant) {
-    assistant.addCommand('toggle theme', async () => {
-      toggleTheme();
-      return `🎨 Theme switched to ${theme.value} mode!`;
-    });
-  }
-});
 </script>
 
 <template>
   <AssistantProvider :config="assistantConfig">
     <button class="theme-toggle" @click="toggleTheme">
-      {{ theme === 'light' ? '🌙' : '☀️' }}
+      {{ theme === 'light' ? 'Dark Mode' : 'Light Mode' }}
     </button>
 
     <div class="showcase-container">
       <header class="hero-section">
-        <h1 class="hero-title">Foisit Vue</h1>
+        <span class="hero-badge">Vue Wrapper</span>
+        <h1 class="hero-title">Build Conversational UIs in Minutes</h1>
         <p class="hero-subtitle">
-          The most powerful, AI-driven conversational assistant for Vue applications.
-          Build natural language interfaces in minutes, not days.
+          Transform your Vue apps with natural language commands. Intelligent slot filling,
+          async data loading, and beautiful UI—all out of the box.
         </p>
+        <div class="hero-actions">
+          <OpenAssistantButton label="Try Demo" />
+          <a href="https://www.npmjs.com/package/@foisit/vue-wrapper" target="_blank" rel="noopener noreferrer" class="demo-btn secondary">
+            View on NPM
+          </a>
+        </div>
       </header>
 
-      <!-- Quick Start Guide -->
+      <!-- Why Foisit -->
       <section class="glass-card">
-        <h2 class="section-title">🚀 Quick Start Guide</h2>
-        <p><strong>Step 1:</strong> Install the package</p>
-        <div class="code-block">
-          <div class="code-header">
-            <span>Terminal</span>
-            <span>NPM</span>
+        <h2 class="section-title">Why Foisit?</h2>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <h3>Natural Language</h3>
+            <p>Users speak naturally. Foisit understands intent and extracts parameters automatically.</p>
           </div>
+          <div class="feature-item">
+            <h3>Smart Forms</h3>
+            <p>Missing data? Auto-generated forms collect what you need with zero config.</p>
+          </div>
+          <div class="feature-item">
+            <h3>Async Ready</h3>
+            <p>Load dropdown options from APIs. Handle async actions with built-in loading states.</p>
+          </div>
+          <div class="feature-item">
+            <h3>File Uploads</h3>
+            <p>Accept files with type restrictions, size limits, and base64 or File delivery.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section class="glass-card">
+        <h2 class="section-title">Get Started in 3 Steps</h2>
+        <p><strong>1.</strong> Install the package</p>
+        <div class="code-block">
+          <div class="code-header"><span>Terminal</span></div>
           <pre>npm install @foisit/vue-wrapper</pre>
         </div>
 
-        <p style="margin-top: 20px;"><strong>Step 2:</strong> Use the component</p>
+        <p style="margin-top: 20px;"><strong>2.</strong> Wrap your app</p>
         <div class="code-block">
-          <div class="code-header">
-            <span>App.vue</span>
-          </div>
-          <pre>&lt;script setup&gt;
+          <div class="code-header"><span>App.vue</span></div>
+          <pre>{{ `<script setup>
 import { AssistantProvider } from '@foisit/vue-wrapper';
 
 const config = {
   commands: [
-    { 
-      command: 'greet',
-      action: () => 'Hello, World!' 
-    }
+    { command: 'greet', action: () => 'Hello!' }
   ]
 };
-&lt;/script&gt;
+</script>
 
-&lt;template&gt;
-  &lt;AssistantProvider :config="config"&gt;
-    &lt;YourApp /&gt;
-  &lt;/AssistantProvider&gt;
-&lt;/template&gt;</pre>
+<template>
+  <AssistantProvider :config="config">
+    <YourApp />
+  </AssistantProvider>
+</template>` }}</pre>
         </div>
 
-        <p style="margin-top: 20px;"><strong>Step 3:</strong> Try it! Double-tap anywhere or click the floating button.</p>
+        <p style="margin-top: 20px;"><strong>3.</strong> Double-tap anywhere to open the assistant</p>
       </section>
 
-      <!-- Core Concepts -->
+      <!-- Interactive Examples -->
       <section class="glass-card">
-        <h2 class="section-title">📚 Core Concepts</h2>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h3>🎯 Commands</h3>
-            <p>Define actions users can trigger through natural language. Simple commands execute immediately.</p>
-          </div>
-          <div class="feature-item">
-            <h3>📝 Slot Filling</h3>
-            <p>Add parameters to commands. Foisit automatically creates forms to collect missing information.</p>
-          </div>
-          <div class="feature-item">
-            <h3>⚠️ Critical Actions</h3>
-            <p>Mark destructive actions as critical. Users must confirm before execution.</p>
-          </div>
-          <div class="feature-item">
-            <h3>🔄 Dynamic Options</h3>
-            <p>Load options from APIs using getOptions(). Perfect for dropdowns with live data.</p>
-          </div>
-        </div>
-      </section>
+        <h2 class="section-title">Interactive Examples</h2>
+        <p>Try these commands live—double-tap or click the floating button:</p>
 
-      <!-- Live Examples with Code -->
-      <section class="glass-card">
-        <h2 class="section-title">💡 Live Examples</h2>
-        <p>Open the assistant (double-tap or click the 💚 button) and try these commands. Each example shows the code powering it:</p>
-
-        <!-- Example 1: Basic Command -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">1. Basic Command - "help"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            No parameters required. Returns a simple message.
-          </p>
+        <div class="example-section">
+          <h3>Basic Command</h3>
+          <p>Simple action, no parameters needed.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
-  command: 'help',
-  description: 'Show available commands',
-  action: () => {
-    return 'I can help you with: User Management, Scheduling...';
-  }
-}</pre>
+            <pre>{{ `{ command: 'help', action: () => 'Available: create user, book appointment...' }` }}</pre>
           </div>
         </div>
 
-        <!-- Example 2: String + Number Parameters with Validation -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">2. Multi-Parameter with Validation - "create user"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            Collects string and number inputs, performs validation, simulates API call.
-          </p>
+        <div class="example-section">
+          <h3>Multi-Parameter Form</h3>
+          <p>Collects multiple inputs with validation.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
+            <pre>{{ `{
   command: 'create user',
   parameters: [
     { name: 'name', type: 'string', required: true },
@@ -343,237 +310,165 @@ const config = {
     { name: 'age', type: 'number', required: true }
   ],
   action: async (params) => {
-    if (params.age &lt; 18) {
-      return { type: 'error', message: 'Must be 18+' };
-    }
-    await simulateAPICall();
-    return { 
-      type: 'success', 
-      message: `User ${params.name} created!` 
-    };
+    if (params.age < 18) return { type: 'error', message: 'Must be 18+' };
+    return \`User \${params.name} created!\`;
   }
-}</pre>
+}` }}</pre>
           </div>
         </div>
 
-        <!-- Example 3: Select Parameter -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">3. Select Parameter - "change theme"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            Shows a dropdown with predefined options.
-          </p>
+        <div class="example-section">
+          <h3>Select Dropdown</h3>
+          <p>Static options for quick selection.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
+            <pre>{{ `{
   command: 'change theme',
   parameters: [{
     name: 'theme',
     type: 'select',
     options: [
-      { label: '🔵 Blue Ocean', value: 'blue' },
-      { label: '🟢 Forest Green', value: 'green' }
+      { label: 'Blue Ocean', value: 'blue' },
+      { label: 'Forest Green', value: 'green' }
     ]
-  }],
-  action: (params) => {
-    document.body.style.backgroundColor = colors[params.theme];
-    return `Theme changed to ${params.theme}!`;
-  }
-}</pre>
+  }]
+}` }}</pre>
           </div>
         </div>
 
-        <!-- Example 4: Date Parameter -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">4. Date Picker - "book appointment"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            Renders a date picker for user selection.
-          </p>
+        <div class="example-section">
+          <h3>Async Options</h3>
+          <p>Load dropdown data from APIs dynamically.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
-  command: 'book appointment',
-  parameters: [
-    { name: 'service', type: 'string', required: true },
-    { name: 'date', type: 'date', required: true }
-  ],
-  action: (params) => {
-    return `📅 Booked ${params.service} on ${params.date}`;
-  }
-}</pre>
-          </div>
-        </div>
-
-        <!-- Example 5: Async Select -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">5. Async/Dynamic Select - "schedule meeting"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            Loads options dynamically from an API or service.
-          </p>
-          <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
+            <pre>{{ `{
   command: 'schedule meeting',
   parameters: [{
     name: 'member',
     type: 'select',
     getOptions: async () => {
       const members = await api.getTeamMembers();
-      return members.map(m => ({
-        label: `${m.name} (${m.dept})`,
-        value: m.id
-      }));
+      return members.map(m => ({ label: m.name, value: m.id }));
     }
-  }],
-  action: async (params) => {
-    return `Meeting scheduled with ${params.member}`;
-  }
-}</pre>
+  }]
+}` }}</pre>
           </div>
         </div>
 
-        <!-- Example 6: Critical Action -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">6. Critical Action - "delete all records"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            Requires user confirmation before executing dangerous operations.
-          </p>
+        <div class="example-section">
+          <h3>Date Picker</h3>
+          <p>Native date selection for scheduling.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
+            <pre>{{ `{
+  command: 'book appointment',
+  parameters: [
+    { name: 'service', type: 'string', required: true },
+    { name: 'date', type: 'date', required: true }
+  ]
+}` }}</pre>
+          </div>
+        </div>
+
+        <div class="example-section">
+          <h3>Critical Action</h3>
+          <p>Requires confirmation before executing.</p>
+          <div class="code-block">
+            <pre>{{ `{
   command: 'delete all records',
-  critical: true, // ⚠️ Forces confirmation dialog
-  description: 'Permanently delete all data',
+  critical: true,
   action: async () => {
     await database.deleteAll();
-    return {
-      type: 'success',
-      message: '🗑️ All records deleted. Cannot be undone.'
-    };
+    return 'All records deleted.';
   }
-}</pre>
+}` }}</pre>
           </div>
         </div>
 
-        <!-- Example 7: Optional Parameters -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: var(--accent-color); margin-bottom: 10px;">7. Optional Parameters - "update profile"</h3>
-          <p style="font-size: 0.95rem; color: var(--secondary-text); margin-bottom: 15px;">
-            All parameters are optional. Users can skip fields they don't want to update.
-          </p>
+        <div class="example-section">
+          <h3>File Upload</h3>
+          <p>Accept files with type and size restrictions.</p>
           <div class="code-block">
-            <div class="code-header">
-              <span>JavaScript</span>
-            </div>
-            <pre>{
-  command: 'update profile',
-  parameters: [
-    { name: 'displayName', type: 'string', required: false },
-    { name: 'bio', type: 'string', required: false },
-    { name: 'role', type: 'select', required: false, options: [...] }
-  ],
-  action: (params) => {
-    const updates = Object.entries(params)
-      .filter(([_, v]) => v)
-      .map(([k, v]) => `${k}: ${v}`);
-    return `Updated: ${updates.join(', ')}`;
-  }
-}</pre>
+            <pre>{{ `{
+  command: 'upload file',
+  parameters: [{
+    name: 'attachment',
+    type: 'file',
+    accept: ['image/*', 'audio/*'],
+    delivery: 'file' // or 'base64'
+  }],
+  action: (params) => \`Received \${params.attachment.name}\`
+}` }}</pre>
           </div>
         </div>
       </section>
 
-      <!-- Parameter Types Reference -->
+      <!-- Parameter Types -->
       <section class="glass-card">
-        <h2 class="section-title">🔧 Parameter Types Reference</h2>
+        <h2 class="section-title">Parameter Types</h2>
         <div class="code-block">
-          <pre>// STRING
+          <pre>{{ `// Text input
 { name: 'username', type: 'string', required: true }
 
-// NUMBER
+// Numeric input
 { name: 'age', type: 'number', required: true }
 
-// DATE
-{ name: 'appointmentDate', type: 'date', required: true }
+// Date picker
+{ name: 'date', type: 'date', required: true }
 
-// SELECT (Static)
-{
-  name: 'role',
-  type: 'select',
-  options: [
-    { label: 'Admin', value: 'admin' },
-    { label: 'User', value: 'user' }
-  ]
-}
+// Dropdown (static)
+{ name: 'role', type: 'select', options: [{ label: 'Admin', value: 'admin' }] }
 
-// SELECT (Dynamic/Async)
-{
-  name: 'customer',
-  type: 'select',
-  getOptions: async () => {
-    const res = await fetch('/api/customers');
-    return res.json();
-  }
-}</pre>
+// Dropdown (async)
+{ name: 'user', type: 'select', getOptions: async () => await fetchUsers() }
+
+// File upload
+{ name: 'file', type: 'file', accept: ['image/*'], delivery: 'file' }` }}</pre>
         </div>
       </section>
 
-      <!-- Programmatic Control -->
+      <!-- Try It -->
       <section class="glass-card">
-        <h2 class="section-title">🎮 Programmatic Control</h2>
-        <p>Control the assistant using Vue's Composition API:</p>
+        <h2 class="section-title">Try It Now</h2>
+        <p>Test the assistant with programmatic controls:</p>
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <OpenAssistantButton label="Open Assistant" />
+        </div>
+      </section>
+
+      <!-- Vue API -->
+      <section class="glass-card">
+        <h2 class="section-title">Vue Integration</h2>
+        <p>Control the assistant programmatically:</p>
         <div class="code-block">
-          <pre>&lt;script setup&gt;
-import { inject } from 'vue';
-import { AssistantService } from '@foisit/vue-wrapper';
+          <pre>{{ `<script setup>
+import { onMounted } from 'vue';
 
-const assistant = inject('assistantService');
+let assistantService = null;
 
-const openAssistant = () => {
-  assistant?.toggle();
-};
+onMounted(() => {
+  assistantService = window.__foisit__;
+});
 
-const addCommand = () => {
-  assistant?.addCommand('my command', async () => {
-    return 'Command executed!';
-  });
-};
-&lt;/script&gt;</pre>
+const open = () => assistantService?.toggle();
+</script>
+
+<template>
+  <button @click="open">Open Assistant</button>
+</template>` }}</pre>
         </div>
       </section>
 
-      <!-- Features Summary -->
+      <!-- Features -->
       <section class="glass-card">
-        <h2 class="section-title">✨ Feature Checklist</h2>
+        <h2 class="section-title">Everything You Need</h2>
         <ul style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
-          <li>✅ Natural language command matching</li>
-          <li>✅ Multi-step slot filling with auto-generated forms</li>
-          <li>✅ All parameter types (string, number, date, select)</li>
-          <li>✅ Static and async/dynamic select options</li>
-          <li>✅ Required and optional parameters</li>
-          <li>✅ Critical action confirmations</li>
-          <li>✅ Interactive response handling (success/error)</li>
-          <li>✅ Floating button trigger</li>
-          <li>✅ Double-tap activation</li>
-          <li>✅ Programmatic API (toggle, addCommand, removeCommand)</li>
-          <li>✅ Dark/Light mode support</li>
-          <li>✅ Custom styling and theming</li>
-          <li>✅ TypeScript support</li>
-          <li>✅ Vue Composition API integration</li>
-          <li>✅ Zero backend required</li>
+          <li>Natural language command matching</li>
+          <li>Automatic parameter collection</li>
+          <li>Multiple input types (string, number, date, select, file)</li>
+          <li>Async dropdown options from APIs</li>
+          <li>Critical action confirmations</li>
+          <li>Full TypeScript support</li>
+          <li>Dark mode built-in</li>
         </ul>
       </section>
     </div>
   </AssistantProvider>
 </template>
-
-<style>
-@import './showcase.css';
-</style>

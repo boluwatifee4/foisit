@@ -7,39 +7,38 @@
 
 Transform your Vue app into an intelligent, voice-ready platform. Foisit provides a drop-in AI layer that understands natural language, manages multi-step workflows, and executes actions—all with zero backend required.
 
-> [!NOTE]
-> 🎙️ **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
+> [!NOTE] > **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Features](#-features)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Core Concepts](#-core-concepts)
-- [API Reference](#-api-reference)
-- [Advanced Usage](#-advanced-usage)
-- [Examples](#-examples)
-- [TypeScript Support](#-typescript-support)
-- [Best Practices](#-best-practices)
-
----
-
-## ✨ Features
-
-- **🧠 Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
-- **📝 Smart Slot Filling** - Auto-generates forms for missing parameters
-- **⚠️ Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
-- **🎨 Premium UI** - Glassmorphic overlay with dark/light mode support
-- **🔒 Zero Backend Required** - Secure proxy architecture keeps API keys server-side
-- **⚡ Vue Native** - Uses Composition API, `provide/inject`, and Vue 3 patterns
-- **🎯 Type-Safe** - Full TypeScript support with comprehensive types
-- **📱 Responsive** - Works flawlessly on desktop and mobile
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [API Reference](#api-reference)
+- [Advanced Usage](#advanced-usage)
+- [Examples](#examples)
+- [TypeScript Support](#typescript-support)
+- [Best Practices](#best-practices)
 
 ---
 
-## 🚀 Installation
+## Features
+
+- **Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
+- **Smart Slot Filling** - Auto-generates forms for missing parameters
+- **Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
+- **Premium UI** - Glassmorphic overlay with dark/light mode support
+- **Zero Backend Required** - Secure proxy architecture keeps API keys server-side
+- **Vue Native** - Uses Composition API, `provide/inject`, and Vue 3 patterns
+- **Type-Safe** - Full TypeScript support with comprehensive types
+- **Responsive** - Works flawlessly on desktop and mobile
+
+---
+
+## Installation
 
 ```bash
 npm install @foisit/vue-wrapper
@@ -55,7 +54,7 @@ npm install @foisit/vue-wrapper
 
 ---
 
-## 🏁 Quick Start
+## Quick Start
 
 ### Step 1: Wrap Your App
 
@@ -106,7 +105,7 @@ const openAssistant = () => {
 
 ---
 
-## 🎯 Core Concepts
+## Core Concepts
 
 ### 1. Commands
 
@@ -143,24 +142,57 @@ Define parameters and Foisit will automatically generate forms to collect them:
 - `number` - Numeric input
 - `date` - Date picker
 - `select` - Dropdown (static or async options)
+- `file` - File upload input
 
-### 3. Critical Actions
+### 3. File Parameters
+
+Collect files via the built-in form UI and receive them in your command `action`.
+
+```javascript
+{
+  command: 'upload file',
+  description: 'Pick a file and return it to the action',
+  parameters: [
+    {
+      name: 'attachment',
+      type: 'file',
+      required: true,
+      accept: ['image/*', 'audio/*', 'video/*'],
+      multiple: false,
+      // delivery: 'file' | 'base64' (default: 'file')
+      delivery: 'file',
+    },
+  ],
+  action: async (params) => {
+    const file = params?.attachment;
+    if (!file) return { type: 'error', message: 'No file provided.' };
+    return {
+      type: 'success',
+      message: `File received. Name: ${file.name}, Type: ${file.type || 'unknown'}, Size: ${file.size} bytes`,
+    };
+  },
+}
+```
+
+`FileParameter` supports validations like `maxFiles`, `maxSizeBytes`, `maxTotalBytes`, and media/image constraints like `maxDurationSec`, `maxWidth`, and `maxHeight`.
+
+### 4. Critical Actions
 
 Protect dangerous operations with automatic confirmation dialogs:
 
 ```javascript
 {
   command: 'delete all data',
-  critical: true, // 🔒 Requires confirmation
+  critical: true, // Requires confirmation
   description: 'Permanently delete all application data',
   action: async () => {
     await dataService.deleteAll();
-    return '✅ All data deleted successfully.';
+    return 'All data deleted successfully.';
   }
 }
 ```
 
-### 4. Select Parameters (Static)
+### 5. Select Parameters (Static)
 
 Provide predefined options:
 
@@ -180,7 +212,7 @@ Provide predefined options:
 }
 ```
 
-### 5. Dynamic Select Parameters
+### 6. Dynamic Select Parameters
 
 Load options from APIs:
 
@@ -204,7 +236,7 @@ Load options from APIs:
 
 ---
 
-## 📘 API Reference
+## API Reference
 
 ### `AssistantService` (via `inject`)
 
@@ -237,7 +269,7 @@ const openWithCallbacks = () => {
 
 ##### `addCommand(command, action?)`
 
-Dynamically add a command at runtime.
+Dynamically add or update a command at runtime. Commands registered with `addCommand` apply immediately for the running session; they are stored in memory and are not automatically persisted across page reloads.
 
 ```vue
 <script setup>
@@ -275,6 +307,23 @@ onMounted(() => {
 </script>
 ```
 
+### Dynamic Updates (Add / Remove / Update commands at runtime) ✅
+
+- Use `addCommand` to add or replace a command for the current runtime.
+- Use `removeCommand(commandPhrase)` to unregister a command immediately.
+- When adding temporary commands inside components, remove them in `onUnmounted` (or equivalent) to avoid leaving stale commands behind.
+
+Example — register and remove a temporary command:
+
+```vue
+import { onMounted, onUnmounted, inject } from 'vue'; const assistant = inject('assistantService'); onMounted(() => { assistant?.addCommand('temp action', () => 'Temporary action'); }); onUnmounted(() => { assistant?.removeCommand('temp action'); });
+```
+
+Notes:
+
+- Commands with optional parameters can return a `form` InteractiveResponse to prompt the user when no params are provided.
+- Commands are not persisted by default; to persist them, re-register at app startup.
+
 ##### `removeCommand(commandPhrase)`
 
 Remove a registered command.
@@ -294,7 +343,7 @@ console.log('Available commands:', commands);
 
 ---
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ### `AssistantConfig`
 
@@ -330,7 +379,7 @@ interface AssistantConfig {
 
 ---
 
-## 🎨 Advanced Usage
+## Advanced Usage
 
 ### Example 1: Multi-Step Booking System with Reactive State
 
@@ -371,7 +420,7 @@ onMounted(() => {
       bookings.value.push(booking);
       return {
         type: 'success',
-        message: `✅ Appointment booked for ${params.date}!`,
+        message: `Appointment booked for ${params.date}!`,
       };
     },
   });
@@ -486,7 +535,7 @@ onMounted(() => {
 
 ---
 
-## 📝 TypeScript Support
+## TypeScript Support
 
 ### Full Type Definitions
 
@@ -520,7 +569,7 @@ const myCommand: AssistantCommand = {
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 ### 1. Use `onMounted` for Commands
 
@@ -576,7 +625,7 @@ action: async (params) => {
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Unit Testing with Vitest
 
@@ -601,7 +650,7 @@ test('renders assistant', () => {
 
 ---
 
-## 🔗 Related Packages
+## Related Packages
 
 - **[@foisit/core](../core)** - Core engine (auto-installed)
 - **[@foisit/angular-wrapper](../angular-wrapper)** - Angular integration
@@ -609,7 +658,7 @@ test('renders assistant', () => {
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Assistant service is undefined
 
@@ -625,23 +674,23 @@ Make sure you're using Vue 3.3+ and have proper type definitions.
 
 ---
 
-## 📄 License
+## License
 
 MIT © [Foisit](https://github.com/boluwatifee4/foisit)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our [Contributing Guide](../../CONTRIBUTING.md) first.
 
 ---
 
-## 📬 Support
+## Support
 
-- 📧 Email: support@foisit.com
-- 💬 Discord: [Join our community](https://discord.gg/foisit)
-- 🐛 Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
+- Email: support@foisit.com
+- Discord: [Join our community](https://discord.gg/foisit)
+- Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
 
 ---
 

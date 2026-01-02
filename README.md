@@ -1,26 +1,25 @@
-# 🎙️ Foisit: AI-Powered Voice & UI Assistant
+# Foisit: AI-Powered Voice & UI Assistant
 
 <img src="https://github.com/user-attachments/assets/1075d88b-6ed5-42ce-b1ce-8c2dcddedb7e" alt="Foisit Logo" width="300" />
 
 **Foisit** is an AI-powered assistant for web applications that combines natural language processing with a modern UI overlay.
 
-> [!NOTE]
-> 🎙️ **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
+> [!NOTE] > **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
 
 ---
 
-## ✅ Currently Supported
+## Currently Supported
 
-- **💬 Text-First Assistant**: A sleek, interactive chat overlay for all user queries.
-- **🧠 Smart Intent (AI)**: Natural language understanding via GPT-4o mini (securely proxied).
-- **🛡️ Critical Actions**: Automated confirmation flow for safe execution of sensitive commands.
-- **🎯 Deterministic Matching**: Ultra-fast exact matching for predefined commands.
-- **👋 Gesture Activation**: Trigger the overlay via a floating watermark (double-click/tap).
-- **⚛️ Framework Wrappers**: Full support for Angular, React, and Vue.
+- **Text-First Assistant**: A sleek, interactive chat overlay for all user queries.
+- **Smart Intent (AI)**: Natural language understanding via GPT-4o mini (securely proxied).
+- **Critical Actions**: Automated confirmation flow for safe execution of sensitive commands.
+- **Deterministic Matching**: Ultra-fast exact matching for predefined commands.
+- **Gesture Activation**: Trigger the overlay via a floating watermark (double-click/tap).
+- **Framework Wrappers**: Full support for Angular, React, and Vue.
 
 ---
 
-## 📦 Framework Wrappers
+## Framework Wrappers
 
 Install the wrapper specifically for your framework. The core engine is included automatically.
 
@@ -32,7 +31,7 @@ Install the wrapper specifically for your framework. The core engine is included
 
 ---
 
-## 🚀 Quick Start (React Example)
+## Quick Start (React Example)
 
 ```tsx
 import { AssistantProvider } from '@foisit/react-wrapper';
@@ -66,7 +65,7 @@ function App() {
 
 ---
 
-## 🛡️ Critical Action Confirmation
+## Critical Action Confirmation
 
 Foisit automatically handles confirmation for commands marked as `critical: true`.
 
@@ -76,7 +75,7 @@ Foisit automatically handles confirmation for commands marked as `critical: true
 
 ---
 
-## 🛠️ Development (Nx Monorepo)
+## Development (Nx Monorepo)
 
 ```bash
 # Serve Angular Demo
@@ -91,6 +90,6 @@ npx nx serve foisit-vue
 
 ---
 
-## 📄 License
+## License
 
 Licensed under the **MIT License**.

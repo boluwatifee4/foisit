@@ -20,6 +20,6 @@ describe('App', () => {
         <App />
       </BrowserRouter>
     );
-    expect(getByText(/Welcome foisit-react/gi)).toBeTruthy();
+    expect(getByText(/Build Conversational UIs in Minutes/gi)).toBeTruthy();
   });
 });

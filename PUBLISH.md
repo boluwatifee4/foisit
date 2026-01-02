@@ -2,7 +2,7 @@
 
 This monorepo uses **Nx** for builds and is configured for **Semantic Release**.
 
-## 🚀 Automated Deployment (Recommended)
+## Automated Deployment (Recommended)
 
 The project is already configured with `semantic-release`. To trigger a release:
 
@@ -20,7 +20,7 @@ The project is already configured with `semantic-release`. To trigger a release:
 
 ---
 
-## 🛠️ Manual Deployment
+## Manual Deployment
 
 If you want to publish individual packages manually:
 
@@ -60,7 +60,7 @@ npm publish --access public
 
 ---
 
-## 🔍 Troubleshooting Common Errors
+## Troubleshooting Common Errors
 
 ### 1. "Access token expired or revoked"
 

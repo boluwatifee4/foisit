@@ -1,12 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { NxWelcomeComponent } from './nx-welcome.component';
 import { RouterModule } from '@angular/router';
+import { AssistantService } from '@foisit/angular-wrapper';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, NxWelcomeComponent, RouterModule.forRoot([])],
+      imports: [AppComponent, RouterModule.forRoot([])],
+      providers: [
+        {
+          provide: AssistantService,
+          useValue: {
+            addCommand: jest.fn(),
+            removeCommand: jest.fn(),
+            toggle: jest.fn(),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
@@ -15,13 +25,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome foisit-ng'
+      'Build Conversational UIs in Minutes'
     );
-  });
-
-  it(`should have as title 'foisit-ng'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('foisit-ng');
   });
 });

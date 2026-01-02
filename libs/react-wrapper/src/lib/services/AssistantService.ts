@@ -26,9 +26,10 @@ export class AssistantService {
 
   constructor(private config: AssistantConfig) {
     // Pass enableSmartIntent (default true) and potential apiKey (if we add it to config later)
-    this.commandHandler = new CommandHandler(
-      this.config.enableSmartIntent !== false
-    );
+    this.commandHandler = new CommandHandler({
+      enableSmartIntent: this.config.enableSmartIntent !== false,
+      intentEndpoint: this.config.intentEndpoint,
+    });
     this.fallbackHandler = new FallbackHandler();
     this.voiceProcessor = new VoiceProcessor();
     this.textToSpeech = new TextToSpeech();
@@ -55,9 +56,23 @@ export class AssistantService {
 
     // Register global callbacks for floating button
     this.overlayManager.registerCallbacks(
-      async (text) => {
-        this.overlayManager.addMessage(text, 'user'); // Echo user input
-        await this.handleCommand(text);
+      async (input: string | Record<string, unknown>) => {
+        if (typeof input === 'string') {
+          this.overlayManager.addMessage(input, 'user'); // Echo user input
+          await this.handleCommand(input);
+          return;
+        }
+
+        // Structured payloads (e.g., { commandId, params }) - run deterministically
+        if (input && typeof input === 'object') {
+          const obj = input as Record<string, unknown>;
+          const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
+          this.overlayManager.addMessage(String(label), 'user');
+          this.overlayManager.showLoading();
+          const response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
+          this.overlayManager.hideLoading();
+          this.processResponse(response);
+        }
       },
       () => console.log('AssistantService: Overlay closed.')
     );
@@ -65,8 +80,11 @@ export class AssistantService {
 
   /** Start listening for activation and commands */
   startListening(): void {
-    console.log('AssistantService: Starting listening...');
-    // this.stateManager.setState('listening'); // DISABLED - no gradient animation
+    // Voice is currently disabled (text-only mode)
+    console.log('AssistantService: Voice is disabled; startListening() is a no-op.');
+    return;
+
+    /*
     this.voiceProcessor.startListening(async (transcript: string) => {
       if (this.processingLock) return;
 
@@ -104,14 +122,30 @@ export class AssistantService {
       this.processingLock = true;
       setTimeout(() => (this.processingLock = false), 1000);
     });
+    */
   }
 
   /** Stop listening */
   stopListening(): void {
-    console.log('AssistantService: Stopping listening...');
-    this.voiceProcessor.stopListening();
+    // Voice is currently disabled (text-only mode)
+    console.log('AssistantService: Voice is disabled; stopListening() is a no-op.');
     this.isActivated = false;
-    // this.stateManager.setState('idle'); // DISABLED - no gradient animation
+  }
+
+  /**
+   * Reset activation state so the next activation flow can occur.
+   * This is mainly used by the wrapper UI (e.g. AssistantActivator).
+   */
+  reactivate(): void {
+    console.log('AssistantService: Reactivating assistant...');
+    this.isActivated = false;
+    // If voice is enabled, ensure we are listening again.
+    // (startListening is idempotent in VoiceProcessor)
+    try {
+      this.startListening();
+    } catch {
+      // no-op
+    }
   }
 
   /** Process activation command */
@@ -136,12 +170,11 @@ export class AssistantService {
   /** Handle recognized commands */
   private async handleCommand(transcript: string): Promise<void> {
     this.overlayManager.showLoading();
-    const response = await this.commandHandler.executeCommand(transcript);
-    this.overlayManager.hideLoading();
-
-    // Add AI/System response bubble
-    if (response.message) {
-      this.overlayManager.addMessage(response.message, 'system');
+    let response: InteractiveResponse;
+    try {
+      response = await this.commandHandler.executeCommand(transcript);
+    } finally {
+      this.overlayManager.hideLoading();
     }
 
     if (response.type === 'form' && response.fields) {
@@ -150,15 +183,31 @@ export class AssistantService {
         response.fields,
         async (data) => {
           this.overlayManager.showLoading();
-          const nextReponse = await this.commandHandler.executeCommand(data);
-          this.overlayManager.hideLoading();
+          let nextReponse: InteractiveResponse;
+          try {
+            nextReponse = await this.commandHandler.executeCommand(data);
+          } finally {
+            this.overlayManager.hideLoading();
+          }
           this.processResponse(nextReponse);
         }
       );
-    } else if (response.type === 'ambiguous' && response.options) {
-      this.overlayManager.addOptions(response.options);
-    } else if (response.type === 'error') {
+      return;
+    }
+
+    if (response.type === 'error') {
       this.fallbackHandler.handleFallback(transcript);
+      this.overlayManager.addMessage(this.fallbackHandler.getFallbackMessage(), 'system');
+      return;
+    }
+
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
+    } else if (
+      (response.type === 'ambiguous' || response.type === 'confirm') &&
+      response.options
+    ) {
+      this.overlayManager.addOptions(response.options);
     }
   }
 
@@ -167,28 +216,41 @@ export class AssistantService {
    */
   destroy(): void {
     this.voiceProcessor.stopListening();
+    this.gestureHandler.destroy();
     this.overlayManager.destroy();
   }
 
   /** Unified response processing */
-  private processResponse(response: any): void {
-    if (response.message) {
-      this.overlayManager.addMessage(response.message, 'system');
-    }
-
+  private processResponse(response: InteractiveResponse | undefined): void {
+    if (!response) return;
     if (response.type === 'form' && response.fields) {
       this.overlayManager.addForm(
         response.message,
         response.fields,
         async (data) => {
           this.overlayManager.showLoading();
-          const nextReponse = await this.commandHandler.executeCommand(data);
-          this.overlayManager.hideLoading();
+          let nextReponse: InteractiveResponse;
+          try {
+            nextReponse = await this.commandHandler.executeCommand(data as Record<string, unknown>);
+          } finally {
+            this.overlayManager.hideLoading();
+          }
           this.processResponse(nextReponse);
         }
       );
-    } else if (response.type === 'ambiguous' && response.options) {
+      return;
+    }
+
+    if ((response.type === 'ambiguous' || response.type === 'confirm') && response.options) {
+      if (response.message) {
+        this.overlayManager.addMessage(response.message, 'system');
+      }
       this.overlayManager.addOptions(response.options);
+      return;
+    }
+
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
     }
   }
 
@@ -196,7 +258,7 @@ export class AssistantService {
   addCommand(
     commandOrObj: string | AssistantCommand,
     action?: (
-      params?: any
+      params?: Record<string, unknown>
     ) => Promise<string | InteractiveResponse | void> | void
   ): void {
     if (typeof commandOrObj === 'string') {
@@ -221,13 +283,31 @@ export class AssistantService {
   }
 
   /** Toggle the assistant overlay */
-  toggle(onSubmit?: (text: string) => void, onClose?: () => void): void {
+  toggle(onSubmit?: (input: string | Record<string, unknown>) => void, onClose?: () => void): void {
     console.log('AssistantService: Toggling overlay...');
     this.overlayManager.toggle(
-      async (text) => {
-        this.overlayManager.addMessage(text, 'user'); // Echo user input
-        if (onSubmit) onSubmit(text);
-        await this.handleCommand(text);
+      async (input) => {
+        if (typeof input === 'string') {
+          this.overlayManager.addMessage(input, 'user'); // Echo user input
+          if (onSubmit) onSubmit(input);
+          await this.handleCommand(input);
+          return;
+        }
+
+        // Structured payload from overlay (deterministic trigger)
+        if (input && typeof input === 'object') {
+          const obj = input as Record<string, unknown>;
+          const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
+          this.overlayManager.addMessage(String(label), 'user');
+          this.overlayManager.showLoading();
+          let response: InteractiveResponse;
+          try {
+            response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
+          } finally {
+            this.overlayManager.hideLoading();
+          }
+          this.processResponse(response);
+        }
       },
       () => {
         console.log('AssistantService: Overlay closed.');

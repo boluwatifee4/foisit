@@ -9,6 +9,7 @@ import {
   GestureHandler,
   OverlayManager,
   AssistantCommand,
+  AssistantCommandParams,
   InteractiveResponse,
 } from '@foisit/core';
 
@@ -30,9 +31,10 @@ export class AssistantService {
 
   constructor(@Inject('ASSISTANT_CONFIG') private config: AssistantConfig) {
     // Pass enableSmartIntent (default true) and potential apiKey (if we add it to config later)
-    this.commandHandler = new CommandHandler(
-      this.config.enableSmartIntent !== false
-    );
+    this.commandHandler = new CommandHandler({
+      enableSmartIntent: this.config.enableSmartIntent !== false,
+      intentEndpoint: this.config.intentEndpoint,
+    });
     this.fallbackHandler = new FallbackHandler();
     this.voiceProcessor = new VoiceProcessor();
     this.textToSpeech = new TextToSpeech();
@@ -59,9 +61,17 @@ export class AssistantService {
 
     // Register global callbacks for floating button
     this.overlayManager.registerCallbacks(
-      async (text) => {
-        this.overlayManager.addMessage(text, 'user'); // Echo user input
-        await this.handleCommand(text);
+      async (input) => {
+        if (typeof input === 'string') {
+          this.overlayManager.addMessage(input, 'user');
+        } else if (input && typeof input === 'object') {
+          const label = this.extractUserLabel(input as Record<string, unknown>);
+          if (label) {
+            this.overlayManager.addMessage(label, 'user');
+          }
+        }
+
+        await this.handleCommand(input);
       },
       () => console.log('AssistantService: Overlay closed.')
     );
@@ -69,7 +79,11 @@ export class AssistantService {
 
   /** Start listening for activation and commands */
   startListening(): void {
-    console.log('AssistantService: Starting listening...');
+    // Voice is currently disabled (text-only mode)
+    console.log('AssistantService: Voice is disabled; startListening() is a no-op.');
+    return;
+
+    /*
     this.voiceProcessor.startListening(async (transcript: string) => {
       if (this.processingLock) return;
 
@@ -107,6 +121,25 @@ export class AssistantService {
       this.processingLock = true;
       setTimeout(() => (this.processingLock = false), 1000);
     });
+    */
+  }
+
+  /** Stop listening for voice input */
+  stopListening(): void {
+    // Voice is currently disabled (text-only mode)
+    console.log('AssistantService: Voice is disabled; stopListening() is a no-op.');
+    this.isActivated = false;
+  }
+
+  /** Reset activation state so the next activation flow can occur. */
+  reactivate(): void {
+    console.log('AssistantService: Reactivating assistant...');
+    this.isActivated = false;
+    try {
+      this.startListening();
+    } catch {
+      // no-op
+    }
   }
 
   /** Process activation command */
@@ -129,32 +162,19 @@ export class AssistantService {
   }
 
   /** Handle recognized commands */
-  private async handleCommand(transcript: string): Promise<void> {
+  private async handleCommand(
+    input: string | Record<string, unknown>
+  ): Promise<void> {
     this.overlayManager.showLoading();
-    const response = await this.commandHandler.executeCommand(transcript);
-    this.overlayManager.hideLoading();
-
-    // Add AI/System response bubble
-    if (response.message) {
-      this.overlayManager.addMessage(response.message, 'system');
+    let response: InteractiveResponse;
+    try {
+      response = await this.commandHandler.executeCommand(input);
+    } finally {
+      this.overlayManager.hideLoading();
     }
 
-    if (response.type === 'form' && response.fields) {
-      this.overlayManager.addForm(
-        response.message,
-        response.fields,
-        async (data) => {
-          this.overlayManager.showLoading();
-          const nextReponse = await this.commandHandler.executeCommand(data);
-          this.overlayManager.hideLoading();
-          this.processResponse(nextReponse);
-        }
-      );
-    } else if (response.type === 'ambiguous' && response.options) {
-      this.overlayManager.addOptions(response.options);
-    } else if (response.type === 'error') {
-      this.fallbackHandler.handleFallback(transcript);
-    }
+    const originalText = typeof input === 'string' ? input : undefined;
+    this.processResponse(response, originalText);
   }
 
   /**
@@ -162,44 +182,57 @@ export class AssistantService {
    */
   destroy(): void {
     this.voiceProcessor.stopListening();
+    this.gestureHandler.destroy();
     this.overlayManager.destroy();
   }
 
   /** Unified response processing */
-  private processResponse(response: any): void {
-    if (response.message) {
-      this.overlayManager.addMessage(response.message, 'system');
+  private processResponse(
+    response: InteractiveResponse,
+    originalText?: string
+  ): void {
+    if (response.type === 'error' && originalText) {
+      this.fallbackHandler.handleFallback(originalText);
+      this.overlayManager.addMessage(this.fallbackHandler.getFallbackMessage(), 'system');
+      return;
     }
 
     if (response.type === 'form' && response.fields) {
       this.overlayManager.addForm(
         response.message,
         response.fields,
-        async (data) => {
+        async (data: Record<string, unknown>) => {
           this.overlayManager.showLoading();
-          const nextReponse = await this.commandHandler.executeCommand(data);
-          this.overlayManager.hideLoading();
+          let nextReponse: InteractiveResponse;
+          try {
+            nextReponse = await this.commandHandler.executeCommand(data);
+          } finally {
+            this.overlayManager.hideLoading();
+          }
           this.processResponse(nextReponse);
         }
       );
-    } else if (response.type === 'ambiguous' && response.options) {
-      this.overlayManager.addOptions(response.options);
+      return;
     }
-  }
 
-  /** Stop listening */
-  stopListening(): void {
-    console.log('AssistantService: Stopping listening...');
-    this.voiceProcessor.stopListening();
-    this.isActivated = false;
-    this.stateManager.setState('idle'); // Remove animation
+    if ((response.type === 'ambiguous' || response.type === 'confirm') && response.options) {
+      if (response.message) {
+        this.overlayManager.addMessage(response.message, 'system');
+      }
+      this.overlayManager.addOptions(response.options);
+      return;
+    }
+
+    if (response.message) {
+      this.overlayManager.addMessage(response.message, 'system');
+    }
   }
 
   /** Add a command dynamically (supports string or rich object) */
   addCommand(
     commandOrObj: string | AssistantCommand,
     action?: (
-      params?: any
+      params?: AssistantCommandParams
     ) => Promise<string | InteractiveResponse | void> | void
   ): void {
     if (typeof commandOrObj === 'string') {
@@ -224,18 +257,43 @@ export class AssistantService {
   }
 
   /** Toggle the assistant overlay */
-  toggle(onSubmit?: (text: string) => void, onClose?: () => void): void {
+  toggle(
+    onSubmit?: (input: string | Record<string, unknown>) => void,
+    onClose?: () => void
+  ): void {
     console.log('AssistantService: Toggling overlay...');
     this.overlayManager.toggle(
-      async (text) => {
-        this.overlayManager.addMessage(text, 'user'); // Echo user input
-        if (onSubmit) onSubmit(text);
-        await this.handleCommand(text);
+      async (input) => {
+        if (typeof input === 'string') {
+          this.overlayManager.addMessage(input, 'user');
+        } else if (input && typeof input === 'object') {
+          const label = this.extractUserLabel(input);
+          if (label) {
+            this.overlayManager.addMessage(label, 'user');
+          }
+        }
+
+        if (onSubmit) onSubmit(input);
+        await this.handleCommand(input);
       },
       () => {
         console.log('AssistantService: Overlay closed.');
         if (onClose) onClose();
       }
     );
+  }
+
+  private extractUserLabel(payload: Record<string, unknown>): string | null {
+    const label = payload['label'];
+    if (typeof label === 'string' && label.trim()) {
+      return label.trim();
+    }
+
+    const commandId = payload['commandId'];
+    if (typeof commandId === 'string' && commandId.trim()) {
+      return commandId.trim();
+    }
+
+    return null;
   }
 }

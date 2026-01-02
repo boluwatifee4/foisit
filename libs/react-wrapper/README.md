@@ -7,39 +7,38 @@
 
 Transform your React app into an intelligent, voice-ready platform. Foisit provides a drop-in AI layer that understands natural language, manages multi-step workflows, and executes actions—all with zero backend required.
 
-> [!NOTE]
-> 🎙️ **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
+> [!NOTE] > **Voice Support Status**: Voice recognition and responses are currently in development and will be released in a future update. The current version focuses on high-performance text-based interactions and AI intent matching.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Features](#-features)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Core Concepts](#-core-concepts)
-- [API Reference](#-api-reference)
-- [Advanced Usage](#-advanced-usage)
-- [Examples](#-examples)
-- [TypeScript Support](#-typescript-support)
-- [Best Practices](#-best-practices)
-
----
-
-## ✨ Features
-
-- **🧠 Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
-- **📝 Smart Slot Filling** - Auto-generates forms for missing parameters
-- **⚠️ Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
-- **🎨 Premium UI** - Glassmorphic overlay with dark/light mode support
-- **🔒 Zero Backend Required** - Secure proxy architecture keeps API keys server-side
-- **⚡ React Native** - Uses Hooks, Context API, and modern React patterns
-- **🎯 Type-Safe** - Full TypeScript support with comprehensive types
-- **📱 Responsive** - Works flawlessly on desktop and mobile
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [API Reference](#api-reference)
+- [Advanced Usage](#advanced-usage)
+- [Examples](#examples)
+- [TypeScript Support](#typescript-support)
+- [Best Practices](#best-practices)
 
 ---
 
-## 🚀 Installation
+## Features
+
+- **Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
+- **Smart Slot Filling** - Auto-generates forms for missing parameters
+- **Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
+- **Premium UI** - Glassmorphic overlay with dark/light mode support
+- **Zero Backend Required** - Secure proxy architecture keeps API keys server-side
+- **React Native** - Uses Hooks, Context API, and modern React patterns
+- **Type-Safe** - Full TypeScript support with comprehensive types
+- **Responsive** - Works flawlessly on desktop and mobile
+
+---
+
+## Installation
 
 ```bash
 npm install @foisit/react-wrapper
@@ -56,7 +55,7 @@ npm install @foisit/react-wrapper
 
 ---
 
-## 🏁 Quick Start
+## Quick Start
 
 ### Step 1: Wrap Your App
 
@@ -104,7 +103,7 @@ function MyComponent() {
 
 ---
 
-## 🎯 Core Concepts
+## Core Concepts
 
 ### 1. Commands
 
@@ -141,24 +140,57 @@ Define parameters and Foisit will automatically generate forms to collect them:
 - `number` - Numeric input
 - `date` - Date picker
 - `select` - Dropdown (static or async options)
+- `file` - File upload input
 
-### 3. Critical Actions
+### 3. File Parameters
+
+Collect files via the built-in form UI and receive them in your command `action`.
+
+```tsx
+{
+  command: 'upload file',
+  description: 'Pick a file and return it to the action',
+  parameters: [
+    {
+      name: 'attachment',
+      type: 'file',
+      required: true,
+      accept: ['image/*', 'audio/*', 'video/*'],
+      multiple: false,
+      // delivery: 'file' | 'base64' (default: 'file')
+      delivery: 'file',
+    },
+  ],
+  action: async (params) => {
+    const file = params?.attachment as File | undefined;
+    if (!file) return { type: 'error', message: 'No file provided.' };
+    return {
+      type: 'success',
+      message: `File received. Name: ${file.name}, Type: ${file.type || 'unknown'}, Size: ${file.size} bytes`,
+    };
+  },
+}
+```
+
+`FileParameter` supports validations like `maxFiles`, `maxSizeBytes`, `maxTotalBytes`, and media/image constraints like `maxDurationSec`, `maxWidth`, and `maxHeight`.
+
+### 4. Critical Actions
 
 Protect dangerous operations with automatic confirmation dialogs:
 
 ```tsx
 {
   command: 'delete all data',
-  critical: true, // 🔒 Requires confirmation
+  critical: true, // Requires confirmation
   description: 'Permanently delete all application data',
   action: async () => {
     await dataService.deleteAll();
-    return '✅ All data deleted successfully.';
+    return 'All data deleted successfully.';
   }
 }
 ```
 
-### 4. Select Parameters (Static)
+### 5. Select Parameters (Static)
 
 Provide predefined options:
 
@@ -178,7 +210,7 @@ Provide predefined options:
 }
 ```
 
-### 5. Dynamic Select Parameters
+### 6. Dynamic Select Parameters
 
 Load options from APIs:
 
@@ -202,7 +234,7 @@ Load options from APIs:
 
 ---
 
-## 📘 API Reference
+## API Reference
 
 ### `useAssistant()` Hook
 
@@ -229,7 +261,7 @@ assistant.toggle(
 
 ##### `addCommand(command, action?)`
 
-Dynamically add a command at runtime.
+Dynamically add or update a command at runtime. Commands added via `addCommand` take effect immediately; they are stored in memory for the current session. Re-register commands on app initialization if you need them after a full page reload.
 
 ```tsx
 // Add a simple command
@@ -259,6 +291,26 @@ assistant.addCommand({
 });
 ```
 
+### Dynamic Updates (Add / Remove / Update commands at runtime) ✅
+
+- `addCommand` registers or can replace commands for the current session.
+- `removeCommand(commandPhrase)` removes a registered command immediately.
+- For one-off commands created inside components, unregister them in a cleanup effect (React's `useEffect` cleanup) to avoid leaking commands.
+
+Example — add/remove a temporary command:
+
+```tsx
+useEffect(() => {
+  assistant.addCommand('temp action', () => 'Temp action');
+  return () => assistant.removeCommand('temp action');
+}, [assistant]);
+```
+
+Notes:
+
+- If a command has optional params and is invoked with no params, you may return a `form` InteractiveResponse to prompt for the values.
+- Commands are not persisted across reloads by default; store and re-register them if needed.
+
 ##### `removeCommand(commandPhrase)`
 
 Remove a registered command.
@@ -278,7 +330,7 @@ console.log('Available commands:', commands);
 
 ---
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ### `AssistantConfig`
 
@@ -314,7 +366,7 @@ interface AssistantConfig {
 
 ---
 
-## 🎨 Advanced Usage
+## Advanced Usage
 
 ### Example 1: Multi-Step Booking System with State
 
@@ -475,7 +527,7 @@ function AccountManager() {
 
 ---
 
-## 📝 TypeScript Support
+## TypeScript Support
 
 ### Full Type Definitions
 
@@ -518,7 +570,7 @@ const assistant = useAssistant();
 
 ---
 
-## 🎯 Best Practices
+## Best Practices
 
 ### 1. Cleanup Effects
 
@@ -571,7 +623,7 @@ Wrap your app with error boundaries:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Unit Testing with React Testing Library
 
@@ -592,7 +644,7 @@ test('renders assistant', () => {
 
 ---
 
-## 🔗 Related Packages
+## Related Packages
 
 - **[@foisit/core](../core)** - Core engine (auto-installed)
 - **[@foisit/angular-wrapper](../angular-wrapper)** - Angular integration
@@ -600,7 +652,7 @@ test('renders assistant', () => {
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Hook error: "useAssistant must be used within AssistantProvider"
 
@@ -616,23 +668,23 @@ Make sure you're using React 18+ and have proper type definitions.
 
 ---
 
-## 📄 License
+## License
 
 MIT © [Foisit](https://github.com/boluwatifee4/foisit)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our [Contributing Guide](../../CONTRIBUTING.md) first.
 
 ---
 
-## 📬 Support
+## Support
 
-- 📧 Email: support@foisit.com
-- 💬 Discord: [Join our community](https://discord.gg/foisit)
-- 🐛 Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
+- Email: support@foisit.com
+- Discord: [Join our community](https://discord.gg/foisit)
+- Issues: [GitHub Issues](https://github.com/boluwatifee4/foisit/issues)
 
 ---
 

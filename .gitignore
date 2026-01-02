@@ -55,4 +55,4 @@ vitest.config.*.timestamp*
 
 # Ignore project folders to remove from Git history
 apps/proxy-api/
-libs/core/
+# libs/core/

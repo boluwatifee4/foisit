@@ -8,6 +8,7 @@ import {
 import { DOCUMENT, CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AssistantService } from '@foisit/angular-wrapper';
+import { environment } from '../environments/environment';
 
 @Component({
   imports: [RouterModule, CommonModule],
@@ -17,6 +18,32 @@ import { AssistantService } from '@foisit/angular-wrapper';
 })
 export class AppComponent {
   theme = signal<'light' | 'dark'>('light');
+
+  // Dev assistant system prompt is stored server-side in `libs/dev-assistant/prompt.txt`.
+
+  // Endpoint that proxies requests to your LLM for dev assistance.
+  // Adjust this to match your actual backend route.
+  private readonly DEV_ASSISTANT_ENDPOINT = environment.devAssistantProxyUrl;
+
+  private async callDevAssistant(code: string, question: string): Promise<string> {
+    try {
+      const res = await fetch(this.DEV_ASSISTANT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, question }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Dev assistant HTTP error: ${res.status}`);
+      }
+
+      const data = (await res.json()) as { answer?: string; message?: string };
+      return data.answer || data.message || 'Dev assistant did not return a response.';
+    } catch (err) {
+      console.error('callDevAssistant failed:', err);
+      throw err;
+    }
+  }
 
   constructor(
     private assistantService: AssistantService,
@@ -371,6 +398,58 @@ Just tell me what you'd like to do!`;
           type: 'success',
           message: `File received.\n\nName: ${v.name}\nType: ${v.type || 'unknown'}\nSize: ${v.size} bytes`,
         };
+      },
+    });
+
+    // ===== DEV ASSISTANT (for other developers) =====
+    this.assistantService.addCommand({
+      command: 'dev assistant',
+      description:
+        'Analyze Foisit command/wrapper code and suggest fixes or alternatives for developers.',
+      parameters: [
+        {
+          name: 'code',
+          description: 'Optional code snippet to analyze (command, config, or usage).',
+          required: false,
+          type: 'string',
+        },
+        {
+          name: 'question',
+          description: 'What you expect or what is wrong (e.g., "no options showing").',
+          required: true,
+          type: 'string',
+        },
+      ],
+      action: async (params?: Record<string, unknown>) => {
+        try {
+          const code = String(params?.['code'] ?? '');
+          const question = String(params?.['question'] ?? '');
+
+          if (!question.trim()) {
+            return {
+              type: 'error',
+              message:
+                'Please describe what you are trying to do or what is going wrong (question is required).',
+            };
+          }
+
+          const explanation = await this.callDevAssistant(code, question);
+
+          const prefix = code.trim()
+            ? ''
+            : 'Note: You did not include a code snippet, so this answer is based only on your description. For more precise help next time, paste the relevant command or wrapper code.\n\n';
+
+          return {
+            type: 'success',
+            message: `${prefix}${explanation}`,
+          };
+        } catch {
+          return {
+            type: 'error',
+            message:
+              'Dev assistant is currently unavailable. Please try again later or check the dev assistant endpoint.',
+          };
+        }
       },
     });
   }

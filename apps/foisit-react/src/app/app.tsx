@@ -2,6 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { AssistantProvider, useAssistant } from '@foisit/react-wrapper';
 import './showcase.css';
 
+const callDevAssistant = async (
+  code: string,
+  question: string
+): Promise<string> => {
+  try {
+    const res = await fetch(import.meta.env.VITE_DEV_ASSISTANT_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, question }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Dev assistant HTTP error: ${res.status}`);
+    }
+
+    const data = (await res.json()) as { answer?: string; message?: string };
+    return (
+      data.answer || data.message || 'Dev assistant did not return a response.'
+    );
+  } catch (err) {
+    console.error('callDevAssistant failed:', err);
+    throw err;
+  }
+};
+
 const config = {
   activationCommand: 'hey foisit',
   introMessage:
@@ -19,7 +44,7 @@ const config = {
     {
       command: 'help',
       description: 'Show available commands and what I can do',
-      action: () => {
+      action: async () => {
         return `I can help you with:
 User Management (create user, update profile)
 Scheduling (book appointment, schedule meeting)
@@ -54,8 +79,10 @@ Just tell me what you'd like to do!`;
           type: 'number' as const,
         },
       ],
-      action: async (params: { name: string; email: string; age: number }) => {
-        if (params.age < 18) {
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { name: string; email: string; age: number };
+
+        if (typed.age < 18) {
           return {
             type: 'error' as const,
             message: 'User must be at least 18 years old.',
@@ -66,7 +93,7 @@ Just tell me what you'd like to do!`;
 
         return {
           type: 'success' as const,
-          message: `User created successfully!\n\nName: ${params.name}\nEmail: ${params.email}\nAge: ${params.age}`,
+          message: `User created successfully!\n\nName: ${typed.name}\nEmail: ${typed.email}\nAge: ${typed.age}`,
         };
       },
     },
@@ -88,15 +115,20 @@ Just tell me what you'd like to do!`;
           ],
         },
       ],
-      action: (params: { theme: string }) => {
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { theme: string };
+
         const themeColors: Record<string, string> = {
           blue: 'rgba(59, 130, 246, 0.1)',
           green: 'rgba(34, 197, 94, 0.1)',
           purple: 'rgba(168, 85, 247, 0.1)',
           red: 'rgba(239, 68, 68, 0.1)',
         };
-        document.body.style.backgroundColor = themeColors[params.theme] || '';
-        return `Theme changed to ${params.theme}!`;
+        document.body.style.backgroundColor = themeColors[typed.theme] || '';
+        return {
+          type: 'success' as const,
+          message: `Theme changed to ${typed.theme}!`,
+        };
       },
     },
 
@@ -117,15 +149,20 @@ Just tell me what you'd like to do!`;
           type: 'date' as const,
         },
       ],
-      action: (params: { service: string; date: string }) => {
-        return `Appointment booked!\n\nService: ${
-          params.service
-        }\nDate: ${new Date(params.date).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}`;
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { service: string; date: string };
+
+        return {
+          type: 'success' as const,
+          message: `Appointment booked!\n\nService: ${
+            typed.service
+          }\nDate: ${new Date(typed.date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}`,
+        };
       },
     },
 
@@ -155,11 +192,16 @@ Just tell me what you'd like to do!`;
           type: 'date' as const,
         },
       ],
-      action: async (params: { member: string; date: string }) => {
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { member: string; date: string };
+
         await new Promise((resolve) => setTimeout(resolve, 600));
-        return `Meeting scheduled with ${params.member} on ${new Date(
-          params.date
-        ).toLocaleDateString()}`;
+        return {
+          type: 'success' as const,
+          message: `Meeting scheduled with ${typed.member} on ${new Date(
+            typed.date
+          ).toLocaleDateString()}`,
+        };
       },
     },
 
@@ -191,8 +233,9 @@ Just tell me what you'd like to do!`;
           delivery: 'file' as const,
         },
       ],
-      action: async (params: any) => {
-        const v = params?.attachment as File | undefined;
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { attachment?: File };
+        const v = typed?.attachment as File | undefined;
         if (!v) {
           return { type: 'error' as const, message: 'No file provided.' };
         }
@@ -234,19 +277,56 @@ Just tell me what you'd like to do!`;
           ],
         },
       ],
-      action: (params: {
-        displayName?: string;
-        bio?: string;
-        role?: string;
-      }) => {
-        const updates = Object.entries(params)
-          .filter(([_, value]) => value)
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as {
+          displayName?: string;
+          bio?: string;
+          role?: string;
+        };
+
+        const updates = Object.entries(typed)
+          .filter(([, value]) => value)
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ');
 
         return updates
           ? `Profile updated: ${updates}`
           : 'No changes made to profile.';
+      },
+    },
+
+    {
+      command: 'dev assistant',
+      description: 'Get help with Foisit development questions and code issues',
+      parameters: [
+        {
+          name: 'question',
+          description: 'Your question about Foisit or code issue',
+          required: true,
+          type: 'string' as const,
+        },
+        {
+          name: 'code',
+          description: 'Optional code snippet to analyze',
+          required: false,
+          type: 'string' as const,
+        },
+      ],
+      action: async (params?: Record<string, unknown>) => {
+        const typed = params as { question: string; code?: string };
+
+        try {
+          const response = await callDevAssistant(
+            typed.code || '',
+            typed.question
+          );
+          return response;
+        } catch (error) {
+          return {
+            type: 'error' as const,
+            message: `Dev assistant error: ${error}`,
+          };
+        }
       },
     },
   ],

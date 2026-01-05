@@ -4,6 +4,26 @@ import { AssistantProvider } from '@foisit/vue-wrapper';
 import OpenAssistantButton from './OpenAssistantButton.vue';
 import './showcase.css';
 
+const callDevAssistant = async (code: string, question: string): Promise<string> => {
+  try {
+    const res = await fetch('', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, question }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Dev assistant HTTP error: ${res.status}`);
+    }
+
+    const data = (await res.json()) as { answer?: string; message?: string };
+    return data.answer || data.message || 'Dev assistant did not return a response.';
+  } catch (err) {
+    console.error('callDevAssistant failed:', err);
+    throw err;
+  }
+};
+
 const assistantConfig = {
   activationCommand: 'hey foisit',
   introMessage: 'Welcome to Foisit! I can help you with various tasks. Try saying "help" to see what I can do.',
@@ -223,6 +243,29 @@ Just tell me what you'd like to do!`;
         return updates
           ? `Profile updated: ${updates}`
           : 'No changes made to profile.';
+      }
+    },
+
+    {
+      command: 'dev assistant',
+      description: 'Get help with Foisit development questions and code issues',
+      parameters: [
+        { name: 'question', description: 'Your question about Foisit or code issue', required: true, type: 'string' as const },
+        { name: 'code', description: 'Optional code snippet to analyze', required: false, type: 'string' as const },
+      ],
+      action: async (params: any) => {
+        try {
+          const response = await callDevAssistant(params.code || '', params.question);
+          return {
+            type: 'success' as const,
+            message: response,
+          };
+        } catch (error) {
+          return {
+            type: 'error' as const,
+            message: `Dev assistant error: ${error}`,
+          };
+        }
       }
     },
   ],

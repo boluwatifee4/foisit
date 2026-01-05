@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "nx-build-apps",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"run-many",
+				"--target=build",
+				"--projects=foisit-ng,foisit-react,foisit-vue"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}

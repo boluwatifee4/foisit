@@ -17,6 +17,7 @@ import { environment } from '../environments/environment';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+
   theme = signal<'light' | 'dark'>('light');
 
   // Dev assistant system prompt is stored server-side in `libs/dev-assistant/prompt.txt`.

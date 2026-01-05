@@ -48,6 +48,12 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 .env
+
+# Sensitive files
+libs/core/src/lib/ui/overlay-manager.ts
+libs/core/src/lib/ai/openai.service.ts
+libs/core/src/lib/command/command-handler.ts
+libs/core/SENSITIVE_FILES_README.md
 .npmrc
 
 # Local Netlify folder

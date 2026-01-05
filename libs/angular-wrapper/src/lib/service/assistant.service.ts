@@ -36,14 +36,45 @@ export class AssistantService {
       intentEndpoint: this.config.intentEndpoint,
     });
     this.fallbackHandler = new FallbackHandler();
-    this.voiceProcessor = new VoiceProcessor();
-    this.textToSpeech = new TextToSpeech();
-    this.stateManager = new StateManager();
-    this.gestureHandler = new GestureHandler();
-    this.overlayManager = new OverlayManager({
-      floatingButton: this.config.floatingButton,
-      inputPlaceholder: this.config.inputPlaceholder,
-    });
+
+    // Browser-only features are lazily created to remain SSR-safe
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      this.voiceProcessor = new VoiceProcessor();
+      this.textToSpeech = new TextToSpeech();
+      this.gestureHandler = new GestureHandler();
+      this.overlayManager = new OverlayManager({
+        floatingButton: this.config.floatingButton,
+        inputPlaceholder: this.config.inputPlaceholder,
+      });
+
+      // Register global callbacks for floating button when overlay exists
+      this.overlayManager.registerCallbacks(
+        async (input) => {
+          if (typeof input === 'string') {
+            this.overlayManager.addMessage(input, 'user');
+          } else if (input && typeof input === 'object') {
+            const label = this.extractUserLabel(input as Record<string, unknown>);
+            if (label) {
+              this.overlayManager.addMessage(label, 'user');
+            }
+          }
+
+          await this.handleCommand(input);
+        },
+        () => console.log('AssistantService: Overlay closed.')
+      );
+
+      // Setup double-tap/double-click listener
+      this.stateManager = new StateManager();
+      this.gestureHandler.setupDoubleTapListener(() => this.toggle());
+    } else {
+      // Server environment: keep browser-specific properties null
+      this.stateManager = undefined as any;
+      this.voiceProcessor = undefined as any;
+      this.textToSpeech = undefined as any;
+      this.gestureHandler = undefined as any;
+      this.overlayManager = undefined as any;
+    }
 
     // Setup commands from config
     this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
@@ -56,32 +87,16 @@ export class AssistantService {
     // Voice disabled for text-first pivot
     // this.startListening();
 
-    // Setup double-tap/double-click listener
-    this.gestureHandler.setupDoubleTapListener(() => this.toggle());
-
-    // Register global callbacks for floating button
-    this.overlayManager.registerCallbacks(
-      async (input) => {
-        if (typeof input === 'string') {
-          this.overlayManager.addMessage(input, 'user');
-        } else if (input && typeof input === 'object') {
-          const label = this.extractUserLabel(input as Record<string, unknown>);
-          if (label) {
-            this.overlayManager.addMessage(label, 'user');
-          }
-        }
-
-        await this.handleCommand(input);
-      },
-      () => console.log('AssistantService: Overlay closed.')
-    );
+    // (moved into the browser-only block)
   }
 
   /** Start listening for activation and commands */
   startListening(): void {
-    // Voice is currently disabled (text-only mode)
-    console.log('AssistantService: Voice is disabled; startListening() is a no-op.');
-    return;
+    // No-op on server or when voice features are unavailable
+    if (typeof window === 'undefined' || !this.voiceProcessor) {
+      console.log('AssistantService: Voice is disabled or unavailable; startListening() is a no-op.');
+      return;
+    }
 
     /*
     this.voiceProcessor.startListening(async (transcript: string) => {
@@ -126,8 +141,12 @@ export class AssistantService {
 
   /** Stop listening for voice input */
   stopListening(): void {
-    // Voice is currently disabled (text-only mode)
-    console.log('AssistantService: Voice is disabled; stopListening() is a no-op.');
+    if (typeof window === 'undefined' || !this.voiceProcessor) {
+      console.log('AssistantService: Voice unavailable; stopListening() is a no-op.');
+      this.isActivated = false;
+      return;
+    }
+    this.voiceProcessor.stopListening();
     this.isActivated = false;
   }
 
@@ -181,9 +200,9 @@ export class AssistantService {
    * Cleanup resources
    */
   destroy(): void {
-    this.voiceProcessor.stopListening();
-    this.gestureHandler.destroy();
-    this.overlayManager.destroy();
+    this.voiceProcessor?.stopListening();
+    this.gestureHandler?.destroy();
+    this.overlayManager?.destroy();
   }
 
   /** Unified response processing */

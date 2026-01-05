@@ -31,58 +31,73 @@ export class AssistantService {
       intentEndpoint: this.config.intentEndpoint,
     });
     this.fallbackHandler = new FallbackHandler();
-    this.voiceProcessor = new VoiceProcessor();
-    this.textToSpeech = new TextToSpeech();
-    this.stateManager = new StateManager();
-    this.gestureHandler = new GestureHandler();
-    this.overlayManager = new OverlayManager({
-      floatingButton: this.config.floatingButton,
-      inputPlaceholder: this.config.inputPlaceholder,
-    });
 
-    // Add configured commands
-    this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
+    // Browser-only features are lazily created to remain SSR-safe
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      this.voiceProcessor = new VoiceProcessor();
+      this.textToSpeech = new TextToSpeech();
+      this.stateManager = new StateManager();
+      this.gestureHandler = new GestureHandler();
+      this.overlayManager = new OverlayManager({
+        floatingButton: this.config.floatingButton,
+        inputPlaceholder: this.config.inputPlaceholder,
+      });
 
-    // Set fallback response
-    if (this.config.fallbackResponse) {
-      this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
+      // Add configured commands
+      this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
+
+      // Set fallback response
+      if (this.config.fallbackResponse) {
+        this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
+      }
+
+      // Setup double-tap/double-click listener
+      this.gestureHandler.setupDoubleTapListener(() => this.toggle());
+
+      // Register global callbacks for floating button
+      this.overlayManager.registerCallbacks(
+        async (input: string | Record<string, unknown>) => {
+          if (typeof input === 'string') {
+            this.overlayManager.addMessage(input, 'user'); // Echo user input
+            await this.handleCommand(input);
+            return;
+          }
+
+          // Structured payloads (e.g., { commandId, params }) - run deterministically
+          if (input && typeof input === 'object') {
+            const obj = input as Record<string, unknown>;
+            const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
+            this.overlayManager.addMessage(String(label), 'user');
+            this.overlayManager.showLoading();
+            const response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
+            this.overlayManager.hideLoading();
+            this.processResponse(response);
+          }
+        },
+        () => console.log('AssistantService: Overlay closed.')
+      );
+    } else {
+      this.voiceProcessor = undefined as any;
+      this.textToSpeech = undefined as any;
+      this.stateManager = undefined as any;
+      this.gestureHandler = undefined as any;
+      this.overlayManager = undefined as any;
+      // Register commands (commandHandler still exists) so server-side can introspect commands
+      this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
+
+      if (this.config.fallbackResponse) {
+        this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
+      }
     }
-
-    // Start listening initially
-    // this.startListening();
-
-    // Setup double-tap/double-click listener
-    this.gestureHandler.setupDoubleTapListener(() => this.toggle());
-
-    // Register global callbacks for floating button
-    this.overlayManager.registerCallbacks(
-      async (input: string | Record<string, unknown>) => {
-        if (typeof input === 'string') {
-          this.overlayManager.addMessage(input, 'user'); // Echo user input
-          await this.handleCommand(input);
-          return;
-        }
-
-        // Structured payloads (e.g., { commandId, params }) - run deterministically
-        if (input && typeof input === 'object') {
-          const obj = input as Record<string, unknown>;
-          const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
-          this.overlayManager.addMessage(String(label), 'user');
-          this.overlayManager.showLoading();
-          const response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
-          this.overlayManager.hideLoading();
-          this.processResponse(response);
-        }
-      },
-      () => console.log('AssistantService: Overlay closed.')
-    );
   }
 
   /** Start listening for activation and commands */
   startListening(): void {
-    // Voice is currently disabled (text-only mode)
-    console.log('AssistantService: Voice is disabled; startListening() is a no-op.');
-    return;
+    // No-op on server or when voice features are unavailable
+    if (typeof window === 'undefined' || !this.voiceProcessor) {
+      console.log('AssistantService: Voice is disabled or unavailable; startListening() is a no-op.');
+      return;
+    }
 
     /*
     this.voiceProcessor.startListening(async (transcript: string) => {
@@ -127,8 +142,12 @@ export class AssistantService {
 
   /** Stop listening */
   stopListening(): void {
-    // Voice is currently disabled (text-only mode)
-    console.log('AssistantService: Voice is disabled; stopListening() is a no-op.');
+    if (typeof window === 'undefined' || !this.voiceProcessor) {
+      console.log('AssistantService: Voice unavailable; stopListening() is a no-op.');
+      this.isActivated = false;
+      return;
+    }
+    this.voiceProcessor.stopListening();
     this.isActivated = false;
   }
 

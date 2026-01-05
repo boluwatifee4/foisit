@@ -20,6 +20,7 @@ type Recognition = {
 type RecognitionCtor = new () => Recognition;
 
 const getRecognitionCtor = (): RecognitionCtor | null => {
+  if (typeof window === 'undefined') return null;
   const w = window as Window & {
     webkitSpeechRecognition?: RecognitionCtor;
     SpeechRecognition?: RecognitionCtor;
@@ -127,19 +128,26 @@ export class VoiceProcessor {
     }
 
     // Pause listening while TTS is speaking via CustomEvents dispatched by TextToSpeech
-    window.addEventListener('foisit:tts-start', this.onTTSStart);
-    window.addEventListener('foisit:tts-end', this.onTTSEnd);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('foisit:tts-start', this.onTTSStart);
+      window.addEventListener('foisit:tts-end', this.onTTSEnd);
 
-    // Pause on tab hide, resume on show
-    this.visibilityHandler = () => {
-      if (document.hidden) {
-        try { this.recognition?.stop(); } catch { /* no-op */ }
-        this.emitStatus(this.ttsSpeaking ? 'speaking' : 'idle');
-      } else if (this.isListening && !this.ttsSpeaking) {
-        this.safeRestart();
+      // Pause on tab hide, resume on show
+      this.visibilityHandler = () => {
+        if (typeof document !== 'undefined' && document.hidden) {
+          try { this.recognition?.stop(); } catch { /* no-op */ }
+          this.emitStatus(this.ttsSpeaking ? 'speaking' : 'idle');
+        } else if (this.isListening && !this.ttsSpeaking) {
+          this.safeRestart();
+        }
+      };
+      if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', this.visibilityHandler);
       }
-    };
-    document.addEventListener('visibilitychange', this.visibilityHandler);
+    } else {
+      // No window/document on server — do not register browser-only handlers
+      this.visibilityHandler = undefined;
+    }
   }
 
   /** Check if SpeechRecognition is available */
@@ -147,7 +155,7 @@ export class VoiceProcessor {
     return getRecognitionCtor() !== null;
   }
 
-   /** Allow consumers (wrappers) to observe status changes */
+  /** Allow consumers (wrappers) to observe status changes */
   onStatusChange(callback: StatusCallback | undefined): void {
     this.statusCallback = callback;
   }

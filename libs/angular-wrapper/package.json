@@ -1,12 +1,9 @@
 {
   "name": "@foisit/angular-wrapper",
-  "version": "2.4.4",
+  "version": "2.4.66",
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0"
-  },
-  "devDependencies": {
-    "@foisit/core": "file:../../dist/libs/core"
   },
   "sideEffects": false,
   "files": [

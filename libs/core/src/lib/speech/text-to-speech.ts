@@ -1,10 +1,10 @@
 export class TextToSpeech {
-  private synth = window.speechSynthesis;
+  private synth: SpeechSynthesis | null = (typeof window !== 'undefined' ? window.speechSynthesis : null);
 
   speak(text: string, options?: { pitch?: number; rate?: number; volume?: number }): void {
     if (!this.synth) {
       // eslint-disable-next-line no-console
-      console.error('SpeechSynthesis API is not supported in this browser.');
+      console.error('SpeechSynthesis API is not supported in this environment.');
       return;
     }
 
@@ -16,18 +16,20 @@ export class TextToSpeech {
     }
 
     // Notify listeners (e.g., VoiceProcessor) to pause recognition while speaking
-    utterance.onstart = () => {
-      window.dispatchEvent(new CustomEvent('foisit:tts-start'));
-    };
-    utterance.onend = () => {
-      // eslint-disable-next-line no-console
-      console.log('Speech finished.');
-      window.dispatchEvent(new CustomEvent('foisit:tts-end'));
-    };
+    if (typeof window !== 'undefined') {
+      utterance.onstart = () => {
+        window.dispatchEvent(new CustomEvent('foisit:tts-start'));
+      };
+      utterance.onend = () => {
+        // eslint-disable-next-line no-console
+        console.log('Speech finished.');
+        window.dispatchEvent(new CustomEvent('foisit:tts-end'));
+      };
+    }
 
     utterance.onerror = (event) => {
       // eslint-disable-next-line no-console
-      console.error('Error during speech synthesis:', event.error);
+      console.error('Error during speech synthesis:', (event as any).error);
     };
 
     this.synth.speak(utterance);

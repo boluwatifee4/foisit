@@ -19,7 +19,7 @@
     "build:core": "nx build core",
     "build:vue-wrapper": "nx build vue-wrapper",
     "build:react-wrapper": "nx build react-wrapper",
-    "build:angular-wrapper": "nx build angular-wrapper",
+    "build:angular-wrapper": "node scripts/bundle-angular-wrapper.js",
     "publish:core": "yarn build:core && cd dist/libs/core && npm publish --access public && cd ../../..",
     "publish:vue": "yarn build:all && cd dist/libs/vue-wrapper && npm publish --access public && cd ../../..",
     "publish:react": "yarn build:all && cd dist/libs/react-wrapper && npm publish --access public && cd ../../..",

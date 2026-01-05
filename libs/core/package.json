@@ -1,6 +1,26 @@
 {
   "name": "@foisit/core",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "description": "Core utilities, types, and interfaces for Foisit voice assistant libraries.",
+  "keywords": [
+    "voice-assistant",
+    "speech-recognition",
+    "ai",
+    "assistant",
+    "core",
+    "utilities",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boluwatifee4/foisit.git"
+  },
+  "author": "Ola Boluwatife (Bima)",
+  "license": "MIT",
+  "homepage": "https://github.com/boluwatifee4/foisit#readme",
+  "bugs": {
+    "url": "https://github.com/boluwatifee4/foisit/issues"
+  },
   "peerDependencies": {
     "typescript": "^4.0.0"
   },

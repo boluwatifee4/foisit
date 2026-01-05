@@ -1,25 +1,35 @@
 {
   "name": "@foisit/vue-wrapper",
-  "version": "2.4.2",
-  "main": "./index.js",
+  "version": "2.4.3",
+  "main": "./index.mjs",
   "types": "./index.d.ts",
   "exports": {
     ".": {
       "import": "./index.mjs",
-      "require": "./index.js",
       "types": "./index.d.ts"
     }
   },
   "files": [
-    "index.js",
     "index.mjs",
     "index.d.ts",
     "lib",
-    "style.css",
     "README.md"
   ],
   "sideEffects": false,
-  "description": "Foisit: Speak, and its done. A voice assistant library for vue apps",
+  "description": "A powerful AI assistant library for Vue applications, providing seamless chatbot functionality and intelligent interactions for websites.",
+  "keywords": [
+    "ai-assistant",
+    "chatbot",
+    "vue",
+    "ai",
+    "assistant",
+    "accessibility",
+    "website-integration"
+  ],
+  "homepage": "https://github.com/boluwatifee4/foisit#readme",
+  "bugs": {
+    "url": "https://github.com/boluwatifee4/foisit/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/boluwatifee4/foisit.git"

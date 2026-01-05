@@ -559,8 +559,6 @@ this.assistant.addCommand({
 ### Full Type Definitions
 
 ```typescript
-import { AssistantCommand, InteractiveResponse } from '@foisit/core';
-
 // Type-safe command definition
 const myCommand: AssistantCommand = {
   command: 'update settings',
@@ -691,7 +689,6 @@ describe('AssistantService', () => {
 
 ## Related Packages
 
-- **[@foisit/core](../core)** - Core engine (auto-installed)
 - **[@foisit/react-wrapper](../react-wrapper)** - React integration
 - **[@foisit/vue-wrapper](../vue-wrapper)** - Vue integration
 

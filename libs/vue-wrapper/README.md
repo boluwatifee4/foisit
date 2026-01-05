@@ -562,8 +562,6 @@ onMounted(() => {
 ### Full Type Definitions
 
 ```typescript
-import type { AssistantCommand, InteractiveResponse } from '@foisit/core';
-
 // Type-safe command definition
 const myCommand: AssistantCommand = {
   command: 'update settings',
@@ -674,7 +672,6 @@ test('renders assistant', () => {
 
 ## Related Packages
 
-- **[@foisit/core](../core)** - Core engine (auto-installed)
 - **[@foisit/angular-wrapper](../angular-wrapper)** - Angular integration
 - **[@foisit/react-wrapper](../react-wrapper)** - React integration
 

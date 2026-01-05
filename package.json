@@ -23,7 +23,11 @@
     "publish:core": "yarn build:core && cd dist/libs/core && npm publish --access public && cd ../../..",
     "publish:vue": "yarn build:all && cd dist/libs/vue-wrapper && npm publish --access public && cd ../../..",
     "publish:react": "yarn build:all && cd dist/libs/react-wrapper && npm publish --access public && cd ../../..",
-    "publish:angular": "yarn build:all && cd dist/libs/angular-wrapper && npm publish --access public && cd ../../.."
+    "publish:angular": "yarn build:all && cd dist/libs/angular-wrapper && npm publish --access public && cd ../../..",
+    "bump:wrappers": "node update-versions.js",
+    "bump:wrappers:patch": "node update-versions.js patch",
+    "bump:wrappers:minor": "node update-versions.js minor",
+    "bump:wrappers:major": "node update-versions.js major"
   },
   "private": true,
   "workspaces": [

@@ -1,6 +1,6 @@
 {
   "name": "@foisit/vue-wrapper",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "main": "./index.mjs",
   "types": "./index.d.ts",
   "exports": {

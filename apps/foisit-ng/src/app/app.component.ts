@@ -453,5 +453,55 @@ Just tell me what you'd like to do!`;
         }
       },
     });
+
+    // ===== ESCALATE COMMAND (shows form when params missing) =====
+    this.assistantService.addCommand({
+      command: 'escalate',
+      description: 'Escalate an incident (demo).',
+      parameters: [
+        {
+          name: 'incidentId',
+          description: 'Incident ID to escalate',
+          required: true,
+          type: 'number',
+        },
+      ],
+      action: async (params?: { incidentId?: number }) => {
+        if (!params || params.incidentId == null) {
+          return {
+            type: 'form',
+            message: 'Provide the Incident ID to escalate.',
+            fields: [
+              {
+                name: 'incidentId',
+                description: 'Incident ID',
+                required: true,
+                type: 'number',
+              },
+            ],
+          };
+        }
+
+        // Simulate API escalation call
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        return `Escalation recorded for incident ${params.incidentId}.`;
+      },
+    });
   }
+
+  runEscalateDemo(): void {
+    this.assistantService.runCommand({ commandId: 'escalate', params: { incidentId: null }, openOverlay: true, showInvocation: true });
+  }
+
+//   this.assistantService.registerCommandHandler('escalate', async (params?: { incidentId?: number }) => {
+//   await new Promise((r) => setTimeout(r, 600));
+//   return `Escalation recorded for incident ${params?.incidentId ?? 'unknown'}.`;
+// });
+
+// this.assistantService.runCommand({
+//   commandId: 'escalate',
+//   params: { incidentId: 789 },
+//   openOverlay: true,
+//   showInvocation: true,
+// });
 }

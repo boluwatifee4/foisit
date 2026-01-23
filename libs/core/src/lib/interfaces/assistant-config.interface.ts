@@ -9,6 +9,7 @@ export interface AssistantConfig {
   /** Override where intent resolution requests are sent (defaults to hosted proxy). */
   intentEndpoint?: string;
   inputPlaceholder?: string;
+  enableGestureActivation?: boolean;
   floatingButton?: {
     visible?: boolean;
     tooltip?: string;

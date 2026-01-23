@@ -45,6 +45,13 @@ export class AssistantService {
       this.overlayManager = new OverlayManager({
         floatingButton: this.config.floatingButton,
         inputPlaceholder: this.config.inputPlaceholder,
+        enableGestureActivation: this.config.enableGestureActivation,
+      });
+
+      // Let the overlay delegate command execution to our CommandHandler when
+      // a programmatic handler isn't registered on the overlay.
+      this.overlayManager.setExternalCommandExecutor(async (payload: any) => {
+        return this.commandHandler.executeCommand(payload);
       });
 
       // Register global callbacks for floating button when overlay exists
@@ -64,9 +71,7 @@ export class AssistantService {
         () => console.log('AssistantService: Overlay closed.')
       );
 
-      // Setup double-tap/double-click listener
       this.stateManager = new StateManager();
-      this.gestureHandler.setupDoubleTapListener(() => this.toggle());
     } else {
       // Server environment: keep browser-specific properties null
       this.stateManager = undefined as any;
@@ -245,6 +250,28 @@ export class AssistantService {
     if (response.message) {
       this.overlayManager.addMessage(response.message, 'system');
     }
+  }
+
+  /** Expose programmatic command handler registration to host apps */
+  registerCommandHandler(commandId: string, handler: (params?: any) => Promise<any> | any) {
+    if (this.overlayManager) this.overlayManager.registerCommandHandler(commandId, handler);
+  }
+
+  unregisterCommandHandler(commandId: string) {
+    if (this.overlayManager) this.overlayManager.unregisterCommandHandler(commandId);
+  }
+
+  /** Programmatically run a registered command (proxies to OverlayManager) */
+  async runCommand(options: { commandId: string; params?: any; openOverlay?: boolean; showInvocation?: boolean; }) {
+    if (!this.overlayManager) throw new Error('Overlay manager not available.');
+    const res = await this.overlayManager.runCommand(options);
+    // If the overlay delegated to the CommandHandler, it returns an
+    // InteractiveResponse object that we should process to render forms/options.
+    if (res && typeof res === 'object' && 'type' in res) {
+      // Let the existing response processing pipeline handle rendering.
+      this.processResponse(res as any);
+    }
+    return res;
   }
 
   /** Add a command dynamically (supports string or rich object) */

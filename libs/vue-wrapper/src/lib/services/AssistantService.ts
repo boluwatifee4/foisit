@@ -38,7 +38,13 @@ export class AssistantService {
     this.overlayManager = new OverlayManager({
       floatingButton: this.config.floatingButton,
       inputPlaceholder: this.config.inputPlaceholder,
+      enableGestureActivation: this.config.enableGestureActivation,
     });
+
+      // Let overlay call our CommandHandler when no local handler present
+      this.overlayManager.setExternalCommandExecutor(async (payload: any) => {
+        return this.commandHandler.executeCommand(payload);
+      });
 
     // Add configured commands
     this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
@@ -50,9 +56,6 @@ export class AssistantService {
 
     // Start listening initially
     // this.startListening();
-
-    // Setup double-tap/double-click listener
-    this.gestureHandler.setupDoubleTapListener(() => this.toggle());
 
     // Register global callbacks for floating button
     this.overlayManager.registerCallbacks(
@@ -249,6 +252,25 @@ export class AssistantService {
     if (response.message) {
       this.overlayManager.addMessage(response.message, 'system');
     }
+  }
+
+  /** Expose programmatic command handler registration to host apps */
+  registerCommandHandler(commandId: string, handler: (params?: any) => Promise<any> | any) {
+    if (this.overlayManager) this.overlayManager.registerCommandHandler(commandId, handler);
+  }
+
+  unregisterCommandHandler(commandId: string) {
+    if (this.overlayManager) this.overlayManager.unregisterCommandHandler(commandId);
+  }
+
+  /** Programmatically run a registered command (proxies to OverlayManager) */
+  async runCommand(options: { commandId: string; params?: any; openOverlay?: boolean; showInvocation?: boolean; }) {
+    if (!this.overlayManager) throw new Error('Overlay manager not available.');
+    const res = await this.overlayManager.runCommand(options);
+    if (res && typeof res === 'object' && 'type' in res) {
+      this.processResponse(res as any);
+    }
+    return res;
   }
 
   /** Add a command dynamically (supports string or rich object) */

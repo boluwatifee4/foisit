@@ -1,28 +1,49 @@
 export class GestureHandler {
   private lastTap = 0 as number;
+  private tapCount = 0;
+  private tapTimeout?: number;
   private dblClickListener?: () => void;
   private touchEndListener?: () => void;
+  private clickListener?: () => void;
 
   /**
-   * Sets up double-click and double-tap listeners
-   * @param onDoubleClickOrTap Callback to execute when a double-click or double-tap is detected
+   * Sets up triple-click and triple-tap listeners
+   * @param onTripleClickOrTap Callback to execute when a triple-click or triple-tap is detected
    */
-  setupDoubleTapListener(onDoubleClickOrTap: () => void): void {
+  setupTripleTapListener(onTripleClickOrTap: () => void): void {
     // Ensure we never stack multiple listeners for the same instance
     this.destroy();
 
-    // Handle double-click (desktop)
-    this.dblClickListener = () => {
-      onDoubleClickOrTap();
+    // Handle triple-click (desktop) - implement manually since no built-in triple-click event
+    this.clickListener = () => {
+      this.tapCount++;
+      if (this.tapCount === 1) {
+        // Start timeout for first click
+        this.tapTimeout = window.setTimeout(() => {
+          this.tapCount = 0;
+        }, 500); // Reset after 500ms
+      } else if (this.tapCount === 3) {
+        // Triple click detected
+        clearTimeout(this.tapTimeout);
+        this.tapCount = 0;
+        onTripleClickOrTap();
+      }
     };
-    document.addEventListener('dblclick', this.dblClickListener);
+    document.addEventListener('click', this.clickListener);
 
-    // Handle double-tap (mobile)
+    // Handle triple-tap (mobile)
     this.touchEndListener = () => {
       const currentTime = new Date().getTime();
       const tapInterval = currentTime - this.lastTap;
-      if (tapInterval < 300 && tapInterval > 0) {
-        onDoubleClickOrTap();
+
+      if (tapInterval < 500 && tapInterval > 0) {
+        this.tapCount++;
+        if (this.tapCount === 3) {
+          this.tapCount = 0;
+          onTripleClickOrTap();
+        }
+      } else {
+        this.tapCount = 1;
       }
       this.lastTap = currentTime;
     };
@@ -36,8 +57,17 @@ export class GestureHandler {
     if (this.touchEndListener) {
       document.removeEventListener('touchend', this.touchEndListener);
     }
+    if (this.clickListener) {
+      document.removeEventListener('click', this.clickListener);
+    }
+    if (this.tapTimeout) {
+      clearTimeout(this.tapTimeout);
+    }
     this.dblClickListener = undefined;
     this.touchEndListener = undefined;
+    this.clickListener = undefined;
+    this.tapTimeout = undefined;
+    this.tapCount = 0;
   }
 }
 

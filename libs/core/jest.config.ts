@@ -1,7 +1,7 @@
 export default {
   displayName: 'core',
   preset: 'ts-jest',
-  testEnvironment: 'node', // For framework-agnostic testing
+  testEnvironment: 'jsdom', // Use jsdom for DOM-dependent tests
   setupFilesAfterEnv: [],
   coverageDirectory: '../../coverage/libs/core',
   transform: {

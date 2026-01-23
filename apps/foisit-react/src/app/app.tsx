@@ -340,6 +340,20 @@ function ShowcaseContent() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Demo: register a programmatic 'escalate' handler for app developers
+  useEffect(() => {
+    const handler = async (params?: { incidentId?: number; note?: string }) => {
+      // Simulate API call
+      await new Promise((r) => setTimeout(r, 500));
+      return `Escalation created for incident ${
+        params?.incidentId ?? 'unknown'
+      }.`;
+    };
+
+    assistant.registerCommandHandler('escalate', handler);
+    return () => assistant.unregisterCommandHandler('escalate');
+  }, [assistant]);
+
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
@@ -362,6 +376,19 @@ function ShowcaseContent() {
           <div className="hero-actions">
             <button className="demo-btn" onClick={() => assistant.toggle()}>
               Try Demo
+            </button>
+            <button
+              className="demo-btn secondary"
+              onClick={() =>
+                assistant.runCommand({
+                  commandId: 'escalate',
+                  params: { incidentId: 123 },
+                  openOverlay: true,
+                  showInvocation: true,
+                })
+              }
+            >
+              Escalate Demo
             </button>
             <a
               href="https://www.npmjs.com/package/@foisit/react-wrapper"

@@ -4,6 +4,14 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from './app';
 
+// Mock fetch globally
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ answer: 'Mocked response' }),
+  } as Response)
+);
+
 describe('App', () => {
   it('should render successfully', () => {
     const { baseElement } = render(

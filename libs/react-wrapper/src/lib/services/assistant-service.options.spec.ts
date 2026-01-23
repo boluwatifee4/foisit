@@ -32,7 +32,7 @@ jest.mock('@foisit/core', () => {
   }
 
   class GestureHandler {
-    setupDoubleTapListener = jest.fn();
+    setupTripleTapListener = jest.fn();
     destroy = jest.fn();
   }
 
@@ -49,6 +49,8 @@ jest.mock('@foisit/core', () => {
       this._onSubmit = onSubmit;
       this._onClose = onClose;
     });
+
+    setExternalCommandExecutor = jest.fn();
 
     toggle = jest.fn(async (onSubmit: any, onClose: any) => {
       this._onSubmit = onSubmit;

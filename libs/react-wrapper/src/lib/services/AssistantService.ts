@@ -41,6 +41,12 @@ export class AssistantService {
       this.overlayManager = new OverlayManager({
         floatingButton: this.config.floatingButton,
         inputPlaceholder: this.config.inputPlaceholder,
+        enableGestureActivation: this.config.enableGestureActivation,
+      });
+
+      // Allow overlay to delegate to commandHandler when needed
+      this.overlayManager.setExternalCommandExecutor(async (payload: any) => {
+        return this.commandHandler.executeCommand(payload);
       });
 
       // Add configured commands
@@ -50,9 +56,6 @@ export class AssistantService {
       if (this.config.fallbackResponse) {
         this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
       }
-
-      // Setup double-tap/double-click listener
-      this.gestureHandler.setupDoubleTapListener(() => this.toggle());
 
       // Register global callbacks for floating button
       this.overlayManager.registerCallbacks(
@@ -300,6 +303,25 @@ export class AssistantService {
   removeCommand(command: string): void {
     console.log(`AssistantService: Removing command "${command}".`);
     this.commandHandler.removeCommand(command);
+  }
+
+  /** Expose programmatic command handler registration to host apps */
+  registerCommandHandler(commandId: string, handler: (params?: any) => Promise<any> | any) {
+    if (this.overlayManager) this.overlayManager.registerCommandHandler(commandId, handler);
+  }
+
+  unregisterCommandHandler(commandId: string) {
+    if (this.overlayManager) this.overlayManager.unregisterCommandHandler(commandId);
+  }
+
+  /** Programmatically run a registered command (proxies to OverlayManager) */
+  async runCommand(options: { commandId: string; params?: any; openOverlay?: boolean; showInvocation?: boolean; }) {
+    if (!this.overlayManager) throw new Error('Overlay manager not available.');
+    const res = await this.overlayManager.runCommand(options);
+    if (res && typeof res === 'object' && 'type' in res) {
+      this.processResponse(res as any);
+    }
+    return res;
   }
 
   /** Get all registered commands */

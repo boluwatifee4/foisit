@@ -32,7 +32,7 @@ vi.mock('@foisit/core', () => {
   }
 
   class GestureHandler {
-    setupDoubleTapListener = vi.fn();
+    setupTripleTapListener = vi.fn();
     destroy = vi.fn();
   }
 

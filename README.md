@@ -11,7 +11,7 @@
 ## Currently Supported
 
 - **Text-First Assistant**: A sleek, interactive chat overlay for all user queries.
-- **Smart Intent (AI)**: Natural language understanding via GPT-4o mini (securely proxied).
+- **Smart Intent (AI)**: Natural language understanding (securely proxied).
 - **Critical Actions**: Automated confirmation flow for safe execution of sensitive commands.
 - **Deterministic Matching**: Ultra-fast exact matching for predefined commands.
 - **Gesture Activation**: Trigger the overlay via a floating watermark (double-click/tap).
@@ -28,6 +28,18 @@ Install the wrapper specifically for your framework. The core engine is included
 | [`@foisit/angular-wrapper`](./libs/angular-wrapper) | Angular   | `npm install @foisit/angular-wrapper` |
 | [`@foisit/react-wrapper`](./libs/react-wrapper)     | React     | `npm install @foisit/react-wrapper`   |
 | [`@foisit/vue-wrapper`](./libs/vue-wrapper)         | Vue       | `npm install @foisit/vue-wrapper`     |
+
+---
+
+## Live Demos
+
+Try Foisit in action with our interactive demos:
+
+| Framework | Demo Link                                           | Development Server          |
+| :-------- | :-------------------------------------------------- | :-------------------------- |
+| Angular   | [View Demo](https://ng-foisit-demo.netlify.app/)    | `npx nx serve foisit-ng`    |
+| React     | [View Demo](https://foisit-react-demo.netlify.app/) | `npx nx serve foisit-react` |
+| Vue       | [View Demo](https://foisit-vue-demo.netlify.app/)   | `npx nx serve foisit-vue`   |
 
 ---
 

@@ -1,0 +1,287 @@
+<div class="landing-container">
+  <section class="hero" style="text-align: center; padding: 120px 8% 80px 8%">
+    <div class="container">
+      <div class="hero-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
+        ANGULAR Enterprise SDK
+      </div>
+      <h1 class="hero-title" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; margin-bottom: 24px; line-height: 1.2;">
+        Control Any UI with <span class="gradient-text">Natural Language</span>
+      </h1>
+      <p style="font-size: 1.1rem; color: var(--text); margin-bottom: 24px; max-width: 720px; margin: 0 auto 48px auto; line-height: 1.7;">
+        This page can switch between light and dark themes using plain language. Click the button below to open the assistant, then tell it in your own words what theme you want — for example,
+        <strong style="color: var(--accent)"> "switch to dark theme"</strong> or
+        <strong style="color: var(--accent)"> "go back to light"</strong>.
+      </p>
+      <button class="demo-btn primary" (click)="assistant.toggle()" style="padding: 16px 32px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: white; transition: all 0.2s;">
+        Open the assistant
+      </button>
+
+      <div class="hero-links" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px;">
+        <a href="https://www.npmjs.com/package/&#64;foisit/angular-wrapper" target="_blank" rel="noreferrer" style="display: inline-block; padding: 14px 28px; border-radius: 8px; background-color: var(--accent); color: white; text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
+          View on npm
+        </a>
+        <button (click)="goToPlayground()" style="display: inline-block; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+          Try the Playground
+        </button>
+        <a href="#use-cases" style="display: inline-block; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
+          See Use Cases
+        </a>
+        <a href="https://foisit-react-demo.netlify.app/" target="_blank" rel="noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/512px-React-icon.svg.png" alt="React" style="width: 20px; height: 20px; object-fit: contain;"/>
+          View React Wrapper
+        </a>
+        <a href="https://foisit-vue-demo.netlify.app/" target="_blank" rel="noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue.js_Logo_2.svg/960px-Vue.js_Logo_2.svg.png" alt="Vue" style="width: 20px; height: 20px; object-fit: contain;"/>
+          View Vue Wrapper
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="use-cases" class="section" style="padding: 100px 8%; background-color: var(--bg-alt)">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 64px">
+        <h2 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 16px; color: var(--text);">
+          Works With Any Application
+        </h2>
+        <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7;">
+          From banking platforms to healthcare systems to e-commerce stores — if your app has actions, Foisit can make them voice and text accessible. Here are just a few examples:
+        </p>
+      </div>
+
+      <div class="use-case-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 32px;">
+        <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
+          <div style="margin-bottom: 16px;">
+            <span style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+              FinTech
+            </span>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
+            Banking & Finance
+          </h3>
+          <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+            User says: <strong>"Transfer fifty thousand to my savings account"</strong>
+          </p>
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
+            The assistant parses the amount, identifies the target account, and because this is a critical action, displays a confirmation dialog before executing. No accidental transfers.
+          </p>
+          <pre class="code-block" style="background: #1e1e2e; border-radius: 8px; padding: 16px; font-size: 12px; overflow: auto; margin-bottom: 20px; color: #cdd6f4; text-align: left; white-space: pre-wrap; word-break: break-word;">
+            <code style="color: #cdd6f4">{{fintechCode}}</code>
+          </pre>
+          <button (click)="triggerTransfer()" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            Try Demo Now
+          </button>
+        </div>
+
+        <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
+          <div style="margin-bottom: 16px;">
+            <span style="display: inline-block; background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+              HealthTech
+            </span>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
+            Healthcare & Scheduling
+          </h3>
+          <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+            User says: <strong>"Book an appointment for Sarah"</strong>
+          </p>
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
+            The assistant detects missing required fields (date, time) and automatically renders a form inside the chat widget. No back-and-forth. No confusion. Just a clean UI.
+          </p>
+          <pre class="code-block" style="background: #1e1e2e; border-radius: 8px; padding: 16px; font-size: 12px; overflow: auto; margin-bottom: 20px; color: #cdd6f4; text-align: left; white-space: pre-wrap; word-break: break-word;">
+            <code style="color: #cdd6f4">{{healthtechCode}}</code>
+          </pre>
+          <button (click)="triggerBook()" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            Try Demo Now
+          </button>
+        </div>
+
+        <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
+          <div style="margin-bottom: 16px;">
+            <span style="display: inline-block; background: rgba(249, 115, 22, 0.1); color: #f97316; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+              E-Commerce
+            </span>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
+            Logistics & Fulfillment
+          </h3>
+          <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+            User says: <strong>"Print shipping label for order 12345"</strong>
+          </p>
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
+            For high-frequency actions, Foisit can bypass the AI entirely using macro mode. The command executes instantly with zero latency — perfect for support teams.
+          </p>
+          <pre class="code-block" style="background: #1e1e2e; border-radius: 8px; padding: 16px; font-size: 12px; overflow: auto; margin-bottom: 20px; color: #cdd6f4; text-align: left; white-space: pre-wrap; word-break: break-word;">
+            <code style="color: #cdd6f4">{{ecommerceCode}}</code>
+          </pre>
+          <button (click)="triggerLabel()" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            Try Demo Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding: 100px 8%">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 64px; align-items: center;">
+        <div>
+          <div class="section-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">
+            Built-in Dev Tools
+          </div>
+          <h2 style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; margin-bottom: 16px; color: var(--text);">
+            Need Help Integrating Foisit?
+          </h2>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            If you're stuck, open the assistant for troubleshooting, code snippets, and personalized commands — right in this demo.
+          </p>
+          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+            Type a question like: <em>"How do I add file upload to a command?"</em> — and get an immediate, contextual answer right inside the widget.
+          </p>
+          <button class="demo-btn primary" (click)="triggerDevAssistant()" style="padding: 14px 28px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: white; margin-bottom: 24px;">
+            Try out Dev Assistant
+          </button>
+          <ul style="list-style: none; padding: 0; margin: 0">
+            <li style="padding: 8px 0; color: var(--text-secondary)">Ask about command configuration</li>
+            <li style="padding: 8px 0; color: var(--text-secondary)">Get code snippets and examples</li>
+            <li style="padding: 8px 0; color: var(--text-secondary)">Troubleshoot integration issues</li>
+            <li style="padding: 8px 0; color: var(--text-secondary)">Learn about advanced features</li>
+          </ul>
+        </div>
+        <div style="background: var(--bg-alt); border-radius: 16px; padding: 32px;">
+          <div style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">Example conversation:</div>
+          <div style="background: var(--bg); border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">You:</div>
+            <div style="color: var(--text);">"How do I make a command show a confirmation before running?"</div>
+          </div>
+          <div style="background: var(--bg); border-radius: 8px; padding: 16px;">
+            <div style="font-size: 13px; color: var(--accent); margin-bottom: 4px;">Dev Assistant:</div>
+            <div style="color: var(--text); font-size: 0.95rem; line-height: 1.6;">
+              Add the <code style="background: var(--bg-alt); padding: 2px 6px; border-radius: 4px;">critical: true</code> property to your command config. This will display a confirmation dialog before the action executes...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding: 100px 8%; background-color: var(--bg-alt)">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 64px">
+        <div class="section-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">
+          Customer Support
+        </div>
+        <h2 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 16px; color: var(--text);">
+          Turn Your Assistant Into a Support Agent
+        </h2>
+        <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7;">
+          Feed your assistant with product knowledge, FAQs, and support policies. It can answer customer questions, escalate issues to human agents, and even trigger backend actions — all from natural conversation.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px;">
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+          <div style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--accent); font-size: 20px; font-weight: 700;">Q</div>
+          <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text);">Answer Questions Instantly</h4>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">Feed your knowledge base, FAQs, or documentation. Users get immediate, accurate answers without waiting for a human.</p>
+        </div>
+
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+          <div style="width: 48px; height: 48px; background: rgba(249, 115, 22, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #f97316; font-size: 20px; font-weight: 700;">!</div>
+          <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text);">Escalate When Needed</h4>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">Define escalation triggers. When a user says "speak to a human" or the assistant can't resolve an issue, route to your support team automatically.</p>
+        </div>
+
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+          <div style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: #22c55e; font-size: 20px; font-weight: 700;">A</div>
+          <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text);">Take Action on Behalf of Users</h4>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">"Cancel my subscription" or "Refund my last order" — the assistant can execute real actions, not just provide canned responses.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 48px; text-align: center;">
+        <pre style="display: inline-block; background: #1e1e2e; border-radius: 8px; padding: 20px 32px; font-size: 13px; color: #cdd6f4; text-align: left; max-width: 100%; overflow: auto;">
+          <code style="color: #cdd6f4;">{{ escalationCode }}</code>
+        </pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding: 100px 8%">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 64px; align-items: start;">
+        <div>
+          <div class="section-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">
+            For Technical Leaders
+          </div>
+          <h2 style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; margin-bottom: 16px; color: var(--text);">
+            Enterprise-Ready from Day One
+          </h2>
+          <p style="color: var(--text-secondary); line-height: 1.7;">
+            We know you've seen libraries that promise easy integration but end up breaking your existing styles, leaking state, or requiring a complete architecture overhaul. Foisit is different.
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+            <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); font-weight: 600;">1</div>
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 4px; color: var(--text);">Complete Style Isolation</h4>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Renders in its own DOM scope with scoped CSS variables. Your Tailwind, Bootstrap, or custom styles remain untouched.</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+            <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); font-weight: 600;">2</div>
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 4px; color: var(--text);">Zero State Pollution</h4>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Uses RxJS and Signals internally. Your NgRx stores stay clean. No global side effects.</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 16px; align-items: flex-start; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+            <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent); font-weight: 600;">3</div>
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: 4px; color: var(--text);">Secure by Default</h4>
+              <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">API keys never reach the browser. All AI processing routes through your own backend proxy.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="text-align: center; padding: 100px 8%; background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);">
+    <div class="container">
+      <h2 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 16px; color: var(--text);">
+        Add Natural Language to Your App Today
+      </h2>
+      <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 32px; max-width: 600px; margin: 0 auto 32px auto;">
+        Install in seconds. Configure in minutes and progressively. Ship features your users will actually use.
+      </p>
+
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px;">
+        <a href="https://www.npmjs.com/package/&#64;foisit/angular-wrapper" target="_blank" rel="noreferrer" style="display: inline-block; padding: 16px 32px; border-radius: 8px; background-color: var(--accent); color: white; text-decoration: none; font-size: 18px; font-weight: 600; transition: all 0.2s;">
+          Get Started on npm
+        </a>
+        <button (click)="goToPlayground()" style="padding: 16px 32px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+          Try Interactive Examples
+        </button>
+      </div>
+
+      <div style="display: flex; gap: 24px; justify-content: center; align-items: center; margin-bottom: 24px;">
+        <a href="https://github.com/AstroBookings/foisit" target="_blank" rel="noreferrer" style="color: var(--text-secondary); transition: color 0.2s;" title="View on GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+        </a>
+      </div>
+
+      <div style="color: var(--text-secondary); font-size: 14px;">
+        <p style="margin-bottom: 8px;">
+          <code style="background: var(--bg-alt); padding: 8px 16px; border-radius: 6px; font-family: monospace;">npm install &#64;foisit/angular-wrapper</code>
+        </p>
+        <p style="margin-top: 16px;">
+          Questions? Reach out at <a href="mailto:boluwatifee4&#64;gmail.com" style="color: var(--accent); text-decoration: none;">boluwatifee4&#64;gmail.com</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</div>

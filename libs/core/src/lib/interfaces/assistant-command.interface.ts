@@ -86,6 +86,8 @@ export interface AssistantCommand {
   keywords?: string[];
   /** Requires explicit user confirmation before running */
   critical?: boolean;
+  /** Bypass AI processing for high-frequency actions (exact match only) */
+  macro?: boolean;
   /** Force required params to be collected via form (default: true). If false, a single simple missing param may be asked as a question. */
   collectRequiredViaForm?: boolean;
   /** Allow AI-extracted params to auto-fill. If false, AI params are ignored and the user is asked for required fields. */

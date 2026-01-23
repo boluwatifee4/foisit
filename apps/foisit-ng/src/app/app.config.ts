@@ -22,7 +22,8 @@ export const appConfig: ApplicationConfig = {
           visible: true,
           tooltip: 'Click to start chatting',
           // customHtml: undefined, // Uses default logo
-          customHtml: '<span>Assistant</span>', // Example custom HTML
+    customHtml:
+      '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;">🤖</div>',
           position: { bottom: '30px', right: '30px' },
         },
         // openAIKey: '', // Removed from public config

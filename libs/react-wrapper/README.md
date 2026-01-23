@@ -27,9 +27,12 @@ Transform your React app into an intelligent, voice-ready platform. Foisit provi
 
 ## Features
 
-- **Natural Language Understanding** - AI-powered intent matching using GPT-4o mini (proxied securely)
+- **Natural Language Understanding** - AI-powered intent matching (proxied securely)
 - **Smart Slot Filling** - Auto-generates forms for missing parameters
 - **Critical Action Protection** - Built-in confirmation dialogs for dangerous operations
+- **Programmatic UI Triggers** - Direct command execution via `runCommand()`
+- **Rich Markdown Rendering** - Enhanced response formatting with headings, code, and links
+- **Advanced File Validations** - Comprehensive client-side file validation with size, type, and dimension checks
 - **Premium UI** - Glassmorphic overlay with dark/light mode support
 - **Zero Backend Required** - Secure proxy architecture keeps API keys server-side
 - **React Native** - Uses Hooks, Context API, and modern React patterns
@@ -194,9 +197,34 @@ Collect files via the built-in form UI and receive them in your command `action`
 }
 ```
 
-`FileParameter` supports validations like `maxFiles`, `maxSizeBytes`, `maxTotalBytes`, and media/image constraints like `maxDurationSec`, `maxWidth`, and `maxHeight`.
+`FileParameter` supports advanced validations:
 
-### 4. Critical Actions
+- `maxFiles`: Maximum number of files allowed (default: 1 for single, 10 for multiple)
+- `maxSizeBytes`: Maximum size per file in bytes
+- `maxTotalBytes`: Maximum total size for all files combined
+- `maxDurationSec`: Maximum duration for media files (audio/video) in seconds
+- `maxWidth` / `maxHeight`: Maximum dimensions for images in pixels
+- `accept`: Allowed MIME types or file extensions (e.g., `['image/*', '.pdf']`)
+- `multiple`: Allow selecting multiple files
+- `capture`: Hint for mobile devices (`'camera'` or `'microphone'`)
+- `delivery`: How files are delivered to your action (`'file'` or `'base64'`)
+
+Files are validated client-side before submission, with clear error messages for violations.
+
+### 4. Rich Markdown Rendering
+
+Assistant responses support rich markdown formatting for enhanced readability:
+
+- **Headings**: `# H1` through `###### H6`
+- **Text Formatting**: `**bold**`, `*italic*`, `~~strikethrough~~`
+- **Code**: Inline `code` and code blocks with syntax highlighting
+- **Links**: `[text](url)` with safe external linking
+- **Lists**: Ordered and unordered lists
+- **Line breaks** and paragraphs
+
+Markdown is automatically rendered in AI responses, while user messages remain plain text.
+
+### 5. Critical Actions
 
 Protect dangerous operations with automatic confirmation dialogs:
 
@@ -212,7 +240,7 @@ Protect dangerous operations with automatic confirmation dialogs:
 }
 ```
 
-### 5. Select Parameters (Static)
+### 6. Select Parameters (Static)
 
 Provide predefined options:
 
@@ -232,7 +260,7 @@ Provide predefined options:
 }
 ```
 
-### 6. Dynamic Select Parameters
+### 7. Dynamic Select Parameters
 
 Load options from APIs:
 
@@ -349,6 +377,36 @@ Get list of all registered command names.
 const commands = assistant.getCommands();
 console.log('Available commands:', commands);
 ```
+
+##### `runCommand(options)`
+
+Programmatically trigger a command execution with optional parameters. This allows you to invoke commands directly from your code without user input.
+
+```tsx
+// Basic usage - trigger a command by ID
+assistant.runCommand({ commandId: 'refresh-data' });
+
+// With parameters
+assistant.runCommand({
+  commandId: 'create-user',
+  params: { name: 'John', email: 'john@example.com' },
+});
+
+// Open overlay and show the command invocation
+assistant.runCommand({
+  commandId: 'export-report',
+  params: { format: 'pdf' },
+  openOverlay: true,
+  showInvocation: true,
+});
+```
+
+**Options:**
+
+- `commandId` (required): The ID of the command to run
+- `params` (optional): Parameters to pass to the command action
+- `openOverlay` (optional): Whether to open the assistant overlay (default: false)
+- `showInvocation` (optional): Whether to display the command invocation in the chat (default: false)
 
 ---
 

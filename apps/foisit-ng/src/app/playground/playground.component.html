@@ -1,0 +1,244 @@
+<button class="theme-toggle" (click)="toggleTheme()">
+  {{ theme() === 'light' ? '🌙' : '☀️' }}
+</button>
+
+<div class="showcase-container">
+  <header class="hero-section">
+    <a routerLink="/" class="back-link">← Back to Home</a>
+    <span class="hero-badge">Angular Wrapper</span>
+    <h1 class="hero-title">Interactive Playground</h1>
+    <p class="hero-subtitle">
+      Test all Foisit features live. Open the assistant and try the commands below.
+    </p>
+    <div class="hero-actions">
+      <button class="demo-btn" (click)="openAssistant()">
+        Open Assistant
+      </button>
+      <button class="demo-btn secondary" (click)="runEscalateDemo()">
+        Escalate Demo
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Start Guide -->
+  <section class="glass-card">
+    <h2 class="section-title">Get Started in 3 Steps</h2>
+    <p><strong>Step 1:</strong> Install the package</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Terminal</span>
+        <span>NPM</span>
+      </div>
+      <pre>npm install &#64;foisit/angular-wrapper</pre>
+    </div>
+
+    <p style="margin-top: 20px;"><strong>Step 2:</strong> Import the module</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span>app.config.ts</span>
+      </div>
+      <pre>{{ quickstartAppConfigCode }}</pre>
+    </div>
+
+    <p style="margin-top: 20px;"><strong>Step 3:</strong> Try it! Triple-tap anywhere or click the floating button.</p>
+  </section>
+
+  <!-- Live Examples with Code -->
+  <section class="glass-card">
+    <h2 class="section-title">Interactive Examples</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 24px;">Open the assistant and try these commands live. Each shows the code powering it.</p>
+
+    <!-- Example 1: Basic Command -->
+    <div class="example-section">
+      <h3>Basic Command</h3>
+      <p>Say "help" - no parameters, instant response.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleHelpCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 2: String + Number Parameters with Validation -->
+    <div class="example-section">
+      <h3>Multi-Parameter with Validation</h3>
+      <p>Say "create user" - collects name, email, age with validation.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleCreateUserCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 3: Select Parameter -->
+    <div class="example-section">
+      <h3>Dropdown Selection</h3>
+      <p>Say "change theme" - renders a dropdown picker.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleChangeThemeCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 4: Date Parameter -->
+    <div class="example-section">
+      <h3>Date Picker</h3>
+      <p>Say "book appointment" - native date picker UI.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleBookAppointmentCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 5: Async Select -->
+    <div class="example-section">
+      <h3>Dynamic API Options</h3>
+      <p>Say "schedule meeting" - loads team members from API.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleScheduleMeetingCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 6: Critical Action -->
+    <div class="example-section">
+      <h3>Protected Actions</h3>
+      <p>Say "delete all records" - requires confirmation.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleDeleteAllRecordsCode }}</pre>
+      </div>
+    </div>
+
+    <!-- Example 7: File Upload -->
+    <div class="example-section">
+      <h3>File Upload</h3>
+      <p>Say "upload file" - file picker with type restrictions.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span>TypeScript</span>
+        </div>
+        <pre>{{ exampleUploadFileCode }}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parameter Types Reference -->
+  <section class="glass-card">
+    <h2 class="section-title">Parameter Types</h2>
+    <div class="code-block">
+      <pre>{{ parameterTypesCode }}</pre>
+    </div>
+  </section>
+
+  <!-- Interactive Sandbox -->
+  <section class="glass-card">
+    <h2 class="section-title">Try It Now</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 24px;">Open the assistant and test commands live:</p>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+      <button class="demo-btn" (click)="openAssistant()">
+        Open Assistant
+      </button>
+      <button class="demo-btn secondary" (click)="toggleAssistant()">
+        Toggle with Callbacks
+      </button>
+    </div>
+  </section>
+
+  <!-- Programmatic Control -->
+  <section class="glass-card">
+    <h2 class="section-title">Programmatic API</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">Full control from your Angular services and components:</p>
+    <div class="code-block">
+      <pre>{{ angularServiceApiCode }}</pre>
+    </div>
+  </section>
+
+  <!-- Gesture Activation -->
+  <section class="glass-card">
+    <h2 class="section-title">Gesture Activation</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Activate the assistant with gestures. Triple-click or triple-tap anywhere on the page to open it instantly.
+    </p>
+    <div class="code-block">
+      <pre>{{ gestureActivationCode }}</pre>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Try it: Triple-click or triple-tap anywhere on this page (not the assistant itself) to open the overlay.
+    </p>
+  </section>
+
+  <!-- Smart Intent -->
+  <section class="glass-card">
+    <h2 class="section-title">Smart Intent Understanding</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Commands don't have to be exact. The assistant understands natural language and matches your intent.
+    </p>
+    <div class="code-block">
+      <pre>{{ smartIntentCode }}</pre>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Try it: Open the assistant and say something like "I want to book an appt" or "schedule a meeting" — it should match the "book appointment" command.
+    </p>
+  </section>
+
+  <!-- Fallback Responses -->
+  <section class="glass-card">
+    <h2 class="section-title">Fallback Responses</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      When the assistant doesn't understand, it provides helpful fallback responses.
+    </p>
+    <div class="code-block">
+      <pre>{{ fallbackCode }}</pre>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Try it: Open the assistant and type gibberish or an unrecognized command to see the fallback in action.
+    </p>
+  </section>
+
+  <!-- Programmatic Command Handlers -->
+  <section class="glass-card">
+    <h2 class="section-title">Programmatic Command Handlers</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Register custom handlers for programmatic execution, bypassing the normal command flow.
+    </p>
+    <div class="code-block">
+      <pre>{{ programmaticHandlersCode }}</pre>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      The "Escalate Demo" button above uses this pattern — it runs a registered handler programmatically.
+    </p>
+  </section>
+
+  <!-- Features Summary -->
+  <section class="glass-card">
+    <h2 class="section-title">Everything You Need</h2>
+    <ul>
+      <li>AI-powered natural language understanding</li>
+      <li>Automatic form generation for missing parameters</li>
+      <li>5 parameter types: string, number, date, select, file</li>
+      <li>Async data loading for dynamic dropdowns</li>
+      <li>Confirmation dialogs for destructive actions</li>
+      <li>Full validation and error handling</li>
+      <li>Programmatic API for dynamic commands</li>
+      <li>Gesture activation (triple-tap/click)</li>
+      <li>Smart intent matching for natural input</li>
+      <li>Fallback responses for unrecognized commands</li>
+      <li>Custom command handlers for advanced workflows</li>
+      <li>Light and dark mode built-in</li>
+      <li>Zero external dependencies</li>
+      <li>100% TypeScript with full type safety</li>
+    </ul>
+  </section>
+</div>

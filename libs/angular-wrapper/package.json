@@ -1,6 +1,6 @@
 {
   "name": "@foisit/angular-wrapper",
-  "version": "2.4.66",
+  "version": "2.4.67",
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0"
@@ -22,7 +22,14 @@
     "accessibility",
     "website-integration"
   ],
-  "homepage": "https://github.com/boluwatifee4/foisit#readme",
+  "homepage": "https://ng-foisit-demo.netlify.app/",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/boluwatifee4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bugs": {
     "url": "https://github.com/boluwatifee4/foisit/issues"
   },

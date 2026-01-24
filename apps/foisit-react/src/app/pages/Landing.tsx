@@ -61,10 +61,15 @@ const Landing = () => {
       command: 'change theme',
       description: 'Switch between light and dark mode',
       action: async () => {
-        toggleTheme();
-        return `Theme switched to ${
-          theme === 'light' ? 'dark' : 'light'
-        } mode.`;
+        const currentTheme =
+          (document.documentElement.getAttribute('data-theme') as
+            | 'light'
+            | 'dark') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('foisit-theme', newTheme);
+        return `Theme switched to ${newTheme} mode.`;
       },
     });
 
@@ -500,7 +505,8 @@ assistant.addCommand({
             className="use-case-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gridTemplateColumns:
+                'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
               gap: '32px',
             }}
           >
@@ -825,7 +831,8 @@ assistant.addCommand({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gridTemplateColumns:
+                'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
               gap: '64px',
               alignItems: 'center',
             }}
@@ -903,6 +910,8 @@ assistant.addCommand({
                   background: 'var(--accent)',
                   color: 'white',
                   marginBottom: '24px',
+                  width: '100%',
+                  maxWidth: '280px',
                 }}
               >
                 Try out Dev Assistant
@@ -1246,7 +1255,8 @@ assistant.addCommand({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gridTemplateColumns:
+                'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
               gap: '64px',
               alignItems: 'start',
             }}
@@ -1531,7 +1541,7 @@ assistant.addCommand({
             }}
           >
             <a
-              href="https://github.com/AstroBookings/foisit"
+              href="https://github.com/boluwatifee4/foisit"
               target="_blank"
               rel="noreferrer"
               style={{

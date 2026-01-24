@@ -43,7 +43,7 @@ export function App() {
         }}
       >
         <a
-          href="https://github.com/AstroBookings/foisit"
+          href="https://github.com/boluwatifee4/foisit"
           target="_blank"
           rel="noreferrer"
           aria-label="View project on GitHub"

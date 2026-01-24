@@ -38,7 +38,7 @@ const assistantConfig = {
       "
     >
       <a
-        href="https://github.com/AstroBookings/foisit"
+        href="https://github.com/boluwatifee4/foisit"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View project on GitHub"

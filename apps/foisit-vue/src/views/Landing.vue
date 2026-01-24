@@ -327,7 +327,7 @@ const triggerDevAssistant = () => {
           </p>
         </div>
 
-        <div class="use-case-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 32px;">
+        <div class="use-case-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 32px;">
           <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
             <div style="margin-bottom: 16px;">
               <span style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
@@ -402,7 +402,7 @@ const triggerDevAssistant = () => {
 
     <section class="section" style="padding: 100px 8%">
       <div class="container">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 64px; align-items: center;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 64px; align-items: center;">
           <div>
             <div class="section-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">
               Built-in Dev Tools
@@ -416,7 +416,7 @@ const triggerDevAssistant = () => {
             <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
               Type a question like: <em>"How do I add file upload to a command?"</em> — and get an immediate, contextual answer right inside the widget.
             </p>
-            <button class="demo-btn primary" @click="triggerDevAssistant" style="padding: 14px 28px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: white; margin-bottom: 24px;">
+            <button class="demo-btn primary" @click="triggerDevAssistant" style="padding: 14px 28px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: white; margin-bottom: 24px; width: 100%; max-width: 280px;">
               Try out Dev Assistant
             </button>
             <ul style="list-style: none; padding: 0; margin: 0">
@@ -495,7 +495,7 @@ assistant?.addCommand({
 
     <section class="section" style="padding: 100px 8%">
       <div class="container">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 64px; align-items: start;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 64px; align-items: start;">
           <div>
             <div class="section-badge" style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">
               For Technical Leaders
@@ -553,7 +553,7 @@ assistant?.addCommand({
         </div>
 
         <div style="display: flex; gap: 24px; justify-content: center; align-items: center; margin-bottom: 24px;">
-          <a href="https://github.com/AstroBookings/foisit" target="_blank" rel="noreferrer" style="color: var(--text-secondary); transition: color 0.2s;" title="View on GitHub">
+          <a href="https://github.com/boluwatifee4/foisit" target="_blank" rel="noreferrer" style="color: var(--text-secondary); transition: color 0.2s;" title="View on GitHub">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
             </svg>

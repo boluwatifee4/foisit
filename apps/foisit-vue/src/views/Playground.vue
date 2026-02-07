@@ -50,7 +50,7 @@ onUnmounted(() => {
       'help', 'create user', 'change theme', 'book appointment',
       'schedule meeting', 'delete all records', 'update profile',
       'reset theme', 'view stats', 'upload file', 'dev assistant',
-      'escalate', 'transfer money', 'print shipping label',
+      'escalate', 'send demo funds', 'print shipping label',
     ];
     commands.forEach((cmd) => assistantService.removeCommand(cmd));
   }
@@ -62,7 +62,7 @@ const setupCommands = () => {
     command: 'help',
     description: 'Show available commands and what I can do',
     action: async () => {
-      return `I can help you with:\nUser Management (create user, update profile)\nScheduling (book appointment, schedule meeting)\nData Operations (delete records - requires confirmation)\nAnalytics (view stats)\nUI Actions (change theme, toggle dark mode)\nFinancial (transfer money - requires confirmation)\nLogistics (print shipping label)\n\nJust tell me what you'd like to do!`;
+      return `I can help you with:\nUser Management (create user, update profile)\nScheduling (book appointment, schedule meeting)\nData Operations (delete records - requires confirmation)\nAnalytics (view stats)\nUI Actions (change theme, toggle dark mode)\nDemo Actions (send demo funds - requires confirmation)\nLogistics (print shipping label)\n\nJust tell me what you'd like to do!`;
     },
   });
 
@@ -110,17 +110,17 @@ const setupCommands = () => {
     },
   });
 
-  // Transfer money
+  // Send demo funds
   assistantService.addCommand({
-    id: 'transfer_money',
-    command: 'transfer money',
-    description: 'Transfer money to an account (requires confirmation)',
+    id: 'send_demo_funds',
+    command: 'send demo funds',
+    description: 'Demo: Simulate sending funds (requires confirmation)',
     parameters: [
       { name: 'amount', type: 'number', required: true },
-      { name: 'toAccount', type: 'string', required: true },
+      { name: 'recipient', type: 'string', required: true },
     ],
     critical: true,
-    action: async (params: any) => `Demo: Would transfer $${params.amount} to ${params.toAccount} after confirmation.`,
+    action: async (params: any) => `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction.`,
   });
 
   // Print shipping label

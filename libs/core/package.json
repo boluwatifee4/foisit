@@ -1,6 +1,6 @@
 {
   "name": "@foisit/core",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Core utilities, types, and interfaces for Foisit voice assistant libraries.",
   "keywords": [
     "voice-assistant",

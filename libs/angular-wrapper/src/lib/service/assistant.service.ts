@@ -46,6 +46,8 @@ export class AssistantService {
         floatingButton: this.config.floatingButton,
         inputPlaceholder: this.config.inputPlaceholder,
         enableGestureActivation: this.config.enableGestureActivation,
+        theme: this.config.theme,
+        themeColors: this.config.themeColors,
       });
 
       // Let the overlay delegate command execution to our CommandHandler when
@@ -60,7 +62,9 @@ export class AssistantService {
           if (typeof input === 'string') {
             this.overlayManager.addMessage(input, 'user');
           } else if (input && typeof input === 'object') {
-            const label = this.extractUserLabel(input as Record<string, unknown>);
+            const label = this.extractUserLabel(
+              input as Record<string, unknown>
+            );
             if (label) {
               this.overlayManager.addMessage(label, 'user');
             }
@@ -99,7 +103,9 @@ export class AssistantService {
   startListening(): void {
     // No-op on server or when voice features are unavailable
     if (typeof window === 'undefined' || !this.voiceProcessor) {
-      console.log('AssistantService: Voice is disabled or unavailable; startListening() is a no-op.');
+      console.log(
+        'AssistantService: Voice is disabled or unavailable; startListening() is a no-op.'
+      );
       return;
     }
 
@@ -147,7 +153,9 @@ export class AssistantService {
   /** Stop listening for voice input */
   stopListening(): void {
     if (typeof window === 'undefined' || !this.voiceProcessor) {
-      console.log('AssistantService: Voice unavailable; stopListening() is a no-op.');
+      console.log(
+        'AssistantService: Voice unavailable; stopListening() is a no-op.'
+      );
       this.isActivated = false;
       return;
     }
@@ -217,7 +225,10 @@ export class AssistantService {
   ): void {
     if (response.type === 'error' && originalText) {
       this.fallbackHandler.handleFallback(originalText);
-      this.overlayManager.addMessage(this.fallbackHandler.getFallbackMessage(), 'system');
+      this.overlayManager.addMessage(
+        this.fallbackHandler.getFallbackMessage(),
+        'system'
+      );
       return;
     }
 
@@ -239,7 +250,10 @@ export class AssistantService {
       return;
     }
 
-    if ((response.type === 'ambiguous' || response.type === 'confirm') && response.options) {
+    if (
+      (response.type === 'ambiguous' || response.type === 'confirm') &&
+      response.options
+    ) {
       if (response.message) {
         this.overlayManager.addMessage(response.message, 'system');
       }
@@ -253,16 +267,26 @@ export class AssistantService {
   }
 
   /** Expose programmatic command handler registration to host apps */
-  registerCommandHandler(commandId: string, handler: (params?: any) => Promise<any> | any) {
-    if (this.overlayManager) this.overlayManager.registerCommandHandler(commandId, handler);
+  registerCommandHandler(
+    commandId: string,
+    handler: (params?: any) => Promise<any> | any
+  ) {
+    if (this.overlayManager)
+      this.overlayManager.registerCommandHandler(commandId, handler);
   }
 
   unregisterCommandHandler(commandId: string) {
-    if (this.overlayManager) this.overlayManager.unregisterCommandHandler(commandId);
+    if (this.overlayManager)
+      this.overlayManager.unregisterCommandHandler(commandId);
   }
 
   /** Programmatically run a registered command (proxies to OverlayManager) */
-  async runCommand(options: { commandId: string; params?: any; openOverlay?: boolean; showInvocation?: boolean; }) {
+  async runCommand(options: {
+    commandId: string;
+    params?: any;
+    openOverlay?: boolean;
+    showInvocation?: boolean;
+  }) {
     if (!this.overlayManager) throw new Error('Overlay manager not available.');
     const res = await this.overlayManager.runCommand(options);
     // If the overlay delegated to the CommandHandler, it returns an

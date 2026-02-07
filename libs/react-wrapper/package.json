@@ -1,6 +1,6 @@
 {
   "name": "@foisit/react-wrapper",
-  "version": "2.4.5",
+  "version": "3.0.0",
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
@@ -29,7 +29,7 @@
     "accessibility",
     "website-integration"
   ],
-  "homepage": "https://foisit-react-demo.netlify.app/",
+  "homepage": "https://foisit-react.netlify.app/",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/boluwatifee4"

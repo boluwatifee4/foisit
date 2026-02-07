@@ -7,6 +7,20 @@ const router = useRouter();
 const assistant = useAssistant();
 const theme = ref<'light' | 'dark'>('light');
 
+// Overlay theme state
+const overlayTheme = ref<'glass' | 'dark-navy' | 'catppuccin' | 'midnight'>('glass');
+const overlayThemePresets = [
+  { id: 'glass', name: 'Glass', description: 'Glassmorphism with blur' },
+  { id: 'dark-navy', name: 'Dark Navy', description: 'Purple gradient accent' },
+  { id: 'catppuccin', name: 'Catppuccin', description: 'Soft pastel tones' },
+  { id: 'midnight', name: 'Midnight', description: 'Hacker green on black' },
+];
+
+const setOverlayTheme = (themeId: 'glass' | 'dark-navy' | 'catppuccin' | 'midnight') => {
+  localStorage.setItem('foisit-overlay-theme', themeId);
+  window.location.reload();
+};
+
 const callDevAssistant = async (
   code: string,
   question: string
@@ -92,16 +106,16 @@ const registerLandingCommands = () => {
   });
 
   assistant.addCommand({
-    id: 'transfer_money',
-    command: 'transfer money',
-    description: 'Demo: Transfer money to an account',
+    id: 'send_demo_funds',
+    command: 'send demo funds',
+    description: 'Demo: Simulate sending funds to an account (no real transactions)',
     parameters: [
       { name: 'amount', type: 'number', required: true },
-      { name: 'toAccount', type: 'string', required: true },
+      { name: 'recipient', type: 'string', required: true },
     ],
     critical: true,
     action: async (params: any) => {
-      return `Demo: Would transfer $${params.amount} to ${params.toAccount} after confirmation.`;
+      return `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction occurred.`;
     },
   });
 
@@ -134,15 +148,15 @@ const registerLandingCommands = () => {
 };
 
 // FinTech code example (Vue Syntax)
-const fintechCode = `// Add a transfer command with built-in safety guardrails
+const fintechCode = `// Add a command with built-in safety guardrails
 assistant?.addCommand({
   // The phrase users will say to trigger this command
-  command: 'transfer money',
+  command: 'send demo funds',
 
   // Define required parameters with type validation
   parameters: [
     { name: 'amount', type: 'number', required: true },
-    { name: 'toAccount', type: 'string', required: true }
+    { name: 'recipient', type: 'string', required: true }
   ],
 
   // Critical flag halts execution and shows confirmation UI
@@ -150,8 +164,8 @@ assistant?.addCommand({
 
   // Your business logic executes only after user confirms
   action: async (params) => {
-    await bankingAPI.transfer(params.amount, params.toAccount);
-    return \`Transferred $\${params.amount} to \${params.toAccount}\`;
+    await yourAPI.processAction(params.amount, params.recipient);
+    return \`Sent $\${params.amount} to \${params.recipient}\`;
   }
 });`;
 
@@ -203,6 +217,13 @@ onMounted(() => {
     theme.value = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
   }
+
+  // Load overlay theme
+  const savedOverlayTheme = localStorage.getItem('foisit-overlay-theme') as typeof overlayTheme.value | null;
+  if (savedOverlayTheme && ['glass', 'dark-navy', 'catppuccin', 'midnight'].includes(savedOverlayTheme)) {
+    overlayTheme.value = savedOverlayTheme;
+  }
+
   if (assistant) {
     registerLandingCommands();
   }
@@ -213,7 +234,7 @@ onUnmounted(() => {
   assistant.removeCommand('change theme');
   assistant.removeCommand('go to playground');
   assistant.removeCommand('dev assistant');
-  assistant.removeCommand('transfer money');
+  assistant.removeCommand('send demo funds');
   assistant.removeCommand('book appointment');
   assistant.removeCommand('print shipping label');
 });
@@ -231,8 +252,8 @@ const goToPlayground = () => {
 
 const triggerTransfer = () => {
   assistant?.runCommand({
-    commandId: 'transfer_money',
-    params: { amount: null, toAccount: null },
+    commandId: 'send_demo_funds',
+    params: { amount: null, recipient: null },
     openOverlay: true,
     showInvocation: true,
   });
@@ -294,6 +315,37 @@ const triggerDevAssistant = () => {
           </button>
         </div>
 
+        <!-- Overlay Theme Picker -->
+        <div style="background: var(--bg-alt); border: 1px solid var(--border); border-radius: 16px; padding: 24px 32px; margin: 24px auto 0; max-width: 680px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+            🎨 Try Different Overlay Themes
+          </div>
+          <p style="font-size: 0.95rem; color: var(--text); margin-bottom: 16px; line-height: 1.5;">
+            Change the Foisit assistant's appearance. Pick a theme, then open the assistant to see the difference!
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <button
+              v-for="preset in overlayThemePresets"
+              :key="preset.id"
+              @click="setOverlayTheme(preset.id as any)"
+              :style="{
+                padding: '10px 18px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: overlayTheme === preset.id ? 'var(--accent)' : 'var(--bg)',
+                color: overlayTheme === preset.id ? 'white' : 'var(--text)',
+                border: overlayTheme === preset.id ? 'none' : '1px solid var(--border)',
+              }"
+              :title="preset.description"
+            >
+              {{ preset.name }}
+            </button>
+          </div>
+        </div>
+
         <div class="hero-links" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px;">
           <a href="https://www.npmjs.com/package/@foisit/vue-wrapper" target="_blank" rel="noreferrer" style="display: inline-block; padding: 14px 28px; border-radius: 8px; background-color: var(--accent); color: white; text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
             View on npm
@@ -304,7 +356,7 @@ const triggerDevAssistant = () => {
           <a href="#use-cases" style="display: inline-block; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
             See Use Cases
           </a>
-          <a href="https://foisit-react-demo.netlify.app/" target="_blank" rel="noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
+          <a href="https://foisit-react.netlify.app/" target="_blank" rel="noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 8px; background-color: transparent; color: var(--text); border: 1px solid var(--border); text-decoration: none; font-size: 16px; font-weight: 600; transition: all 0.2s;">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/512px-React-icon.svg.png" alt="React" style="width: 20px; height: 20px; object-fit: contain;"/>
             View React Wrapper
           </a>
@@ -331,23 +383,26 @@ const triggerDevAssistant = () => {
           <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
             <div style="margin-bottom: 16px;">
               <span style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
-                FinTech
+                FinTech Demo
               </span>
             </div>
             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
-              Banking & Finance
+              Financial App Integration
             </h3>
+            <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 0.8rem; font-style: italic;">
+              ⚠️ This is a demo simulation only — no real transactions occur.
+            </p>
             <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
-              User says: <strong>"Transfer fifty thousand to my savings account"</strong>
+              User says: <strong>"Send demo funds to my account"</strong>
             </p>
             <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
-              The assistant parses the amount, identifies the target account, and because this is a critical action, displays a confirmation dialog before executing. No accidental transfers.
+              The assistant parses the amount, identifies the recipient, and because this is a critical action, displays a confirmation dialog before executing. Safety guardrails built-in.
             </p>
             <pre class="code-block" style="background: #1e1e2e; border-radius: 8px; padding: 16px; font-size: 12px; overflow: auto; margin-bottom: 20px; color: #cdd6f4; text-align: left; white-space: pre-wrap; word-break: break-word;">
               <code style="color: #cdd6f4">{{fintechCode}}</code>
             </pre>
             <button @click="triggerTransfer" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-              Try Demo Now
+              Try Demo Simulation
             </button>
           </div>
 

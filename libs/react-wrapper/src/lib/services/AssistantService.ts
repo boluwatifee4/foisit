@@ -42,6 +42,8 @@ export class AssistantService {
         floatingButton: this.config.floatingButton,
         inputPlaceholder: this.config.inputPlaceholder,
         enableGestureActivation: this.config.enableGestureActivation,
+        theme: this.config.theme,
+        themeColors: this.config.themeColors,
       });
 
       // Allow overlay to delegate to commandHandler when needed
@@ -50,7 +52,9 @@ export class AssistantService {
       });
 
       // Add configured commands
-      this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
+      this.config.commands.forEach((cmd) =>
+        this.commandHandler.addCommand(cmd)
+      );
 
       // Set fallback response
       if (this.config.fallbackResponse) {
@@ -69,10 +73,15 @@ export class AssistantService {
           // Structured payloads (e.g., { commandId, params }) - run deterministically
           if (input && typeof input === 'object') {
             const obj = input as Record<string, unknown>;
-            const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
+            const label =
+              (obj['label'] as string) ??
+              (obj['commandId'] as string) ??
+              'Selection';
             this.overlayManager.addMessage(String(label), 'user');
             this.overlayManager.showLoading();
-            const response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
+            const response = await this.commandHandler.executeCommand(
+              obj as Record<string, unknown>
+            );
             this.overlayManager.hideLoading();
             this.processResponse(response);
           }
@@ -86,7 +95,9 @@ export class AssistantService {
       this.gestureHandler = undefined as any;
       this.overlayManager = undefined as any;
       // Register commands (commandHandler still exists) so server-side can introspect commands
-      this.config.commands.forEach((cmd) => this.commandHandler.addCommand(cmd));
+      this.config.commands.forEach((cmd) =>
+        this.commandHandler.addCommand(cmd)
+      );
 
       if (this.config.fallbackResponse) {
         this.fallbackHandler.setFallbackMessage(this.config.fallbackResponse);
@@ -98,7 +109,9 @@ export class AssistantService {
   startListening(): void {
     // No-op on server or when voice features are unavailable
     if (typeof window === 'undefined' || !this.voiceProcessor) {
-      console.log('AssistantService: Voice is disabled or unavailable; startListening() is a no-op.');
+      console.log(
+        'AssistantService: Voice is disabled or unavailable; startListening() is a no-op.'
+      );
       return;
     }
 
@@ -146,7 +159,9 @@ export class AssistantService {
   /** Stop listening */
   stopListening(): void {
     if (typeof window === 'undefined' || !this.voiceProcessor) {
-      console.log('AssistantService: Voice unavailable; stopListening() is a no-op.');
+      console.log(
+        'AssistantService: Voice unavailable; stopListening() is a no-op.'
+      );
       this.isActivated = false;
       return;
     }
@@ -219,7 +234,10 @@ export class AssistantService {
 
     if (response.type === 'error') {
       this.fallbackHandler.handleFallback(transcript);
-      this.overlayManager.addMessage(this.fallbackHandler.getFallbackMessage(), 'system');
+      this.overlayManager.addMessage(
+        this.fallbackHandler.getFallbackMessage(),
+        'system'
+      );
       return;
     }
 
@@ -259,7 +277,9 @@ export class AssistantService {
           this.overlayManager.showLoading();
           let nextReponse: InteractiveResponse;
           try {
-            nextReponse = await this.commandHandler.executeCommand(data as Record<string, unknown>);
+            nextReponse = await this.commandHandler.executeCommand(
+              data as Record<string, unknown>
+            );
           } finally {
             this.overlayManager.hideLoading();
           }
@@ -269,7 +289,10 @@ export class AssistantService {
       return;
     }
 
-    if ((response.type === 'ambiguous' || response.type === 'confirm') && response.options) {
+    if (
+      (response.type === 'ambiguous' || response.type === 'confirm') &&
+      response.options
+    ) {
       if (response.message) {
         this.overlayManager.addMessage(response.message, 'system');
       }
@@ -306,16 +329,26 @@ export class AssistantService {
   }
 
   /** Expose programmatic command handler registration to host apps */
-  registerCommandHandler(commandId: string, handler: (params?: any) => Promise<any> | any) {
-    if (this.overlayManager) this.overlayManager.registerCommandHandler(commandId, handler);
+  registerCommandHandler(
+    commandId: string,
+    handler: (params?: any) => Promise<any> | any
+  ) {
+    if (this.overlayManager)
+      this.overlayManager.registerCommandHandler(commandId, handler);
   }
 
   unregisterCommandHandler(commandId: string) {
-    if (this.overlayManager) this.overlayManager.unregisterCommandHandler(commandId);
+    if (this.overlayManager)
+      this.overlayManager.unregisterCommandHandler(commandId);
   }
 
   /** Programmatically run a registered command (proxies to OverlayManager) */
-  async runCommand(options: { commandId: string; params?: any; openOverlay?: boolean; showInvocation?: boolean; }) {
+  async runCommand(options: {
+    commandId: string;
+    params?: any;
+    openOverlay?: boolean;
+    showInvocation?: boolean;
+  }) {
     if (!this.overlayManager) throw new Error('Overlay manager not available.');
     const res = await this.overlayManager.runCommand(options);
     if (res && typeof res === 'object' && 'type' in res) {
@@ -330,7 +363,10 @@ export class AssistantService {
   }
 
   /** Toggle the assistant overlay */
-  toggle(onSubmit?: (input: string | Record<string, unknown>) => void, onClose?: () => void): void {
+  toggle(
+    onSubmit?: (input: string | Record<string, unknown>) => void,
+    onClose?: () => void
+  ): void {
     console.log('AssistantService: Toggling overlay...');
     this.overlayManager.toggle(
       async (input) => {
@@ -344,12 +380,17 @@ export class AssistantService {
         // Structured payload from overlay (deterministic trigger)
         if (input && typeof input === 'object') {
           const obj = input as Record<string, unknown>;
-          const label = (obj['label'] as string) ?? (obj['commandId'] as string) ?? 'Selection';
+          const label =
+            (obj['label'] as string) ??
+            (obj['commandId'] as string) ??
+            'Selection';
           this.overlayManager.addMessage(String(label), 'user');
           this.overlayManager.showLoading();
           let response: InteractiveResponse;
           try {
-            response = await this.commandHandler.executeCommand(obj as Record<string, unknown>);
+            response = await this.commandHandler.executeCommand(
+              obj as Record<string, unknown>
+            );
           } finally {
             this.overlayManager.hideLoading();
           }

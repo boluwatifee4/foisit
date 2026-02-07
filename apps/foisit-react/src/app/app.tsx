@@ -1,9 +1,63 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { AssistantProvider } from '@foisit/react-wrapper';
+import { AssistantProvider, ThemeColors } from '@foisit/react-wrapper';
 import Landing from './pages/Landing';
 import Playground from './pages/Playground';
 import './showcase.css';
+
+// ============================================================================
+// Overlay Theme Presets
+// ============================================================================
+type OverlayThemePreset = 'glass' | 'dark-navy' | 'catppuccin' | 'midnight';
+
+const OVERLAY_THEME_PRESETS: Record<OverlayThemePreset, { theme: 'glass' | 'solid'; themeColors?: ThemeColors }> = {
+  'glass': {
+    theme: 'glass',
+  },
+  'dark-navy': {
+    theme: 'solid',
+    themeColors: {
+      background: '#1a1a2e',
+      text: '#ffffff',
+      accent: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      userBubbleBg: 'rgba(102, 126, 234, 0.2)',
+      systemBubbleBg: 'rgba(255, 255, 255, 0.08)',
+      border: 'rgba(255, 255, 255, 0.1)',
+    },
+  },
+  'catppuccin': {
+    theme: 'solid',
+    themeColors: {
+      background: '#1e1e2e',
+      text: '#cdd6f4',
+      accent: '#89b4fa',
+      userBubbleBg: 'rgba(137, 180, 250, 0.15)',
+      systemBubbleBg: 'rgba(49, 50, 68, 0.8)',
+      border: 'rgba(88, 91, 112, 0.5)',
+    },
+  },
+  'midnight': {
+    theme: 'solid',
+    themeColors: {
+      background: '#0a0a0a',
+      text: '#00ff88',
+      accent: '#00ff88',
+      userBubbleBg: 'rgba(0, 255, 136, 0.1)',
+      systemBubbleBg: 'rgba(255, 255, 255, 0.03)',
+      border: 'rgba(0, 255, 136, 0.2)',
+    },
+  },
+};
+
+function getOverlayThemeConfig(): { theme: 'glass' | 'solid'; themeColors?: ThemeColors } {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return OVERLAY_THEME_PRESETS['glass'];
+  }
+  const saved = localStorage.getItem('foisit-overlay-theme') as OverlayThemePreset | null;
+  return OVERLAY_THEME_PRESETS[saved || 'glass'] || OVERLAY_THEME_PRESETS['glass'];
+}
+
+const overlayTheme = getOverlayThemeConfig();
 
 const config = {
   activationCommand: 'hey foisit',
@@ -20,6 +74,8 @@ const config = {
     customHtml:
       '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;">🤖</div>',
   },
+  theme: overlayTheme.theme,
+  themeColors: overlayTheme.themeColors,
   commands: [],
 };
 
@@ -92,7 +148,7 @@ export function App() {
         </a>
 
         <a
-          href="https://foisit-vue-demo.netlify.app/"
+          href="https://foisit-vue.netlify.app/"
           target="_blank"
           rel="noreferrer"
           aria-label="View Vue demo"
@@ -117,3 +173,4 @@ export function App() {
 }
 
 export default App;
+

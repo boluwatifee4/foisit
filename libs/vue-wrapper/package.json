@@ -1,6 +1,6 @@
 {
   "name": "@foisit/vue-wrapper",
-  "version": "2.4.5",
+  "version": "3.0.0",
   "main": "./index.mjs",
   "types": "./index.d.ts",
   "exports": {
@@ -26,7 +26,7 @@
     "accessibility",
     "website-integration"
   ],
-  "homepage": "https://foisit-vue-demo.netlify.app/",
+  "homepage": "https://foisit-vue.netlify.app/",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/boluwatifee4"

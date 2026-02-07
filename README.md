@@ -35,11 +35,11 @@ Install the wrapper specifically for your framework. The core engine is included
 
 Try Foisit in action with our interactive demos:
 
-| Framework | Demo Link                                           | Development Server          |
-| :-------- | :-------------------------------------------------- | :-------------------------- |
-| Angular   | [View Demo](https://ng-foisit-demo.netlify.app/)    | `npx nx serve foisit-ng`    |
-| React     | [View Demo](https://foisit-react-demo.netlify.app/) | `npx nx serve foisit-react` |
-| Vue       | [View Demo](https://foisit-vue-demo.netlify.app/)   | `npx nx serve foisit-vue`   |
+| Framework | Demo Link                                        | Development Server          |
+| :-------- | :----------------------------------------------- | :-------------------------- |
+| Angular   | [View Demo](https://ng-foisit-demo.netlify.app/) | `npx nx serve foisit-ng`    |
+| React     | [View Demo](https://foisit-react.netlify.app/)   | `npx nx serve foisit-react` |
+| Vue       | [View Demo](https://foisit-vue.netlify.app/)     | `npx nx serve foisit-vue`   |
 
 ---
 
@@ -84,6 +84,27 @@ Foisit automatically handles confirmation for commands marked as `critical: true
 **User:** "Delete my order"  
 **Assistant:** "Are you sure you want to delete your last order?"  
 **Buttons:** [Yes] [No]
+
+---
+
+## Theme Customization
+
+Foisit supports two theme modes:
+
+- **Glass** (default): Glassmorphism with blur effects, adapts to light/dark mode
+- **Solid**: Opaque UI with fully customizable colors
+
+```tsx
+const config = {
+  theme: 'solid',
+  themeColors: {
+    background: '#1e1e2e',
+    text: '#cdd6f4',
+    accent: '#89b4fa',
+  },
+  commands: [...],
+};
+```
 
 ---
 

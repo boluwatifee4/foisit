@@ -33,7 +33,7 @@ Transform your Vue app into an intelligent, voice-ready platform. Foisit provide
 - **Programmatic UI Triggers** - Direct command execution via `runCommand()`
 - **Rich Markdown Rendering** - Enhanced response formatting with headings, code, and links
 - **Advanced File Validations** - Comprehensive client-side file validation with size, type, and dimension checks
-- **Premium UI** - Glassmorphic overlay with dark/light mode support
+- **Premium UI** - Glass or solid theme with dark/light mode support
 - **Zero Backend Required** - Secure proxy architecture keeps API keys server-side
 - **Vue Native** - Uses Composition API, `provide/inject`, and Vue 3 patterns
 - **Type-Safe** - Full TypeScript support with comprehensive types
@@ -454,8 +454,56 @@ interface AssistantConfig {
     customHtml?: string;
     position?: { bottom: string; right: string };
   };
+
+  // Theme mode: 'glass' (default) or 'solid'
+  theme?: 'glass' | 'solid';
+
+  // Custom colors for solid theme (ignored in glass mode)
+  themeColors?: ThemeColors;
 }
 ```
+
+### `ThemeColors`
+
+Custom colors for solid theme mode:
+
+```typescript
+interface ThemeColors {
+  background?: string; // Background color (e.g., '#1e1e2e')
+  text?: string; // Primary text color (e.g., '#ffffff')
+  accent?: string; // Accent color for highlights (e.g., '#89b4fa' or a gradient)
+  userBubbleBg?: string; // User message bubble background
+  systemBubbleBg?: string; // System message bubble background
+  border?: string; // Border color
+}
+```
+
+### Theme Customization Example
+
+```vue
+<script setup>
+const config = {
+  commands: [...],
+  // Use solid theme with custom colors
+  theme: 'solid',
+  themeColors: {
+    background: '#1e1e2e',
+    text: '#cdd6f4',
+    accent: '#89b4fa',
+    userBubbleBg: 'rgba(137, 180, 250, 0.2)',
+    systemBubbleBg: 'rgba(255, 255, 255, 0.05)',
+  },
+};
+</script>
+
+<template>
+  <AssistantProvider :config="config">
+    <App />
+  </AssistantProvider>
+</template>
+```
+
+> **Note**: Glass theme (default) uses glassmorphism with blur effects and adapts to light/dark mode via `prefers-color-scheme`. Solid theme ignores system preferences and uses configured colors.
 
 ---
 

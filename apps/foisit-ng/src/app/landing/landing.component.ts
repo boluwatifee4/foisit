@@ -14,18 +14,35 @@ import { environment } from '../../environments/environment';
 export class LandingComponent implements OnInit, OnDestroy {
   theme = 'light';
 
+  // Overlay theme (for Foisit assistant UI)
+  overlayTheme: 'glass' | 'dark-navy' | 'catppuccin' | 'midnight' = 'glass';
+  overlayThemePresets: {
+    id: 'glass' | 'dark-navy' | 'catppuccin' | 'midnight';
+    name: string;
+    description: string;
+  }[] = [
+    { id: 'glass', name: 'Glass', description: 'Glassmorphism with blur' },
+    {
+      id: 'dark-navy',
+      name: 'Dark Navy',
+      description: 'Purple gradient accent',
+    },
+    { id: 'catppuccin', name: 'Catppuccin', description: 'Soft pastel tones' },
+    { id: 'midnight', name: 'Midnight', description: 'Hacker green on black' },
+  ];
+
   private readonly DEV_ASSISTANT_ENDPOINT = environment.devAssistantProxyUrl;
 
   // FinTech code example (Angular Syntax)
-  fintechCode = `// Add a transfer command with built-in safety guardrails
+  fintechCode = `// Add a command with built-in safety guardrails
 this.assistant.addCommand({
   // The phrase users will say to trigger this command
-  command: 'transfer money',
+  command: 'send demo funds',
 
   // Define required parameters with type validation
   parameters: [
     { name: 'amount', type: 'number', required: true },
-    { name: 'toAccount', type: 'string', required: true }
+    { name: 'recipient', type: 'string', required: true }
   ],
 
   // Critical flag halts execution and shows confirmation UI
@@ -33,8 +50,8 @@ this.assistant.addCommand({
 
   // Your business logic executes only after user confirms
   action: async (params) => {
-    await this.bankingAPI.transfer(params.amount, params.toAccount);
-    return \`Transferred $\${params.amount} to \${params.toAccount}\`;
+    await this.yourAPI.processAction(params.amount, params.recipient);
+    return \`Sent $\${params.amount} to \${params.recipient}\`;
   }
 });`;
 
@@ -101,6 +118,19 @@ this.assistant.addCommand({
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
 
+    // Load overlay theme from localStorage
+    const savedOverlayTheme = localStorage.getItem('foisit-overlay-theme') as
+      | typeof this.overlayTheme
+      | null;
+    if (
+      savedOverlayTheme &&
+      ['glass', 'dark-navy', 'catppuccin', 'midnight'].includes(
+        savedOverlayTheme
+      )
+    ) {
+      this.overlayTheme = savedOverlayTheme;
+    }
+
     this.registerLandingCommands();
   }
 
@@ -108,12 +138,15 @@ this.assistant.addCommand({
     this.assistant.removeCommand('change theme');
     this.assistant.removeCommand('go to playground');
     this.assistant.removeCommand('dev assistant');
-    this.assistant.removeCommand('transfer money');
+    this.assistant.removeCommand('send demo funds');
     this.assistant.removeCommand('book appointment');
     this.assistant.removeCommand('print shipping label');
   }
 
-  private async callDevAssistant(code: string, question: string): Promise<string> {
+  private async callDevAssistant(
+    code: string,
+    question: string
+  ): Promise<string> {
     if (!this.DEV_ASSISTANT_ENDPOINT) {
       throw new Error(
         'Dev assistant proxy is not configured. Set environment.devAssistantProxyUrl.'
@@ -193,16 +226,17 @@ this.assistant.addCommand({
 
     // Demo commands for use cases
     this.assistant.addCommand({
-      id: 'transfer_money',
-      command: 'transfer money',
-      description: 'Demo: Transfer money to an account',
+      id: 'send_demo_funds',
+      command: 'send demo funds',
+      description:
+        'Demo: Simulate sending funds to an account (no real transactions)',
       parameters: [
         { name: 'amount', type: 'number', required: true },
-        { name: 'toAccount', type: 'string', required: true },
+        { name: 'recipient', type: 'string', required: true },
       ],
       critical: true,
       action: async (params: any) => {
-        return `Demo: Would transfer $${params.amount} to ${params.toAccount} after confirmation.`;
+        return `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction occurred.`;
       },
     });
 
@@ -242,10 +276,20 @@ this.assistant.addCommand({
     window.scrollTo(0, 0);
   }
 
+  // Overlay theme methods
+  setOverlayTheme(themeId: 'glass' | 'dark-navy' | 'catppuccin' | 'midnight') {
+    localStorage.setItem('foisit-overlay-theme', themeId);
+    window.location.reload();
+  }
+
+  isOverlayThemeActive(themeId: string): boolean {
+    return this.overlayTheme === themeId;
+  }
+
   triggerTransfer() {
     this.assistant.runCommand({
-      commandId: 'transfer_money',
-      params: { amount: null, toAccount: null },
+      commandId: 'send_demo_funds',
+      params: { amount: null, recipient: null },
       openOverlay: true,
       showInvocation: true,
     });

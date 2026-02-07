@@ -34,6 +34,20 @@ const Landing = () => {
   const assistant = useAssistant();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
+  // Overlay theme state
+  const [overlayTheme, setOverlayThemeState] = useState<'glass' | 'dark-navy' | 'catppuccin' | 'midnight'>('glass');
+  const overlayThemePresets = [
+    { id: 'glass', name: 'Glass', description: 'Glassmorphism with blur' },
+    { id: 'dark-navy', name: 'Dark Navy', description: 'Purple gradient accent' },
+    { id: 'catppuccin', name: 'Catppuccin', description: 'Soft pastel tones' },
+    { id: 'midnight', name: 'Midnight', description: 'Hacker green on black' },
+  ];
+
+  const setOverlayTheme = (themeId: 'glass' | 'dark-navy' | 'catppuccin' | 'midnight') => {
+    localStorage.setItem('foisit-overlay-theme', themeId);
+    window.location.reload();
+  };
+
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
@@ -50,6 +64,12 @@ const Landing = () => {
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    // Load overlay theme
+    const savedOverlayTheme = localStorage.getItem('foisit-overlay-theme') as typeof overlayTheme | null;
+    if (savedOverlayTheme && ['glass', 'dark-navy', 'catppuccin', 'midnight'].includes(savedOverlayTheme)) {
+      setOverlayThemeState(savedOverlayTheme);
     }
   }, []);
 
@@ -117,16 +137,16 @@ const Landing = () => {
 
     // Demo commands for use cases
     assistant.addCommand({
-      id: 'transfer_money',
-      command: 'transfer money',
-      description: 'Demo: Transfer money to an account',
+      id: 'send_demo_funds',
+      command: 'send demo funds',
+      description: 'Demo: Simulate sending funds to an account (no real transactions)',
       parameters: [
         { name: 'amount', type: 'number', required: true },
-        { name: 'toAccount', type: 'string', required: true },
+        { name: 'recipient', type: 'string', required: true },
       ],
       critical: true,
       action: async (params: any) => {
-        return `Demo: Would transfer $${params.amount} to ${params.toAccount} after confirmation.`;
+        return `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction occurred.`;
       },
     });
 
@@ -160,22 +180,22 @@ const Landing = () => {
       assistant.removeCommand('change theme');
       assistant.removeCommand('go to playground');
       assistant.removeCommand('dev assistant');
-      assistant.removeCommand('transfer money');
+      assistant.removeCommand('send demo funds');
       assistant.removeCommand('book appointment');
       assistant.removeCommand('print shipping label');
     };
   }, []);
 
   // FinTech code example
-  const fintechCode = `// Add a transfer command with built-in safety guardrails
+  const fintechCode = `// Add a command with built-in safety guardrails
 assistant.addCommand({
   // The phrase users will say to trigger this command
-  command: 'transfer money',
+  command: 'send demo funds',
 
   // Define required parameters with type validation
   parameters: [
     { name: 'amount', type: 'number', required: true },
-    { name: 'toAccount', type: 'string', required: true }
+    { name: 'recipient', type: 'string', required: true }
   ],
 
   // Critical flag halts execution and shows confirmation UI
@@ -183,8 +203,8 @@ assistant.addCommand({
 
   // Your business logic executes only after user confirms
   action: async (params) => {
-    await bankingAPI.transfer(params.amount, params.toAccount);
-    return \`Transferred $\${params.amount} to \${params.toAccount}\`;
+    await yourAPI.processAction(params.amount, params.recipient);
+    return \`Sent $\${params.amount} to \${params.recipient}\`;
   }
 });`;
 
@@ -347,6 +367,69 @@ assistant.addCommand({
             </button>
           </div>
 
+          {/* Overlay Theme Picker */}
+          <div
+            style={{
+              background: 'var(--bg-alt)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '24px 32px',
+              margin: '24px auto 0',
+              maxWidth: '680px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '14px',
+                color: 'var(--text-secondary)',
+                marginBottom: '8px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
+              🎨 Try Different Overlay Themes
+            </div>
+            <p
+              style={{
+                fontSize: '0.95rem',
+                color: 'var(--text)',
+                marginBottom: '16px',
+                lineHeight: '1.5',
+              }}
+            >
+              Change the Foisit assistant's appearance. Pick a theme, then open the assistant to see the difference!
+            </p>
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}
+            >
+              {overlayThemePresets.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => setOverlayTheme(preset.id as any)}
+                  title={preset.description}
+                  style={{
+                    padding: '10px 18px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    background: overlayTheme === preset.id ? 'var(--accent)' : 'var(--bg)',
+                    color: overlayTheme === preset.id ? 'white' : 'var(--text)',
+                    border: overlayTheme === preset.id ? 'none' : '1px solid var(--border)',
+                  }}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div
             className="hero-links"
             style={{
@@ -439,7 +522,7 @@ assistant.addCommand({
               View Angular Wrapper
             </a>
             <a
-              href="https://foisit-vue-demo.netlify.app/"
+              href="https://foisit-vue.netlify.app/"
               target="_blank"
               rel="noreferrer"
               style={{
@@ -534,7 +617,7 @@ assistant.addCommand({
                     textTransform: 'uppercase',
                   }}
                 >
-                  FinTech
+                  FinTech Demo
                 </span>
               </div>
               <h3
@@ -545,8 +628,18 @@ assistant.addCommand({
                   color: 'var(--text)',
                 }}
               >
-                Banking & Finance
+                Financial App Integration
               </h3>
+              <p
+                style={{
+                  color: 'var(--text-secondary)',
+                  marginBottom: '8px',
+                  fontSize: '0.8rem',
+                  fontStyle: 'italic',
+                }}
+              >
+                ⚠️ This is a demo simulation only — no real transactions occur.
+              </p>
               <p
                 style={{
                   color: 'var(--text-secondary)',
@@ -555,7 +648,7 @@ assistant.addCommand({
                 }}
               >
                 User says:{' '}
-                <strong>"Transfer fifty thousand to my savings account"</strong>
+                <strong>"Send demo funds to my account"</strong>
               </p>
               <p
                 style={{
@@ -565,9 +658,9 @@ assistant.addCommand({
                   lineHeight: '1.6',
                 }}
               >
-                The assistant parses the amount, identifies the target account,
+                The assistant parses the amount, identifies the recipient,
                 and because this is a critical action, displays a confirmation
-                dialog before executing. No accidental transfers.
+                dialog before executing. Safety guardrails built-in.
               </p>
               <pre
                 className="code-block"
@@ -590,8 +683,8 @@ assistant.addCommand({
                 onClick={() =>
                   assistant &&
                   assistant.runCommand({
-                    commandId: 'transfer_money',
-                    params: { amount: null, toAccount: null },
+                    commandId: 'send_demo_funds',
+                    params: { amount: null, recipient: null },
                     openOverlay: true,
                     showInvocation: true,
                   })
@@ -609,7 +702,7 @@ assistant.addCommand({
                   transition: 'all 0.2s',
                 }}
               >
-                Try Demo Now
+                Try Demo Simulation
               </button>
             </div>
 

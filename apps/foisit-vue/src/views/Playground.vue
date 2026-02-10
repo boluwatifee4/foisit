@@ -50,7 +50,7 @@ onUnmounted(() => {
       'help', 'create user', 'change theme', 'book appointment',
       'schedule meeting', 'delete all records', 'update profile',
       'reset theme', 'view stats', 'upload file', 'dev assistant',
-      'escalate', 'send demo funds', 'print shipping label',
+      'escalate', 'process demo task', 'print shipping label',
     ];
     commands.forEach((cmd) => assistantService.removeCommand(cmd));
   }
@@ -62,7 +62,7 @@ const setupCommands = () => {
     command: 'help',
     description: 'Show available commands and what I can do',
     action: async () => {
-      return `I can help you with:\nUser Management (create user, update profile)\nScheduling (book appointment, schedule meeting)\nData Operations (delete records - requires confirmation)\nAnalytics (view stats)\nUI Actions (change theme, toggle dark mode)\nDemo Actions (send demo funds - requires confirmation)\nLogistics (print shipping label)\n\nJust tell me what you'd like to do!`;
+      return `I can help you with:\nUser Management (create user, update profile)\nScheduling (book appointment, schedule meeting)\nData Operations (delete records - requires confirmation)\nAnalytics (view stats)\nUI Actions (change theme, toggle dark mode)\nDemo Actions (process demo task - requires confirmation)\nLogistics (print shipping label)\n\nJust tell me what you'd like to do!`;
     },
   });
 
@@ -110,17 +110,17 @@ const setupCommands = () => {
     },
   });
 
-  // Send demo funds
+  // Process demo task
   assistantService.addCommand({
-    id: 'send_demo_funds',
-    command: 'send demo funds',
-    description: 'Demo: Simulate sending funds (requires confirmation)',
+    id: 'process_demo_task',
+    command: 'process demo task',
+    description: 'Demo: Simulate processing a task (requires confirmation)',
     parameters: [
-      { name: 'amount', type: 'number', required: true },
-      { name: 'recipient', type: 'string', required: true },
+      { name: 'quantity', type: 'number', required: true },
+      { name: 'label', type: 'string', required: true },
     ],
     critical: true,
-    action: async (params: any) => `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction.`,
+    action: async (params: any) => `[DEMO] Processed ${params.quantity} items labeled "${params.label}" — this is a simulated action.`,
   });
 
   // Print shipping label

@@ -106,16 +106,16 @@ const registerLandingCommands = () => {
   });
 
   assistant.addCommand({
-    id: 'send_demo_funds',
-    command: 'send demo funds',
-    description: 'Demo: Simulate sending funds to an account (no real transactions)',
+    id: 'process_demo_task',
+    command: 'process demo task',
+    description: 'Demo: Simulate processing a task with confirmation (no real action occurs)',
     parameters: [
-      { name: 'amount', type: 'number', required: true },
-      { name: 'recipient', type: 'string', required: true },
+      { name: 'quantity', type: 'number', required: true },
+      { name: 'label', type: 'string', required: true },
     ],
     critical: true,
     action: async (params: any) => {
-      return `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction occurred.`;
+      return `[DEMO] Processed ${params.quantity} items labeled "${params.label}" — this is a simulated action.`;
     },
   });
 
@@ -147,16 +147,16 @@ const registerLandingCommands = () => {
   });
 };
 
-// FinTech code example (Vue Syntax)
-const fintechCode = `// Add a command with built-in safety guardrails
-assistant?.addCommand({
+// Task Automation code example
+const taskAutoCode = `// Add a command with built-in safety guardrails
+assistant.addCommand({
   // The phrase users will say to trigger this command
-  command: 'send demo funds',
+  command: 'process demo task',
 
   // Define required parameters with type validation
   parameters: [
-    { name: 'amount', type: 'number', required: true },
-    { name: 'recipient', type: 'string', required: true }
+    { name: 'quantity', type: 'number', required: true },
+    { name: 'label', type: 'string', required: true }
   ],
 
   // Critical flag halts execution and shows confirmation UI
@@ -164,8 +164,8 @@ assistant?.addCommand({
 
   // Your business logic executes only after user confirms
   action: async (params) => {
-    await yourAPI.processAction(params.amount, params.recipient);
-    return \`Sent $\${params.amount} to \${params.recipient}\`;
+    await yourAPI.processTask(params.quantity, params.label);
+    return \`Processed \${params.quantity} items labeled "\${params.label}"\`;
   }
 });`;
 
@@ -234,7 +234,7 @@ onUnmounted(() => {
   assistant.removeCommand('change theme');
   assistant.removeCommand('go to playground');
   assistant.removeCommand('dev assistant');
-  assistant.removeCommand('send demo funds');
+  assistant.removeCommand('process demo task');
   assistant.removeCommand('book appointment');
   assistant.removeCommand('print shipping label');
 });
@@ -250,10 +250,10 @@ const goToPlayground = () => {
   window.scrollTo(0, 0);
 };
 
-const triggerTransfer = () => {
+const triggerTask = () => {
   assistant?.runCommand({
-    commandId: 'send_demo_funds',
-    params: { amount: null, recipient: null },
+    commandId: 'process_demo_task',
+    params: { quantity: null, label: null },
     openOverlay: true,
     showInvocation: true,
   });
@@ -375,7 +375,7 @@ const triggerDevAssistant = () => {
             Works With Any Application
           </h2>
           <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7;">
-            From banking platforms to healthcare systems to e-commerce stores — if your app has actions, Foisit can make them voice and text accessible. Here are just a few examples:
+            From scheduling systems to e-commerce stores — if your app has actions, Foisit can make them voice and text accessible. Here are just a few examples:
           </p>
         </div>
 
@@ -383,26 +383,26 @@ const triggerDevAssistant = () => {
           <div class="use-case-card" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; transition: all 0.2s;">
             <div style="margin-bottom: 16px;">
               <span style="display: inline-block; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
-                FinTech Demo
+                Task Automation
               </span>
             </div>
             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; color: var(--text);">
-              Financial App Integration
+              Confirmation Guardrails
             </h3>
             <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 0.8rem; font-style: italic;">
-              ⚠️ This is a demo simulation only — no real transactions occur.
+              ℹ️ This is an interactive demo of Foisit's SDK features.
             </p>
             <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
-              User says: <strong>"Send demo funds to my account"</strong>
+              User says: <strong>"Process demo task"</strong>
             </p>
             <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;">
-              The assistant parses the amount, identifies the recipient, and because this is a critical action, displays a confirmation dialog before executing. Safety guardrails built-in.
+              The assistant parses the parameters, and because this is a critical action, displays a confirmation dialog before executing. Safety guardrails are built-in.
             </p>
             <pre class="code-block" style="background: #1e1e2e; border-radius: 8px; padding: 16px; font-size: 12px; overflow: auto; margin-bottom: 20px; color: #cdd6f4; text-align: left; white-space: pre-wrap; word-break: break-word;">
-              <code style="color: #cdd6f4">{{fintechCode}}</code>
+              <code style="color: #cdd6f4">{{taskAutoCode}}</code>
             </pre>
-            <button @click="triggerTransfer" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-              Try Demo Simulation
+            <button @click="triggerTask" style="width: 100%; padding: 12px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--accent); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              Try Demo
             </button>
           </div>
 

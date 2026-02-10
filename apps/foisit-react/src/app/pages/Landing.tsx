@@ -137,16 +137,16 @@ const Landing = () => {
 
     // Demo commands for use cases
     assistant.addCommand({
-      id: 'send_demo_funds',
-      command: 'send demo funds',
-      description: 'Demo: Simulate sending funds to an account (no real transactions)',
+      id: 'process_demo_task',
+      command: 'process demo task',
+      description: 'Demo: Simulate processing a task with confirmation (no real action occurs)',
       parameters: [
-        { name: 'amount', type: 'number', required: true },
-        { name: 'recipient', type: 'string', required: true },
+        { name: 'quantity', type: 'number', required: true },
+        { name: 'label', type: 'string', required: true },
       ],
       critical: true,
       action: async (params: any) => {
-        return `[DEMO SIMULATION] Would send $${params.amount} to ${params.recipient} - no real transaction occurred.`;
+        return `[DEMO] Processed ${params.quantity} items labeled "${params.label}" — this is a simulated action.`;
       },
     });
 
@@ -180,22 +180,22 @@ const Landing = () => {
       assistant.removeCommand('change theme');
       assistant.removeCommand('go to playground');
       assistant.removeCommand('dev assistant');
-      assistant.removeCommand('send demo funds');
+      assistant.removeCommand('process demo task');
       assistant.removeCommand('book appointment');
       assistant.removeCommand('print shipping label');
     };
   }, []);
 
-  // FinTech code example
-  const fintechCode = `// Add a command with built-in safety guardrails
+  // Task Automation code example
+  const taskAutoCode = `// Add a command with built-in safety guardrails
 assistant.addCommand({
   // The phrase users will say to trigger this command
-  command: 'send demo funds',
+  command: 'process demo task',
 
   // Define required parameters with type validation
   parameters: [
-    { name: 'amount', type: 'number', required: true },
-    { name: 'recipient', type: 'string', required: true }
+    { name: 'quantity', type: 'number', required: true },
+    { name: 'label', type: 'string', required: true }
   ],
 
   // Critical flag halts execution and shows confirmation UI
@@ -203,8 +203,8 @@ assistant.addCommand({
 
   // Your business logic executes only after user confirms
   action: async (params) => {
-    await yourAPI.processAction(params.amount, params.recipient);
-    return \`Sent $\${params.amount} to \${params.recipient}\`;
+    await yourAPI.processTask(params.quantity, params.label);
+    return \`Processed \${params.quantity} items labeled "\${params.label}"\`;
   }
 });`;
 
@@ -578,7 +578,7 @@ assistant.addCommand({
                 lineHeight: '1.7',
               }}
             >
-              From banking platforms to healthcare systems to e-commerce stores
+              From scheduling systems to e-commerce stores
               — if your app has actions, Foisit can make them voice and text
               accessible. Here are just a few examples:
             </p>
@@ -593,7 +593,7 @@ assistant.addCommand({
               gap: '32px',
             }}
           >
-            {/* FinTech Card */}
+            {/* Task Automation Card */}
             <div
               className="use-case-card"
               style={{
@@ -617,7 +617,7 @@ assistant.addCommand({
                     textTransform: 'uppercase',
                   }}
                 >
-                  FinTech Demo
+                  Task Automation
                 </span>
               </div>
               <h3
@@ -628,7 +628,7 @@ assistant.addCommand({
                   color: 'var(--text)',
                 }}
               >
-                Financial App Integration
+                Confirmation Guardrails
               </h3>
               <p
                 style={{
@@ -638,7 +638,7 @@ assistant.addCommand({
                   fontStyle: 'italic',
                 }}
               >
-                ⚠️ This is a demo simulation only — no real transactions occur.
+                ℹ️ This is an interactive demo of Foisit's SDK features.
               </p>
               <p
                 style={{
@@ -648,7 +648,7 @@ assistant.addCommand({
                 }}
               >
                 User says:{' '}
-                <strong>"Send demo funds to my account"</strong>
+                <strong>"Process demo task"</strong>
               </p>
               <p
                 style={{
@@ -658,9 +658,9 @@ assistant.addCommand({
                   lineHeight: '1.6',
                 }}
               >
-                The assistant parses the amount, identifies the recipient,
-                and because this is a critical action, displays a confirmation
-                dialog before executing. Safety guardrails built-in.
+                The assistant parses the parameters, and because this is
+                a critical action, displays a confirmation dialog before
+                executing. Safety guardrails are built-in.
               </p>
               <pre
                 className="code-block"
@@ -677,14 +677,14 @@ assistant.addCommand({
                   wordBreak: 'break-word',
                 }}
               >
-                <code style={{ color: '#cdd6f4' }}>{fintechCode}</code>
+                <code style={{ color: '#cdd6f4' }}>{taskAutoCode}</code>
               </pre>
               <button
                 onClick={() =>
                   assistant &&
                   assistant.runCommand({
-                    commandId: 'send_demo_funds',
-                    params: { amount: null, recipient: null },
+                    commandId: 'process_demo_task',
+                    params: { quantity: null, label: null },
                     openOverlay: true,
                     showInvocation: true,
                   })
@@ -702,7 +702,7 @@ assistant.addCommand({
                   transition: 'all 0.2s',
                 }}
               >
-                Try Demo Simulation
+                Try Demo
               </button>
             </div>
 

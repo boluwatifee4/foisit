@@ -17,6 +17,12 @@ export interface ThemeColors {
   systemBubbleBg?: string;
   /** Border color (e.g., 'rgba(255, 255, 255, 0.1)') */
   border?: string;
+  /** Checkbox accent color for custom-styled checkboxes (e.g., '#667eea') */
+  checkboxAccent?: string;
+  /** Checkbox border color for custom-styled checkboxes */
+  checkboxBorder?: string;
+  /** Checkbox checkmark color for custom-styled checkboxes */
+  checkboxCheck?: string;
 }
 
 export interface AssistantConfig {

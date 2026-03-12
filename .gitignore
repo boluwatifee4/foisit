@@ -56,6 +56,7 @@ libs/core/src/lib/command/command-handler.ts
 apps/proxy-api
 libs/core/SENSITIVE_FILES_README.md
 .npmrc
+DOCUMENTATION_LIB_PROXY_API.md
 
 # Local Netlify folder
 .netlify

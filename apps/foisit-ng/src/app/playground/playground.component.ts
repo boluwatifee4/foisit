@@ -89,6 +89,22 @@ export const appConfig = {
   action: (params) => 'Theme changed to ' + params.theme + '!'
 });`;
 
+  readonly exampleMultiSelectCode = `this.assistantService.addCommand({
+  command: 'pick favorite drinks',
+  parameters: [{
+    name: 'drinks',
+    type: 'select',
+    multiple: true,
+    options: [
+      { label: 'Coffee', value: 'coffee' },
+      { label: 'Tea', value: 'tea' },
+      { label: 'Soda', value: 'soda' },
+      { label: 'Water', value: 'water' }
+    ]
+  }],
+  action: (params) => 'Selected: ' + (params.drinks || []).join(', ')
+});`;
+
   readonly exampleBookAppointmentCode = `this.assistantService.addCommand({
   command: 'book appointment',
   parameters: [
@@ -142,6 +158,9 @@ export const appConfig = {
 
 // SELECT - Static dropdown
 { name: 'role', type: 'select', options: [{ label: 'Admin', value: 'admin' }] }
+
+// SELECT - Multi-select (checkbox list)
+{ name: 'drinks', type: 'select', multiple: true, options: [{ label: 'Coffee', value: 'coffee' }] }
 
 // SELECT - Async dropdown from API
 { name: 'customer', type: 'select', getOptions: () => fetch('/api/customers').then(r => r.json()) }
@@ -242,7 +261,7 @@ assistant.unregisterCommandHandler('customAction');`;
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initTheme();
@@ -261,6 +280,7 @@ assistant.unregisterCommandHandler('customAction');`;
       'help',
       'create user',
       'change theme',
+      'pick favorite drinks',
       'book appointment',
       'schedule meeting',
       'delete all records',
@@ -396,6 +416,35 @@ Just tell me what you'd like to do!`;
       },
     });
 
+    // ===== MULTI-SELECT PARAMETER =====
+    this.assistantService.addCommand({
+      command: 'pick favorite drinks',
+      description: 'Select multiple drinks from a list',
+      parameters: [
+        {
+          name: 'drinks',
+          description: 'Choose one or more drinks',
+          required: true,
+          type: 'select',
+          multiple: true,
+          options: [
+            { label: 'Coffee', value: 'coffee' },
+            { label: 'Tea', value: 'tea' },
+            { label: 'Soda', value: 'soda' },
+            { label: 'Water', value: 'water' },
+          ],
+        },
+      ],
+      action: async (params?: Record<string, unknown>) => {
+        const p = params as { drinks?: string[] } | undefined;
+        const selections = Array.isArray(p?.drinks) ? p?.drinks : [];
+        return {
+          type: 'success',
+          message: `Selected drinks: ${selections.join(', ')}`,
+        };
+      },
+    });
+
     // ===== DATE PARAMETER =====
     this.assistantService.addCommand({
       command: 'book appointment',
@@ -408,14 +457,13 @@ Just tell me what you'd like to do!`;
         const p = params as unknown as Partial<BookAppointmentParams> | undefined;
         return {
           type: 'success',
-          message: `Appointment booked!\n\nService: ${
-            String(p?.service ?? '')
-          }\nDate: ${new Date(p?.date ?? '').toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}`,
+          message: `Appointment booked!\n\nService: ${String(p?.service ?? '')
+            }\nDate: ${new Date(p?.date ?? '').toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}`,
         };
       },
     });

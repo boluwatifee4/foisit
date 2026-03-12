@@ -61,6 +61,11 @@ export class AssistantService {
         async (input) => {
           if (typeof input === 'string') {
             this.overlayManager.addMessage(input, 'user');
+          } else if (Array.isArray(input)) {
+            // display each selected value
+            input.forEach((v) =>
+              this.overlayManager.addMessage(String(v), 'user')
+            );
           } else if (input && typeof input === 'object') {
             const label = this.extractUserLabel(
               input as Record<string, unknown>
@@ -70,7 +75,7 @@ export class AssistantService {
             }
           }
 
-          await this.handleCommand(input);
+          await this.handleCommand(input as any);
         },
         () => console.log('AssistantService: Overlay closed.')
       );
@@ -195,7 +200,7 @@ export class AssistantService {
 
   /** Handle recognized commands */
   private async handleCommand(
-    input: string | Record<string, unknown>
+    input: string | Record<string, unknown> | string[]
   ): Promise<void> {
     this.overlayManager.showLoading();
     let response: InteractiveResponse;
@@ -328,7 +333,7 @@ export class AssistantService {
 
   /** Toggle the assistant overlay */
   toggle(
-    onSubmit?: (input: string | Record<string, unknown>) => void,
+    onSubmit?: (input: string | string[] | Record<string, unknown>) => void,
     onClose?: () => void
   ): void {
     console.log('AssistantService: Toggling overlay...');
@@ -336,15 +341,19 @@ export class AssistantService {
       async (input) => {
         if (typeof input === 'string') {
           this.overlayManager.addMessage(input, 'user');
+        } else if (Array.isArray(input)) {
+          input.forEach((v) =>
+            this.overlayManager.addMessage(String(v), 'user')
+          );
         } else if (input && typeof input === 'object') {
-          const label = this.extractUserLabel(input);
+          const label = this.extractUserLabel(input as Record<string, unknown>);
           if (label) {
             this.overlayManager.addMessage(label, 'user');
           }
         }
 
-        if (onSubmit) onSubmit(input);
-        await this.handleCommand(input);
+        if (onSubmit) onSubmit(input as any);
+        await this.handleCommand(input as any);
       },
       () => {
         console.log('AssistantService: Overlay closed.');

@@ -129,9 +129,9 @@ Define parameters and Foisit will automatically generate forms to collect them:
   command: 'create user',
   description: 'Create a new user account',
   parameters: [
-    { name: 'username', type: 'string', required: true },
-    { name: 'email', type: 'string', required: true },
-    { name: 'age', type: 'number', required: false }
+    { name: 'username', label: 'Username', type: 'string', required: true },
+    { name: 'email', label: 'Email address', type: 'string', required: true },
+    { name: 'age', label: 'Age', type: 'number', required: false }
   ],
   action: (params) => userService.create(params)
 }
@@ -165,9 +165,17 @@ Example:
 - `number` - Numeric input
 - `date` - Date picker
 - `select` - Dropdown (static or async options)
+  - **new:** set `multiple: true` to allow the user to choose more than one value; the result becomes an array.
 - `file` - File upload input
 
+**Field label text**
+
+- By default, the form label uses `description` (or falls back to `name`).
+- Set `label` on a parameter when you want explicit, user-friendly label text.
+
 ### 3. File Parameters
+
+> **Tip:** you can also call `overlayManager.addOptions(..., { allowMultiple: true })` or supply a `select` parameter with `multiple: true` when you want pill‑style options that support multiple choices.
 
 Collect files via the built-in form UI and receive them in your command `action`.
 
@@ -462,6 +470,9 @@ interface ThemeColors {
   userBubbleBg?: string; // User message bubble background
   systemBubbleBg?: string; // System message bubble background
   border?: string; // Border color
+  checkboxAccent?: string; // Checkbox accent color
+  checkboxBorder?: string; // Checkbox border color
+  checkboxCheck?: string; // Checkbox checkmark color
 }
 ```
 

@@ -7,6 +7,8 @@ export type AssistantCommandParams = Record<string, unknown>;
 
 export interface StringParameter {
   name: string;
+  /** Optional UI label (preferred over description/name for form field label text) */
+  label?: string;
   description?: string;
   required?: boolean;
   type: 'string';
@@ -16,6 +18,8 @@ export interface StringParameter {
 
 export interface NumberParameter {
   name: string;
+  /** Optional UI label (preferred over description/name for form field label text) */
+  label?: string;
   description?: string;
   required?: boolean;
   type: 'number';
@@ -27,6 +31,8 @@ export interface NumberParameter {
 
 export interface DateParameter {
   name: string;
+  /** Optional UI label (preferred over description/name for form field label text) */
+  label?: string;
   description?: string;
   required?: boolean;
   type: 'date';
@@ -37,16 +43,22 @@ export interface DateParameter {
 
 export interface SelectParameter {
   name: string;
+  /** Optional UI label (preferred over description/name for form field label text) */
+  label?: string;
   description?: string;
   required?: boolean;
   type: 'select';
   options?: SelectOption[];
   getOptions?: () => Promise<SelectOption[]>;
   defaultValue?: string;
+  /** Allow selecting multiple options (returned value will be an array) */
+  multiple?: boolean;
 }
 
 export interface FileParameter {
   name: string;
+  /** Optional UI label (preferred over description/name for form field label text) */
+  label?: string;
   description?: string;
   required?: boolean;
   type: 'file';

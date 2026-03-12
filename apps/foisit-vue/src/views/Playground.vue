@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAssistant } from '@foisit/vue-wrapper';
 import '../app/showcase.css';
 
 const router = useRouter();
+const assistant = useAssistant();
 const theme = ref<'light' | 'dark'>('light');
-
-// Get assistant service
-let assistantService: any = null;
 
 const callDevAssistant = async (code: string, question: string): Promise<string> => {
   try {
@@ -37,28 +36,24 @@ onMounted(() => {
     document.documentElement.setAttribute('data-theme', savedTheme);
   }
 
-  // Get assistant service
-  assistantService = (window as any).__foisit__;
-
   // Setup demo commands
-  if (assistantService) setupCommands();
+  if (assistant) setupCommands();
 });
 
 onUnmounted(() => {
-  if (assistantService) {
-    const commands = [
-      'help', 'create user', 'change theme', 'book appointment',
-      'schedule meeting', 'delete all records', 'update profile',
-      'reset theme', 'view stats', 'upload file', 'dev assistant',
-      'escalate', 'process demo task', 'print shipping label',
-    ];
-    commands.forEach((cmd) => assistantService.removeCommand(cmd));
-  }
+  if (!assistant) return;
+  const commands = [
+    'help', 'create user', 'change theme', 'book appointment',
+    'pick favorite drinks', 'schedule meeting', 'delete all records', 'update profile',
+    'reset theme', 'view stats', 'upload file', 'dev assistant',
+    'escalate', 'process demo task', 'print shipping label',
+  ];
+  commands.forEach((cmd) => assistant.removeCommand(cmd));
 });
 
 const setupCommands = () => {
   // Help
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'help',
     description: 'Show available commands and what I can do',
     action: async () => {
@@ -67,7 +62,7 @@ const setupCommands = () => {
   });
 
   // Create user
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'create user',
     description: 'Create a new user account with name, email, and age',
     parameters: [
@@ -83,7 +78,7 @@ const setupCommands = () => {
   });
 
   // Change theme
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'change theme',
     description: 'Switch between light and dark mode',
     action: async () => {
@@ -95,8 +90,35 @@ const setupCommands = () => {
     },
   });
 
+  // Multi-select demo
+  assistant.addCommand({
+    command: 'pick favorite drinks',
+    description: 'Select multiple drinks from a list',
+    parameters: [
+      {
+        name: 'drinks',
+        description: 'Choose one or more drinks',
+        required: true,
+        type: 'select',
+        multiple: true,
+        options: [
+          { label: 'Coffee', value: 'coffee' },
+          { label: 'Tea', value: 'tea' },
+          { label: 'Soda', value: 'soda' },
+          { label: 'Water', value: 'water' },
+        ],
+      },
+    ],
+    action: async (params: any) => {
+      const selections = Array.isArray(params?.drinks)
+        ? params.drinks.join(', ')
+        : '';
+      return { type: 'success', message: `Selected drinks: ${selections}` };
+    },
+  });
+
   // Book appointment
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'book appointment',
     description: 'Schedule an appointment with date and time',
     parameters: [
@@ -111,7 +133,7 @@ const setupCommands = () => {
   });
 
   // Process demo task
-  assistantService.addCommand({
+  assistant.addCommand({
     id: 'process_demo_task',
     command: 'process demo task',
     description: 'Demo: Simulate processing a task (requires confirmation)',
@@ -124,7 +146,7 @@ const setupCommands = () => {
   });
 
   // Print shipping label
-  assistantService.addCommand({
+  assistant.addCommand({
     id: 'print_shipping_label',
     command: 'print shipping label',
     description: 'Print shipping label for an order (fast execution)',
@@ -134,7 +156,7 @@ const setupCommands = () => {
   });
 
   // Schedule meeting
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'schedule meeting',
     description: 'Schedule a meeting with attendees',
     parameters: [
@@ -163,7 +185,7 @@ const setupCommands = () => {
   });
 
   // Delete all records
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'delete all records',
     description: 'Permanently delete all user records',
     critical: true,
@@ -174,7 +196,7 @@ const setupCommands = () => {
   });
 
   // Update profile
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'update profile',
     description: 'Update your user profile',
     parameters: [
@@ -199,7 +221,7 @@ const setupCommands = () => {
   });
 
   // View stats
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'view stats',
     description: 'Show application statistics',
     action: async () => {
@@ -209,7 +231,7 @@ const setupCommands = () => {
   });
 
   // Reset theme command
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'reset theme',
     action: async () => {
       document.body.style.backgroundColor = '';
@@ -218,7 +240,7 @@ const setupCommands = () => {
   });
 
   // Upload file
-  assistantService.addCommand({
+  assistant.addCommand({
     command: 'upload file',
     description: 'Upload a file with description',
     parameters: [
@@ -237,7 +259,7 @@ const setupCommands = () => {
   });
 
   // Dev assistant
-  assistantService.addCommand({
+  assistant.addCommand({
     id: 'dev_assistant',
     command: 'dev assistant',
     description: 'Get help with Foisit development questions and code issues',
@@ -256,7 +278,7 @@ const setupCommands = () => {
   });
 
   // Escalate (programmatic handler demo)
-  assistantService.addCommand({
+  assistant.addCommand({
     id: 'escalate',
     command: 'escalate',
     description: 'Escalate an issue to support team',
@@ -277,11 +299,11 @@ const toggleTheme = () => {
 };
 
 const openAssistant = () => {
-  assistantService?.toggle();
+  assistant?.toggle();
 };
 
 const runEscalateDemo = () => {
-  assistantService?.runCommand({ commandId: 'escalate', params: { incidentId: null }, openOverlay: true, showInvocation: true });
+  assistant?.runCommand({ commandId: 'escalate', params: { incidentId: null }, openOverlay: true, showInvocation: true });
 };
 
 const goBack = () => {
@@ -382,6 +404,29 @@ const goBack = () => {
         </div>
 
         <div class="example-section">
+          <h3>Multi-Select Options</h3>
+          <p>Say "pick favorite drinks" — choose multiple items at once.</p>
+          <div class="code-block">
+            <div class="code-header"><span>TypeScript</span></div>
+            <pre>assistant.addCommand({
+  command: 'pick favorite drinks',
+  parameters: [{
+    name: 'drinks',
+    type: 'select',
+    multiple: true,
+    options: [
+      { label: 'Coffee', value: 'coffee' },
+      { label: 'Tea', value: 'tea' },
+      { label: 'Soda', value: 'soda' }
+    ]
+  }],
+  action: (params) =&gt;
+    `Selected: ${params.drinks?.join(', ')}`
+});</pre>
+          </div>
+        </div>
+
+        <div class="example-section">
           <h3>Date Picker</h3>
           <p>Say "book appointment" — native date picker UI.</p>
           <div class="code-block">
@@ -466,6 +511,9 @@ const goBack = () => {
 
 // SELECT - Static dropdown
 { name: 'role', type: 'select', options: [{ label: 'Admin', value: 'admin' }] }
+
+// SELECT - Multi-select (checkbox list)
+{ name: 'drinks', type: 'select', multiple: true, options: [{ label: 'Coffee', value: 'coffee' }] }
 
 // SELECT - Async dropdown from API
 { name: 'customer', type: 'select', getOptions: () => fetch('/api/customers').then(r => r.json()) }
@@ -605,7 +653,7 @@ assistant.unregisterCommandHandler('customAction');</pre>
         <ul>
           <li>AI-powered natural language understanding</li>
           <li>Automatic form generation for missing parameters</li>
-          <li>Parameter types: string, number, date, select, file</li>
+          <li>Parameter types: string, number, date, select (single/multi), file</li>
           <li>Async data loading for dynamic dropdowns</li>
           <li>Confirmation dialogs for destructive actions</li>
           <li>Full validation and error handling</li>

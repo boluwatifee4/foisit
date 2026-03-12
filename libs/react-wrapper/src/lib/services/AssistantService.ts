@@ -63,10 +63,18 @@ export class AssistantService {
 
       // Register global callbacks for floating button
       this.overlayManager.registerCallbacks(
-        async (input: string | Record<string, unknown>) => {
+        async (input: string | string[] | Record<string, unknown>) => {
           if (typeof input === 'string') {
             this.overlayManager.addMessage(input, 'user'); // Echo user input
             await this.handleCommand(input);
+            return;
+          }
+
+          if (Array.isArray(input)) {
+            input.forEach((v) =>
+              this.overlayManager.addMessage(String(v), 'user')
+            );
+            await this.handleCommand(input as any);
             return;
           }
 
@@ -205,11 +213,11 @@ export class AssistantService {
   }
 
   /** Handle recognized commands */
-  private async handleCommand(transcript: string): Promise<void> {
+  private async handleCommand(input: string | string[] | Record<string, unknown>): Promise<void> {
     this.overlayManager.showLoading();
     let response: InteractiveResponse;
     try {
-      response = await this.commandHandler.executeCommand(transcript);
+      response = await this.commandHandler.executeCommand(input as any);
     } finally {
       this.overlayManager.hideLoading();
     }
@@ -233,11 +241,16 @@ export class AssistantService {
     }
 
     if (response.type === 'error') {
-      this.fallbackHandler.handleFallback(transcript);
-      this.overlayManager.addMessage(
-        this.fallbackHandler.getFallbackMessage(),
-        'system'
-      );
+      const originalText = typeof input === 'string' ? input : '';
+      if (originalText) {
+        this.fallbackHandler.handleFallback(originalText);
+        this.overlayManager.addMessage(
+          this.fallbackHandler.getFallbackMessage(),
+          'system'
+        );
+      } else if (response.message) {
+        this.overlayManager.addMessage(response.message, 'system');
+      }
       return;
     }
 
@@ -364,7 +377,7 @@ export class AssistantService {
 
   /** Toggle the assistant overlay */
   toggle(
-    onSubmit?: (input: string | Record<string, unknown>) => void,
+    onSubmit?: (input: string | string[] | Record<string, unknown>) => void,
     onClose?: () => void
   ): void {
     console.log('AssistantService: Toggling overlay...');
@@ -374,6 +387,15 @@ export class AssistantService {
           this.overlayManager.addMessage(input, 'user'); // Echo user input
           if (onSubmit) onSubmit(input);
           await this.handleCommand(input);
+          return;
+        }
+
+        if (Array.isArray(input)) {
+          input.forEach((v) =>
+            this.overlayManager.addMessage(String(v), 'user')
+          );
+          if (onSubmit) onSubmit(input);
+          await this.handleCommand(input as any);
           return;
         }
 

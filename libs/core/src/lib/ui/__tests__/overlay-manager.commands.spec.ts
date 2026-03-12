@@ -51,4 +51,62 @@ describe('OverlayManager runCommand', () => {
     // at least two system messages (results)
     expect(msgs.length).toBeGreaterThanOrEqual(2);
   });
+
+  test('addForm supports multi-select values', () => {
+    const received: any = [];
+    overlay.registerCallbacks((input) => received.push(input), () => { /* empty */ });
+
+    overlay.addForm(
+      'Choose drinks',
+      [
+        {
+          name: 'drinks',
+          type: 'select' as const,
+          options: [
+            { label: 'Coffee', value: 'coffee' },
+            { label: 'Tea', value: 'tea' },
+          ],
+          multiple: true,
+          required: true,
+        },
+      ],
+      (data) => {
+        received.push(data);
+      }
+    );
+
+    // simulate user checking both boxes
+    const checkboxes = Array.from(document.querySelectorAll('input[type=checkbox]')) as HTMLInputElement[];
+    checkboxes.forEach((cb) => (cb.checked = true));
+
+    const form = document.querySelector('form') as HTMLFormElement;
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+    // onSubmit callback should have been invoked with object containing array
+    expect(received.length).toBeGreaterThanOrEqual(1);
+    const last = received[received.length - 1];
+    expect(last).toEqual({ drinks: ['coffee', 'tea'] });
+  });
+
+  test('addOptions multi selection works with confirmation', () => {
+    const received: any[] = [];
+    overlay.registerCallbacks((input) => received.push(input), () => { /* empty */ });
+
+    overlay.addOptions(
+      [
+        { label: 'A', value: 'a' },
+        { label: 'B', value: 'b' },
+      ],
+      { allowMultiple: true, confirmLabel: 'Done' }
+    );
+
+    // click both pills
+    const buttons = Array.from(document.querySelectorAll('.foisit-option-chip')) as HTMLButtonElement[];
+    // last one is confirm
+    buttons.slice(0, 2).forEach((btn) => btn.click());
+    const confirm = buttons[2];
+    confirm.click();
+
+    expect(received).toEqual([['a', 'b']]);
+  });
 });

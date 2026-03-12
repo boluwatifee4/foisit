@@ -132,6 +132,36 @@ Just tell me what you'd like to do!`;
       },
     });
 
+    // Multi-select demo command
+    assistant.addCommand({
+      command: 'pick favorite drinks',
+      description: 'Select multiple drinks from a list',
+      parameters: [
+        {
+          name: 'drinks',
+          description: 'Choose one or more drinks',
+          required: true,
+          type: 'select',
+          multiple: true,
+          options: [
+            { label: 'Coffee', value: 'coffee' },
+            { label: 'Tea', value: 'tea' },
+            { label: 'Soda', value: 'soda' },
+            { label: 'Water', value: 'water' },
+          ],
+        },
+      ],
+      action: async (params: any) => {
+        const selections = Array.isArray(params?.drinks)
+          ? params.drinks.join(', ')
+          : '';
+        return {
+          type: 'success',
+          message: `Selected drinks: ${selections}`,
+        };
+      },
+    });
+
     // Book appointment command
     assistant.addCommand({
       command: 'book appointment',
@@ -384,6 +414,7 @@ Just tell me what you'd like to do!`;
         'schedule meeting',
         'delete all records',
         'update profile',
+        'pick favorite drinks',
         'reset theme',
         'view stats',
         'upload file',
@@ -565,7 +596,33 @@ export default () => (
             </div>
           </div>
 
-          {/* Example 4: Date Picker */}
+          {/* Example 4: Multi-Select */}
+          <div className="example-section">
+            <h3>Multi-Select Options</h3>
+            <p>Say "pick favorite drinks" - choose multiple items at once.</p>
+            <div className="code-block">
+              <div className="code-header">
+                <span>TypeScript</span>
+              </div>
+              <pre>{`assistant.addCommand({
+  command: 'pick favorite drinks',
+  parameters: [{
+    name: 'drinks',
+    type: 'select',
+    multiple: true,
+    options: [
+      { label: 'Coffee', value: 'coffee' },
+      { label: 'Tea', value: 'tea' },
+      { label: 'Soda', value: 'soda' }
+    ]
+  }],
+  action: (params) =>
+    'Selected: ' + (params.drinks?.join(', ') || '')
+});`}</pre>
+            </div>
+          </div>
+
+          {/* Example 5: Date Picker */}
           <div className="example-section">
             <h3>Date Picker</h3>
             <p>Say "book appointment" - native date picker UI.</p>
@@ -584,7 +641,7 @@ export default () => (
             </div>
           </div>
 
-          {/* Example 5: Async Select */}
+          {/* Example 6: Async Select */}
           <div className="example-section">
             <h3>Dynamic API Options</h3>
             <p>Say "schedule meeting" - loads team members from API.</p>
@@ -607,7 +664,7 @@ export default () => (
             </div>
           </div>
 
-          {/* Example 6: Critical Action */}
+          {/* Example 7: Critical Action */}
           <div className="example-section">
             <h3>Protected Actions</h3>
             <p>Say "delete all records" - requires confirmation.</p>
@@ -626,7 +683,7 @@ export default () => (
             </div>
           </div>
 
-          {/* Example 7: File Upload */}
+          {/* Example 8: File Upload */}
           <div className="example-section">
             <h3>File Upload</h3>
             <p>Say "upload file" - file picker with type restrictions.</p>
@@ -663,6 +720,9 @@ export default () => (
 
 // SELECT - Static dropdown
 { name: 'role', type: 'select', options: [{ label: 'Admin', value: 'admin' }] }
+
+// SELECT - Multi-select (checkbox list)
+{ name: 'drinks', type: 'select', multiple: true, options: [{ label: 'Coffee', value: 'coffee' }] }
 
 // SELECT - Async dropdown from API
 { name: 'customer', type: 'select', getOptions: () => fetch('/api/customers').then(r => r.json()) }
@@ -836,7 +896,10 @@ assistant.unregisterCommandHandler('customAction');`}</pre>
           <ul>
             <li>AI-powered natural language understanding</li>
             <li>Automatic form generation for missing parameters</li>
-            <li>5 parameter types: string, number, date, select, file</li>
+            <li>
+              5 parameter types: string, number, date, select (single/multi),
+              file
+            </li>
             <li>Async data loading for dynamic dropdowns</li>
             <li>Confirmation dialogs for destructive actions</li>
             <li>Full validation and error handling</li>
